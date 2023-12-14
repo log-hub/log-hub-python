@@ -10,7 +10,7 @@ setup(
     description='A simple sample package',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='http://github.com/yourusername/log_hub',
+    url='https://github.com/log-hub/log-hub-python',
     author='Log-hub AG',
     author_email='support@log-hub.com',
     license='MIT',
