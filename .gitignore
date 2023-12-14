@@ -64,6 +64,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+loghub_env
 
 # Spyder project settings
 .spyderproject

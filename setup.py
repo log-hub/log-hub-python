@@ -20,6 +20,6 @@ setup(
         'Operating System :: OS Independent',
     ],
     install_requires=required,
-    package_data={'log_hub': ['sample_data/*.xlsx']},
+    package_data={'pyloghub': ['sample_data/*.xlsx']},
     include_package_data=True,
 )
