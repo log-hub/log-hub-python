@@ -4,7 +4,7 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(
-    name='log_hub',
+    name='pyloghub',
     version='0.1.0',
     packages=find_packages(),
     description='A simple sample package',

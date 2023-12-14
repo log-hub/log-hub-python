@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 import pandas as pd
-from log_hub.geocoding import forward_geocoding  # Replace 'your_module' with the actual name of your module
+from pyloghub.geocoding import forward_geocoding  # Replace 'your_module' with the actual name of your module
 
 class TestForwardGeocoding(unittest.TestCase):
     def setUp(self):

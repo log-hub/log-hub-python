@@ -3,7 +3,7 @@
 
 ## Introduction
 
-The `log_hub` package provides convinient access to various Log-hub API services for Supply Chain Visualization, Network Design Optimization, and Transport Optimization.
+The `pyloghub` package provides convinient access to various Log-hub API services for Supply Chain Visualization, Network Design Optimization, and Transport Optimization.
 
 ### Prerequisites
 
@@ -46,12 +46,12 @@ A virtual environment allows you to manage Python packages for different project
 
    Deactivate with `deactivate` when done.
 
-### Installing `log_hub` Package
+### Installing `pyloghub` Package
 
 Within the environment, install the package using:
 
 ```bash
-pip install log_hub
+pip install pyloghub
 ```
 
 ## Configuration
@@ -73,7 +73,7 @@ This example demonstrates using the Reverse Distance Calculation feature:
 
 1. **Import Functions**:
    ```python
-   from log_hub.distance_calculation import reverse_distance_calculation, reverse_distance_calculation_sample_data
+   from pyloghub.distance_calculation import reverse_distance_calculation, reverse_distance_calculation_sample_data
    ```
 
 2. **Load Sample Data**:
