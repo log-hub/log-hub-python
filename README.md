@@ -5,6 +5,8 @@
 
 # Log-hub Python API library
 
+[![PyPI version](https://badge.fury.io/py/pyloghub.svg)](https://pypi.org/project/pyloghub/)
+
 ## Introduction
 
 The `pyloghub` package provides convinient access to various Log-hub API services for Supply Chain Visualization, Network Design Optimization, and Transport Optimization.
