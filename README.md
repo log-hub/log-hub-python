@@ -7,6 +7,18 @@
 
 [![PyPI version](https://badge.fury.io/py/pyloghub.svg)](https://pypi.org/project/pyloghub/)
 
+## Table of Contents
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+  - [Setting Up Python Environment](#setting-up-python-environment)
+  - [Installing `pyloghub` Package](#installing-pyloghub-package)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Available Functionalities](#available-functionalities)
+- [Contact Us](#contact-us)
+- [License](#license)
+
 ## Introduction
 
 The `pyloghub` package provides convinient access to various Log-hub API services for Supply Chain Visualization, Network Design Optimization, and Transport Optimization.
@@ -232,13 +244,20 @@ shipments_analysis_df, transports_analysis_df = forward_shipment_analyzer(shipme
 
 For the Milkrun Optimization, Transport Optimization as well as the Shipment Analyzer service there is also the reverse version available.
 
-## Support
+## Contact Us
 
-For additional support, questions, or feedback, please reach out to us via email:
+For any inquiries, assistance, or additional information, feel free to reach out to us at our office or via email.
 
-- Email Support: [support@log-hub.com](mailto:support@log-hub.com)
+**Address:**  
+Schwandweg 5,  
+8834 Schindellegi,  
+Switzerland  
+
+**Email:**  
+[support@log-hub.com](mailto:support@log-hub.com)
 
 Alternatively, for more information and resources, visit [Log-hub API Documentation](https://production.supply-chain-apps.log-hub.com/sca/api-docs).
+
 
 ## License
 
