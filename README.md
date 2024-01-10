@@ -21,7 +21,7 @@
 
 ## Introduction
 
-The `pyloghub` package provides convinient access to various Log-hub API services for Supply Chain Visualization, Network Design Optimization, and Transport Optimization.
+The `pyloghub` package provides convinient access to various Log-hub API services for Supply Chain Visualization, Network Design Optimization, and Transport Optimization as well as access to the Log-hub platform data.
 
 ### Prerequisites
 
@@ -243,6 +243,80 @@ shipments_analysis_df, transports_analysis_df = forward_shipment_analyzer(shipme
 ```
 
 For the Milkrun Optimization, Transport Optimization as well as the Shipment Analyzer service there is also the reverse version available.
+
+### Working with Log-hub Tables
+
+To read or update a table, you need a table link from a table in the Log-hub platform. Therefore, please navigate in a workspace with an existing dataset and go to the table you would like to read or update. Click on the "three dots" and click on "Table Link". Then copy the corresponding table link. If no table exists create a dataset and a new table via the GUI.
+
+#### Reading Data from a Table
+The read_table function simplifies the process of fetching and formatting data from a specific table on the Log-hub platform into a pandas DataFrame. This function ensures that the data types in the DataFrame match those in the Log-hub table, leveraging metadata from the table for precise formatting.
+
+```python
+from pyloghub.dataset import read_table
+import pandas as pd
+
+# Replace with actual table link, email, and API key
+table_link = "https://production.supply-chain-apps.log-hub.com/api/v1/datasets/.../tables/.../rows"
+email = "your_email@example.com"
+api_key = "your_api_key"
+
+# Read data from table
+dataframe = read_table(table_link, email, api_key)
+
+# Check the DataFrame
+if dataframe is not None:
+    print(dataframe.head())
+else:
+    print("Failed to read data from the table.")
+```
+
+#### Updating Data in a Table
+The update_table function is designed for uploading data from a local pandas DataFrame to a specific table on the Log-hub platform. It requires the table link, the DataFrame, metadata describing the table structure (optional). If no metadata are provided, the datatypes are automatically extracted from the pandas dataframe.
+
+```python
+from pyloghub.dataset import update_table
+import pandas as pd
+
+# Replace with actual credentials and link
+table_link = "https://production.supply-chain-apps.log-hub.com/api/v1/datasets/.../tables/.../rows"
+email = "your_email@example.com"
+api_key = "your_api_key"
+
+# Example DataFrame
+dataframe = pd.DataFrame({
+    'ColumnA': ['Value1', 'Value2'],
+    'ColumnB': [123, 456]
+})
+
+# Metadata for the table
+metadata = {
+    'table_name': 'YourTableName',  # Optional, defaults to 'Table 01' if not provided
+    'columns': [
+        {
+            'name': 'ColumnA',
+            'propertyName': 'ColumnA',
+            'dataType': 'string',
+            'format': 'General'
+        },
+        {
+            'name': 'ColumnB',
+            'propertyName': 'ColumnB',
+            'dataType': 'number',
+            'format': 'General'
+        }
+        # More columns as needed
+    ]
+}
+
+# Update table
+response = update_table(table_link, dataframe, metadata, email, api_key)
+
+if response is None:
+    print("Table updated successfully.")
+else:
+    print("Failed to update the table.")
+```
+
 
 ## Contact Us
 
