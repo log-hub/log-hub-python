@@ -119,7 +119,10 @@ This example demonstrates using the Reverse Distance Calculation feature:
 
 `pyloghub` offers a suite of functionalities to enhance your supply chain management processes. Below is a quick guide to the available features and sample usage for each.
 
-### Geocoding
+<p align="left">
+  <img src="examples\assets\geocoding.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Forward Geocoding
 Convert addresses to geographic coordinates.
 
@@ -142,7 +145,10 @@ geocodes_df = sample_data['geocodes']
 reverse_geocoding_result_df = reverse_geocoding(geocodes_df, api_key)
 ```
 
-### Distance Calculation
+<p align="left">
+  <img src="examples\assets\distance_calculation.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Forward Distance Calculation
 Calculate distances based on address data.
 
@@ -167,7 +173,10 @@ parameters = sample_data['parameters']
 reverse_center_of_gravity_result_df = reverse_distance_calculation(geocode_data_df, parameters, api_key)
 ```
 
-### Center of Gravity
+<p align="left">
+  <img src="examples\assets\center_of_gravity.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Forward Center of Gravity
 Determine optimal facility locations based on addresses.
 
@@ -192,7 +201,10 @@ parameters = sample_data['parameters']
 assigned_geocodes_df, centers_df = reverse_center_of_gravity(coordinates_df, parameters, api_key)
 ```
 
-### Transport Optimization
+<p align="left">
+  <img src="examples\assets\milkrun_optimization.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Milkrun Optimization Plus
 Optimize delivery routes with multiple stops.
 
@@ -210,6 +222,10 @@ parameters = sample_data['parameters']
 route_overview_df, route_details_df, external_orders_df  = forward_milkrun_optimization_plus(depots_df, vehicles_df, jobs_df, timeWindowProfiles_df, breaks_df, parameters, api_key)
 ```
 
+<p align="left">
+  <img src="examples\assets\transport_optimization.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Transport Optimization Plus
 Optimize transport routes for shipments.
 
@@ -225,6 +241,10 @@ parameters = sample_data['parameters']
 
 route_overview_df, route_details_df, external_orders_df = forward_transport_optimization_plus(vehicles_df, shipments_df, timeWindowProfiles_df, breaks_df, parameters, api_key)
 ```
+
+<p align="left">
+  <img src="examples\assets\shipment_analyzer.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Shipment Analyzer
 Analyze and optimize shipment costs and operations.
@@ -243,6 +263,40 @@ shipments_analysis_df, transports_analysis_df = forward_shipment_analyzer(shipme
 ```
 
 For the Milkrun Optimization, Transport Optimization as well as the Shipment Analyzer service there is also the reverse version available.
+
+<p align="left">
+  <img src="examples\assets\freight_matrix.png" alt="Header Image"  width="980"/>
+</p>
+
+#### Freight Matrix
+Evaluate shipments with costs based on your own freight cost matrices. The following matrix types are supported:
+
+* Absolute weight distance matrix
+* Relative weight distance matrix
+* Absolute weight zone matrix
+* Relative weight zone matrix
+* Zone zone matrix
+* Absolute weight zone distance matrix
+* Relative weight zone distance matrix
+
+```python
+from pyloghub.freight_matrix import forward_freight_matrix, forward_freight_matrix_sample_data
+
+sample_data = forward_freight_matrix_sample_data()
+shipments_df = sample_data['shipments']
+matrix_id = "Your freight matrix id"
+
+evaluated_shipments_df = forward_freight_matrix(shipments_df, matrix_id, api_key)
+evaluated_shipments_df
+```
+You can create a freight matrix on the Log-hub Platform. Therefore, please create a workspace and click within the workspace on "Create Freight Matrix". There you can provide the matrix a name, select the matrix type and define all other parameters. 
+To get the matrix id, please click on the "gear" icon. There you can copy & paste the matrix id that is needed in your API request.
+
+
+<p align="left">
+  <img src="examples\assets\log_hub_tables.png" alt="Header Image"  width="980"/>
+</p>
+
 
 ### Working with Log-hub Tables
 

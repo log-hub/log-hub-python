@@ -135,7 +135,10 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
     if any(df is None for df in [vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/transportoptimizationplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/transportoptimizationplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",
@@ -310,7 +313,10 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
     if any(df is None for df in [vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/reversetransportoptimizationplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversetransportoptimizationplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",

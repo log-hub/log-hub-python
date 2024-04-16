@@ -68,7 +68,10 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     if address_pairs is None:
         return None
 
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/distancecalculation"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/distancecalculation"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",
@@ -191,8 +194,10 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
     if geocodes is None:
         return None
 
-
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/reversedistancecalculation"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversedistancecalculation"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",

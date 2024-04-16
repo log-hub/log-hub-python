@@ -65,7 +65,10 @@ def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, ap
     if addresses is None:
         return None
 
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/centerofgravityplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/centerofgravityplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",
@@ -173,7 +176,10 @@ def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, 
     if coordinates is None:
         return None
 
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/reversecenterofgravityplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversecenterofgravityplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",

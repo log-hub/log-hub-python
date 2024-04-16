@@ -147,8 +147,10 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     if any(df is None for df in [depots, vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/milkrunoptimizationplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/milkrunoptimizationplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",
@@ -333,7 +335,10 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     if any(df is None for df in [depots, vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/reversemilkrunoptimizationplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversemilkrunoptimizationplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",

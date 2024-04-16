@@ -58,7 +58,10 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.Data
 
     addresses = addresses.fillna("")
     
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/geocoding"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/geocoding"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",
@@ -174,9 +177,11 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str) -> Optional[pd.DataF
     # Convert the list of dictionaries to a pandas DataFrame
     geocodes = pd.DataFrame(geocodes)
     
-    # Convert the latitude and longitude columns to float64
     
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/reversegeocoding"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversegeocoding"
+
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",

@@ -258,7 +258,9 @@ def update_table(table_link, dataframe, metadata, email, api_key):
         "rows": dataframe.to_dict(orient='records')
     }
 
-    url = f"https://production.supply-chain-apps.log-hub.com/api/v1/datasets/{dataset_id}/tables/{table_id}"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/v1/datasets/{dataset_id}/tables/{table_id}"
 
     try:
         # Send PATCH request

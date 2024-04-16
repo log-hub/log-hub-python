@@ -113,7 +113,10 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
         logging.error("Invalid type for 'consolidation' in parameters. It should be boolean.")
         return None
 
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/shipmentanalyzerplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/shipmentanalyzerplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",
@@ -256,8 +259,10 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
         logging.error("Invalid type for 'consolidation' in parameters. It should be boolean.")
         return None
 
-    # API call with the modified URL
-    url = "https://production.supply-chain-apps.log-hub.com/api/applications/v1/reverseshipmentanalyzerplus"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reverseshipmentanalyzerplus"
+    
     headers = {
         "accept": "application/json",
         "authorization": f"apikey {api_key}",
