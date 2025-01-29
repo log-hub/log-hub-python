@@ -24,6 +24,7 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.Data
         - postalCode (str): Postal code.
         - city (str): City name.
         - street (str): Street name with house number.
+        - searchString (str): Key location details. Information such as country, state, city, street, and zip code, although the zip code cannot be the first entry.
 
     api_key (str): The Log-hub API key for accessing the geocoding service.
 
@@ -38,7 +39,7 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.Data
         Validate and convert the data types of the DataFrame columns.
         Log an error message if a required column is missing or if conversion fails.
         """
-        string_columns = ['country', 'state', 'postalCode', 'city', 'street']
+        string_columns = ['country', 'state', 'postalCode', 'city', 'street', 'searchString']
         for col in string_columns:
             if col in df.columns:
                 try:
@@ -115,7 +116,7 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.Data
 def forward_geocoding_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'GeocodingSampleDataAddresses.xlsx')
-    addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:E')
+    addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:F').fillna("")
     return {'addresses': addresses_df}
 
 
