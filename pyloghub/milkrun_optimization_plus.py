@@ -22,6 +22,7 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - city (str): City name.
         - street (str): Street name with house number.
         - depotId (str): Depot Id.
+        - processingTimeAtTheDepo (number): Loading or unloading time at depot.
 
     vehicles (pd.DataFrame): DataFrame containing vehicle information.
         Columns:
@@ -37,9 +38,14 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - timeWindowEnd (str): Time Window End (ISO 8601 format).
         - profile (str): Profile.
         - speedFactor (number): Speed Factor.
-        - fixed (number): Fixed cost.
+        - fixedCostsTO (number): Fixed cost.
         - perHour (number): Cost per hour.
+        - perKilometer (number): Cost per kilometer.
+        - costPerStop (number): Cost per stop.
+        - minimumTravelTime (number): Min travel time.
         - maxTravelTime (number): Max Travel Time.
+        - max_distance (number): Maximum number of kilometers that vehicle can drive per route.
+        - maximumDistanceBetweenStops (number): Maximum number of kilometers that vehicle can drive between each stop.
         - breakId (str): Break Id.
 
     jobs (pd.DataFrame): DataFrame containing job information.
@@ -58,6 +64,7 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - stopDuration (number): Stop Duration.
         - timeWindowProfile (str): Time Window Profile.
         - stopDurationAtDepo (number): Loading/Unloading Time at Depot.
+        - external_costs (number): External costs for order.
 
     timeWindowProfiles (pd.DataFrame): DataFrame containing time window profile information.
         Columns:
@@ -70,6 +77,8 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - breakId (str): Break Id.
         - earliestBreakStart (str): Earliest Break Start (ISO 8601 format).
         - latestBreakStart (str): Latest Break Start (ISO 8601 format).
+        - earliestRelativeBreakStart (str): Minimum driving time before the break can start (ISO 8601 format).
+        - latestRelativeBreakTime (str): Maximum driving time until the break must start (ISO 8601 format).
         - breakDuration (number): Break Duration.
 
     parameters (Dict): Dictionary containing parameters like durationUnit.
@@ -112,28 +121,27 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     # Define expected columns and data types for each DataFrame
     depot_columns = {
         'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
-        'street': 'str', 'depotId': 'str'
+        'street': 'str', 'depotId': 'str', 'processingTimeAtTheDepo': 'float'
     }
     vehicle_columns = {
         'vehicleTypeId': 'str', 'availableVehicles': 'int', 'startDepot': 'str', 
         'endDepot': 'str', 'maxWeight': 'float', 'maxVolume': 'float', 
         'maxPallets': 'int', 'maxStops': 'int', 'timeWindowStart': 'str', 
         'timeWindowEnd': 'str', 'profile': 'str', 'speedFactor': 'float', 
-        'fixed': 'float', 'perHour': 'float', 'maxTravelTime': 'float', 'breakId': 'str'
-    }
+        'fixedCostsTO': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime':'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
+    }   
     job_columns = {
         'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
         'street': 'str', 'orderId': 'str', 'weight': 'float', 'volume': 'float', 
-        'pallets': 'int', 'pickupDelivery': 'str', 'vehicleTypeId': 'str', 
-        'stopDuration': 'float', 'timeWindowProfile': 'str', 'stopDurationAtDepot': 'float'
+        'pallets': 'int', 'pickupDelivery': 'str', 'depotId': 'str', 'vehicleTypeId': 'str', 
+        'stopDuration': 'float', 'timeWindowProfile': 'str', 'stopDurationAtDepo': 'float', 'external_costs':'float'
     }
     timeWindowProfile_columns = {
         'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 
         'timeWindowProfileEnd': 'str'
-    }
+    } 
     break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 
-        'breakDuration': 'float'
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart':'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
     }
 
     # Perform validation and conversion for each DataFrame
@@ -181,7 +189,7 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in milk run optimization API: {response.status_code} - {response.text}")
+                logging.error(f"Error in milkrun optimization API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
@@ -196,11 +204,11 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
 def forward_milkrun_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'MilkrunPlusSampleDataAddresses.xlsx')
-    depots_df = pd.read_excel(data_path, sheet_name='depots', usecols='A:G', dtype={'postalCode': str})
-    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:Q', dtype={'maxTravelTime': int})
-    jobs_df = pd.read_excel(data_path, sheet_name='jobs', usecols='A:P', dtype={'postalCode': str})
+    depots_df = pd.read_excel(data_path, sheet_name='depots', usecols='A:H', dtype={'postalCode': str})
+    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:V', dtype={'maxTravelTime': int})
+    jobs_df = pd.read_excel(data_path, sheet_name='jobs', usecols='A:Q', dtype={'postalCode': str})
     time_window_profiles_df = pd.read_excel(data_path, sheet_name='timeWindowProfiles', usecols='A:D')
-    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:E')
+    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:G')
 
     parameters = {
         "durationUnit": "min"
@@ -220,6 +228,7 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - depotId (str): Depot Id.
         - latitude (float): Latitude of the depot.
         - longitude (float): Longitude of the depot.
+        - processingTimeAtTheDepo (number): Loading or unloading time at depot.
 
     vehicles (pd.DataFrame): DataFrame containing vehicle information, with columns:
         - vehicleTypeId (str): Vehicle Type Id.
@@ -234,9 +243,14 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - timeWindowEnd (str): Time Window End (ISO 8601 format).
         - profile (str): Profile.
         - speedFactor (float): Speed Factor.
-        - fixed (float): Fixed cost.
+        - fixedCostsTO (float): Fixed cost.
         - perHour (float): Cost per hour.
+        - perKilometer (float): Cost per kilometer.
+        - costPerStop (float): Cost per stop.
+        - minimumTravelTime (float): Min travel time.
         - maxTravelTime (float): Max Travel Time.
+        - max_distance (float): Maximum distance that vehicle can drive per route.
+        - maximumDistanceBetweenStops (float): Maximum distance that vehicle can drive between two stops.
         - breakId (str): Break Id.
 
     jobs (pd.DataFrame): DataFrame containing job information, with columns:
@@ -248,10 +262,12 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - volume (float): Volume.
         - pallets (int): Pallets.
         - pickupDelivery (str): Pickup/Delivery.
+        - depotId (str): Depot Id.
         - vehicleTypeId (str): Vehicle Type Id.
         - stopDuration (float): Stop Duration.
         - timeWindowProfile (str): Time Window Profile.
         - stopDurationAtDepo (float): Loading/Unloading Time at Depot.
+        - external_costs (float): External costs.
 
     timeWindowProfiles (pd.DataFrame): DataFrame containing time window profile information, with columns:
         - timeWindowProfileId (str): Time Window Profile Id.
@@ -262,6 +278,8 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - breakId (str): Break Id.
         - earliestBreakStart (str): Earliest Break Start (ISO 8601 format).
         - latestBreakStart (str): Latest Break Start (ISO 8601 format).
+        - earliestRelativeBreakStart (str): Earliest Relative Break Start (ISO 8601 format).
+        - latestRelativeBreakStart (str): Latest Relative Break Start (ISO 8601 format).
         - breakDuration (float): Break Duration.
 
     parameters (Dict): Dictionary containing parameters like durationUnit.
@@ -303,25 +321,25 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
 
     # Define expected columns and data types for each DataFrame
     depot_columns = {
-        'latitude': 'float', 'longitude': 'float', 'depotId': 'str'
+        'latitude': 'float', 'longitude': 'float', 'depotId': 'str', 'processingTimeAtTheDepo': 'float'
     }
     vehicle_columns = {
         'vehicleTypeId': 'str', 'availableVehicles': 'int', 'startDepot': 'str', 'endDepot': 'str',
         'maxWeight': 'float', 'maxVolume': 'float', 'maxPallets': 'int', 'maxStops': 'int',
         'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 'speedFactor': 'float',
-        'fixed': 'float', 'perHour': 'float', 'maxTravelTime': 'float', 'breakId': 'str'
+        'fixedCostsTO': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
     }
     job_columns = {
         'latitude': 'float', 'longitude': 'float', 'depotId': 'str', 'orderId': 'str',
         'weight': 'float', 'volume': 'float', 'pallets': 'int', 'pickupDelivery': 'str',
         'vehicleTypeId': 'str', 'stopDuration': 'float', 'timeWindowProfile': 'str', 
-        'stopDurationAtDepo': 'float'
+        'stopDurationAtDepo': 'float', 'external_costs': 'float'
     }
     timeWindowProfile_columns = {
         'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 'timeWindowProfileEnd': 'str'
     }
     break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'breakDuration': 'float'
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
     }
 
     # Perform validation and conversion for each DataFrame
@@ -384,11 +402,11 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
 def reverse_milkrun_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'MilkrunPlusSampleDataReverse.xlsx')
-    depots_df = pd.read_excel(data_path, sheet_name='depots', usecols='A:D', dtype={'postalCode': str})
-    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:Q', dtype={'maxTravelTime': int})
-    jobs_df = pd.read_excel(data_path, sheet_name='jobs', usecols='A:M', dtype={'postalCode': str})
+    depots_df = pd.read_excel(data_path, sheet_name='depots', usecols='A:E', dtype={'postalCode': str})
+    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:V', dtype={'maxTravelTime': int})
+    jobs_df = pd.read_excel(data_path, sheet_name='jobs', usecols='A:N', dtype={'postalCode': str})
     time_window_profiles_df = pd.read_excel(data_path, sheet_name='timeWindowProfiles', usecols='A:D')
-    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:E')
+    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:G')
 
     parameters = {
         "durationUnit": "min"
