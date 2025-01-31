@@ -38,7 +38,7 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - timeWindowEnd (str): Time Window End (ISO 8601 format).
         - profile (str): Profile.
         - speedFactor (number): Speed Factor.
-        - fixedCostsTO (number): Fixed cost.
+        - fixed (number): Fixed cost.
         - perHour (number): Cost per hour.
         - perKilometer (number): Cost per kilometer.
         - costPerStop (number): Cost per stop.
@@ -128,7 +128,7 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         'endDepot': 'str', 'maxWeight': 'float', 'maxVolume': 'float', 
         'maxPallets': 'int', 'maxStops': 'int', 'timeWindowStart': 'str', 
         'timeWindowEnd': 'str', 'profile': 'str', 'speedFactor': 'float', 
-        'fixedCostsTO': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime':'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
+        'fixed': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime':'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
     }   
     job_columns = {
         'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
@@ -243,7 +243,7 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         - timeWindowEnd (str): Time Window End (ISO 8601 format).
         - profile (str): Profile.
         - speedFactor (float): Speed Factor.
-        - fixedCostsTO (float): Fixed cost.
+        - fixed (float): Fixed cost.
         - perHour (float): Cost per hour.
         - perKilometer (float): Cost per kilometer.
         - costPerStop (float): Cost per stop.
@@ -327,7 +327,7 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         'vehicleTypeId': 'str', 'availableVehicles': 'int', 'startDepot': 'str', 'endDepot': 'str',
         'maxWeight': 'float', 'maxVolume': 'float', 'maxPallets': 'int', 'maxStops': 'int',
         'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 'speedFactor': 'float',
-        'fixedCostsTO': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
+        'fixed': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
     }
     job_columns = {
         'latitude': 'float', 'longitude': 'float', 'depotId': 'str', 'orderId': 'str',
