@@ -68,48 +68,22 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.Data
         "authorization": f"apikey {api_key}",
         "content-type": "application/json"
     }
-    batch_size = 5000
-    max_retries = 3
-
-    def process_batch(batch):
-        """
-        Process a batch of addresses for geocoding.
-
-        This function sends a batch of addresses to the geocoding API and handles
-        potential rate limiting by implementing retries with a delay.
-
-        Parameters:
-        batch (dict): A batch of addresses in the required JSON format for the API.
-
-        Returns:
-        requests.Response: The response from the Log-hub geocoding API.
-        """
-        for attempt in range(max_retries):
-            try:
-                response = requests.post(url, json=batch, headers=headers)
-                if response.status_code == 200:
-                    return response
-                elif response.status_code == 429:
-                    retry_after = int(response.headers.get('Retry-After', 15))
-                    logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
-                    time.sleep(retry_after)
-                else:
-                    logging.error(f"Error in geocoding API: {response.status_code} - {response.text}")
-            except requests.exceptions.RequestException as e:
-                logging.error(f"Request failed: {e}")
-                time.sleep(10)  # Fallback in case of request failure
-        return None
-
+    
     results = []
-    for start in range(0, len(addresses), batch_size):
-        end = start + batch_size
-        batch = addresses.iloc[start:end].to_dict(orient='records')
-        response = process_batch({"addresses": batch})
-        if response:
+    try:
+        response = requests.post(url, json={'addresses': addresses.to_dict(orient='records')}, headers=headers)
+        if response.status_code == 200:
             results.extend(response.json().get("geocodes", []))
+        elif response.status_code == 429:
+            retry_after = int(response.headers.get('Retry-After', 15))
+            logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
+            time.sleep(retry_after)
         else:
-            logging.error(f"Failed to process batch {start}-{end} after multiple retries.")
-
+            logging.error(f"Error in geocoding API: {response.status_code} - {response.text}")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        time.sleep(10)  # Fallback in case of request failure
+        
     return pd.DataFrame(results)
 
 
@@ -118,7 +92,6 @@ def forward_geocoding_sample_data():
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'GeocodingSampleDataAddresses.xlsx')
     addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:F').fillna("")
     return {'addresses': addresses_df}
-
 
 def reverse_geocoding(geocodes: pd.DataFrame, api_key: str) -> Optional[pd.DataFrame]:
     """
@@ -188,47 +161,22 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str) -> Optional[pd.DataF
         "authorization": f"apikey {api_key}",
         "content-type": "application/json"
     }
-    batch_size = 5000
-    max_retries = 3
-
-    def process_batch(batch):
-        """
-        Process a batch of geocodes for reverse geocoding.
-
-        This function sends a batch of geocodes to the reverse geocoding API and handles
-        potential rate limiting by implementing retries with a delay.
-
-        Parameters:
-        batch (dict): A batch of geocodes in the required JSON format for the API.
-
-        Returns:
-        requests.Response: The response from the Log-hub reverse geocoding API.
-        """
-        for attempt in range(max_retries):
-            try:
-                response = requests.post(url, json=batch, headers=headers)
-                if response.status_code == 200:
-                    return response
-                elif response.status_code == 429:
-                    retry_after = int(response.headers.get('Retry-After', 15))
-                    logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
-                    time.sleep(retry_after)
-                else:
-                    logging.error(f"Error in reverse geocoding API: {response.status_code} - {response.text}")
-            except requests.exceptions.RequestException as e:
-                logging.error(f"Request failed: {e}")
-                time.sleep(10)  # Fallback in case of request failure
-        return None
-
+    
     results = []
-    for start in range(0, len(geocodes), batch_size):
-        end = start + batch_size
-        batch = geocodes.iloc[start:end].to_dict(orient='records')
-        response = process_batch({"geocodes": batch})
-        if response:
+
+    try:
+        response = requests.post(url, json={"geocodes": geocodes.to_dict(orient='records')}, headers=headers)
+        if response.status_code == 200:
             results.extend(response.json().get("addresses", []))
+        elif response.status_code == 429:
+            retry_after = int(response.headers.get('Retry-After', 15))
+            logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
+            time.sleep(retry_after)
         else:
-            logging.error(f"Failed to process batch {start}-{end} after multiple retries.")
+            logging.error(f"Error in reverse geocoding API: {response.status_code} - {response.text}")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        time.sleep(10)  # Fallback in case of request failure
 
     return pd.DataFrame(results)
 
