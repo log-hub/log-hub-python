@@ -77,52 +77,27 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
         "authorization": f"apikey {api_key}",
         "content-type": "application/json"
     }
-    batch_size = 5000
-    max_retries = 3
-
-    def process_batch(batch):
-        """
-        Process a batch of address pairs for distance calculation.
-
-        This function sends a batch of address pairs along with parameters to the distance calculation
-        API and handles potential rate limiting by implementing retries with a delay.
-
-        Parameters:
-        batch (dict): A batch of address pairs and parameters in the required JSON format for the API.
-
-        Returns:
-        requests.Response: The response from the Log-hub distance calculation API.
-        """
-        for attempt in range(max_retries):
-            try:
-                response = requests.post(url, json=batch, headers=headers)
-                if response.status_code == 200:
-                    return response
-                elif response.status_code == 429:
-                    retry_after = int(response.headers.get('Retry-After', 10))
-                    logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
-                    time.sleep(retry_after)
-                else:
-                    logging.error(f"Error in distance calculation API: {response.status_code} - {response.text}")
-            except requests.exceptions.RequestException as e:
-                logging.error(f"Request failed: {e}")
-                time.sleep(10)  # Fallback in case of request failure
-        return None
 
     results = []
-    for start in range(0, len(address_pairs), batch_size):
-        end = start + batch_size
-        batch = address_pairs.iloc[start:end].to_dict(orient='records')
-        response = process_batch({"addresses": batch, "parameters": parameters})
-        if response:
+
+    try:
+        response = requests.post(url, json={"addresses": address_pairs.to_dict(orient='records'), "parameters": parameters}, headers=headers)
+        if response.status_code == 200:
             response_data = response.json()
             if isinstance(response_data, list):
                 results.extend(response_data)
             else:
                 logging.error("Unexpected response format from the API.")
+        elif response.status_code == 429:
+            retry_after = int(response.headers.get('Retry-After', 10))
+            logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
+            time.sleep(retry_after)
         else:
-            logging.error(f"Failed to process batch {start}-{end} after multiple retries.")
-
+            logging.error(f"Error in distance calculation API: {response.status_code} - {response.text}")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        time.sleep(10)  # Fallback in case of request failure
+ 
     return pd.DataFrame(results)
 
 
@@ -203,39 +178,26 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         "authorization": f"apikey {api_key}",
         "content-type": "application/json"
     }
-    batch_size = 5000
-    max_retries = 3
-
-    def process_batch(batch):
-        for attempt in range(max_retries):
-            try:
-                response = requests.post(url, json=batch, headers=headers)
-                if response.status_code == 200:
-                    return response
-                elif response.status_code == 429:
-                    retry_after = int(response.headers.get('Retry-After', 15))
-                    logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
-                    time.sleep(retry_after)
-                else:
-                    logging.error(f"Error in reverse distance calculation API: {response.status_code} - {response.text}")
-            except requests.exceptions.RequestException as e:
-                logging.error(f"Request failed: {e}")
-                time.sleep(10)
-        return None
 
     results = []
-    for start in range(0, len(geocodes), batch_size):
-        end = start + batch_size
-        batch = geocodes.iloc[start:end].to_dict(orient='records')
-        response = process_batch({"geocodes": batch, "parameters": parameters})
-        if response:
+
+    try:
+        response = requests.post(url, json={"geocodes": geocodes.to_dict(orient='records'), "parameters": parameters}, headers=headers)
+        if response.status_code == 200:
             response_data = response.json()
             if isinstance(response_data, list):
                 results.extend(response_data)
             else:
                 logging.error("Unexpected response format from the API.")
+        elif response.status_code == 429:
+            retry_after = int(response.headers.get('Retry-After', 15))
+            logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
+            time.sleep(retry_after)
         else:
-            logging.error(f"Failed to process batch {start}-{end} after multiple retries.")
+            logging.error(f"Error in reverse distance calculation API: {response.status_code} - {response.text}")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        time.sleep(10)
 
     return pd.DataFrame(results)
 
