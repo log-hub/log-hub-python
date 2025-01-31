@@ -78,28 +78,30 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
         "content-type": "application/json"
     }
 
-    results = []
+    max_retries = 3
+    retry_delay = 15  # seconds
 
-    try:
-        response = requests.post(url, json={"addresses": address_pairs.to_dict(orient='records'), "parameters": parameters}, headers=headers)
-        if response.status_code == 200:
-            response_data = response.json()
-            if isinstance(response_data, list):
-                results.extend(response_data)
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(url, json={"addresses": address_pairs.to_dict(orient='records'), "parameters": parameters}, headers=headers)
+            if response.status_code == 200:
+                response_data = response.json()
+                distance_calculation_df = pd.DataFrame(response_data)
+                return distance_calculation_df
+            elif response.status_code == 429:
+                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
+                time.sleep(retry_delay)
             else:
-                logging.error("Unexpected response format from the API.")
-        elif response.status_code == 429:
-            retry_after = int(response.headers.get('Retry-After', 10))
-            logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
-            time.sleep(retry_after)
-        else:
-            logging.error(f"Error in distance calculation API: {response.status_code} - {response.text}")
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Request failed: {e}")
-        time.sleep(10)  # Fallback in case of request failure
- 
-    return pd.DataFrame(results)
+                logging.error(f"Error in distance calculation API: {response.status_code} - {response.text}")
+                return None
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Request failed: {e}")
+            if attempt < max_retries - 1:
+                logging.info(f"Retrying in {retry_delay} seconds.")
+                time.sleep(retry_delay)
 
+    logging.error("Max retries exceeded.")
+    return None
 
 def forward_distance_calculation_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -179,27 +181,30 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         "content-type": "application/json"
     }
 
-    results = []
+    max_retries = 3
+    retry_delay = 15  # seconds
 
-    try:
-        response = requests.post(url, json={"geocodes": geocodes.to_dict(orient='records'), "parameters": parameters}, headers=headers)
-        if response.status_code == 200:
-            response_data = response.json()
-            if isinstance(response_data, list):
-                results.extend(response_data)
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(url, json={"geocodes": geocodes.to_dict(orient='records'), "parameters": parameters}, headers=headers)
+            if response.status_code == 200:
+                response_data = response.json()
+                distance_calculation_df = pd.DataFrame(response_data)
+                return distance_calculation_df
+            elif response.status_code == 429:
+                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
+                time.sleep(retry_delay)
             else:
-                logging.error("Unexpected response format from the API.")
-        elif response.status_code == 429:
-            retry_after = int(response.headers.get('Retry-After', 15))
-            logging.info(f"Rate limit exceeded. Retrying after {retry_after} seconds.")
-            time.sleep(retry_after)
-        else:
-            logging.error(f"Error in reverse distance calculation API: {response.status_code} - {response.text}")
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Request failed: {e}")
-        time.sleep(10)
+                logging.error(f"Error in distance calculation API: {response.status_code} - {response.text}")
+                return None
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Request failed: {e}")
+            if attempt < max_retries - 1:
+                logging.info(f"Retrying in {retry_delay} seconds.")
+                time.sleep(retry_delay)
 
-    return pd.DataFrame(results)
+    logging.error("Max retries exceeded.")
+    return None
 
 
 def reverse_distance_calculation_sample_data():
