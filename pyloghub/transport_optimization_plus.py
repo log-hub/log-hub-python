@@ -28,8 +28,10 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         - timeWindowStart, timeWindowEnd (str): Time Window Start and End (ISO 8601 format).
         - profile (str): Profile.
         - speedFactor (float): Speed Factor.
-        - fixed, perHour (float): Fixed and Per Hour Costs.
-        - maxTravelTime (float): Maximum Travel Time.
+        - fixed, perHour, perKilometer, costPerStop (float): Fixed and Costs Per Hour, Kilometer and Stop.
+        - minimumTravelTime, maxTravelTime (float): Minimum and Maximum Travel Time.
+        - max_distance (float): Maximum number of kilometers that vehicle can drive per route.
+        - maximumDistanceBetweenStops (float): Maximum number of kilometers that vehicle can drive between each stop.
         - breakId (str): Break Id.
 
     jobs (pd.DataFrame): DataFrame containing job information.
@@ -46,6 +48,7 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         - weight, volume (float): Weight and Volume.
         - pallets (int): Pallets.
         - vehicleTypeId (str): Vehicle Type Id.
+        - external_costs (number): External costs for order.
 
     timeWindowProfiles (pd.DataFrame): DataFrame containing time window profile information.
         Columns:
@@ -56,6 +59,7 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         Columns:
         - breakId (str): Break Id.
         - earliestBreakStart, latestBreakStart (str): Earliest and Latest Break Start (ISO 8601 format).
+        - earliestRelativeBreakStart, latestRelativeBreakStart (str): Earliest and Latest Relative Break Start (ISO 8601 format).
         - breakDuration (float): Break Duration.
 
     parameters (Dict): Dictionary containing parameters like durationUnit and distanceUnit.
@@ -103,8 +107,7 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         'endCity': 'str', 'endStreet': 'str', 'maxWeight': 'float', 
         'maxVolume': 'float', 'maxPallets': 'int', 'maxStops': 'int', 
         'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 
-        'speedFactor': 'float', 'fixed': 'float', 'perHour': 'float', 
-        'maxTravelTime': 'float', 'breakId': 'str'
+        'speedFactor': 'float', 'fixed': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
     }
     job_columns = {
         'shipmentId': 'str', 'fromName': 'str', 'fromCountry': 'str', 
@@ -114,15 +117,14 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 
         'toStreet': 'str', 'recipientStopDuration': 'float', 
         'recipientTimeWindowProfile': 'str', 'weight': 'float', 
-        'volume': 'float', 'pallets': 'int', 'vehicleTypeId': 'str'
+        'volume': 'float', 'pallets': 'int', 'vehicleTypeId': 'str', 'external_costs': 'float'
     }
     timeWindowProfile_columns = {
         'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 
         'timeWindowProfileEnd': 'str'
     }
     break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 
-        'breakDuration': 'float'
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
     }
 
     # Perform validation and conversion for each DataFrame
@@ -182,10 +184,10 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
 def forward_transport_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'transportPlusAddresses.xlsx')
-    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:AA', dtype={'startState': str, 'startPostalCode': str, 'endState': str, 'endPostalCode': str, 'maxTravelTime': int}).fillna("")
-    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:V').fillna("")
+    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:AF', dtype={'startState': str, 'startPostalCode': str, 'endState': str, 'endPostalCode': str, 'maxTravelTime': int}).fillna("")
+    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:W').fillna("")
     time_window_profiles_df = pd.read_excel(data_path, sheet_name='timeWindowProfile', usecols='A:D').fillna("")
-    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:E').fillna("")
+    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:G').fillna("")
 
     parameters = {
         "durationUnit": "min",
@@ -213,8 +215,10 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         - timeWindowStart, timeWindowEnd (str): Time Window Start and End (ISO 8601 format).
         - profile (str): Profile.
         - speedFactor (float): Speed Factor.
-        - fixed, perHour (float): Fixed and Per Hour Costs.
-        - maxTravelTime (float): Maximum Travel Time.
+        - fixed, perHour, perKilometer, costPerStop (float): Fixed and Costs Per Hour, Kilometer and Stop.
+        - minimumTravelTime, maxTravelTime (float): Minimum and Maximum Travel Time.
+        - max_distance (float): Maximum number of kilometers that vehicle can drive per route.
+        - maximumDistanceBetweenStops (float): Maximum number of kilometers that vehicle can drive between each stop.
         - breakId (str): Break Id.
 
     jobs (pd.DataFrame): DataFrame containing job information with latitude and longitude.
@@ -228,6 +232,7 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         - weight, volume (float): Weight and Volume.
         - pallets (int): Pallets.
         - vehicleTypeId (str): Vehicle Type Id.
+        - external_costs (number): External costs for order.
 
     timeWindowProfiles (pd.DataFrame): DataFrame containing time window profile information.
         Columns:
@@ -238,6 +243,8 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         Columns:
         - breakId (str): Break Id.
         - earliestBreakStart, latestBreakStart (str): Earliest and Latest Break Start (ISO 8601 format).
+        - earliestRelativeBreakStart (str): Minimum driving time before the break can start (ISO 8601 format).
+        - latestRelativeBreakTime (str): Maximum driving time until the break must start (ISO 8601 format).
         - breakDuration (float): Break Duration.
 
     parameters (Dict): Dictionary containing parameters like durationUnit and distanceUnit.
@@ -283,8 +290,7 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         'endLatitude': 'float', 'endLongitude': 'float', 'maxWeight': 'float', 
         'maxVolume': 'float', 'maxPallets': 'int', 'maxStops': 'int', 
         'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 
-        'speedFactor': 'float', 'fixed': 'float', 'perHour': 'float', 
-        'maxTravelTime': 'float', 'breakId': 'str'
+        'speedFactor': 'float', 'fixed': 'float', 'perHour': 'float',  'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
     }
     job_columns = {
         'shipmentId': 'str', 'fromName': 'str', 'fromLatitude': 'float', 
@@ -292,15 +298,14 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         'senderTimeWindowProfile': 'str', 'toName': 'str', 'toLatitude': 'float', 
         'toLongitude': 'float', 'recipientStopDuration': 'float', 
         'recipientTimeWindowProfile': 'str', 'weight': 'float', 
-        'volume': 'float', 'pallets': 'int', 'vehicleTypeId': 'str'
+        'volume': 'float', 'pallets': 'int', 'vehicleTypeId': 'str', 'external_costs': 'float'
     }
     timeWindowProfile_columns = {
         'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 
         'timeWindowProfileEnd': 'str'
     }
     break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 
-        'breakDuration': 'float'
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
     }
 
     # Perform validation and conversion for each DataFrame
@@ -361,10 +366,10 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
 def reverse_transport_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'transportPlusReverse.xlsx')
-    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:U', dtype={'maxTravelTime': int}).fillna("")
-    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:P').fillna("")
+    vehicles_df = pd.read_excel(data_path, sheet_name='vehicles', usecols='A:Z', dtype={'maxTravelTime': int}).fillna("")
+    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:Q').fillna("")
     time_window_profiles_df = pd.read_excel(data_path, sheet_name='timeWindowProfiles', usecols='A:D').fillna("")
-    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:E').fillna("")
+    breaks_df = pd.read_excel(data_path, sheet_name='breaks', usecols='A:G').fillna("")
 
     parameters = {
         "durationUnit": "min",
