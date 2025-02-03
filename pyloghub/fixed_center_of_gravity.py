@@ -5,8 +5,9 @@ import time
 import logging
 import warnings
 from typing import Optional, Dict, Tuple
+from save_to_platform import save_scenario_check
 
-def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Calculate fixed center of gravity based on a list of customers and their weights, and predefined fixed centers.
 
@@ -39,6 +40,10 @@ def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     parameters (Dict): A dictionary containing parameters like numberOfCenters (number) and distanceUnit (enum: "km" or "mi").
 
     api_key (str): The Log-hub API key for accessing the fixed center of gravity service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas DataFrames. The first DataFrame contains the 
@@ -95,6 +100,7 @@ def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
         "fixedCenters": fixed_centers.to_dict(orient='records') if not fixed_centers.empty else [],
         "parameters": parameters
     }
+    payload = save_scenario_check(save_scenario, payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
@@ -134,7 +140,7 @@ def forward_fixed_center_of_gravity_sample_data():
     return {'customers': customers_df, 'fixedCenters': fixedCenters_df, 'parameters': parameters}
 
 
-def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Calculate reverse fixed center of gravity based on a list of customers and their weights, and predefined fixed centers.
 
@@ -160,6 +166,10 @@ def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     parameters (Dict): A dictionary containing parameters like numberOfCenters (number) and distanceUnit (enum: "km" or "mi").
 
     api_key (str): The Log-hub API key for accessing the reverse fixed center of gravity service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas DataFrames. The first DataFrame contains the 
@@ -214,6 +224,7 @@ def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
         "fixedCenters": fixed_centers.to_dict(orient='records'),
         "parameters": parameters
     }
+    payload = save_scenario_check(save_scenario, payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
