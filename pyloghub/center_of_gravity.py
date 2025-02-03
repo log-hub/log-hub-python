@@ -5,8 +5,9 @@ import time
 import logging
 import warnings
 from typing import Optional, Dict, Tuple
+from save_to_platform import save_scenario_check
 
-def forward_center_of_gravity(addresses: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_center_of_gravity(addresses: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Calculate center of gravity based on a list of addresses and their weights.
 
@@ -27,6 +28,10 @@ def forward_center_of_gravity(addresses: pd.DataFrame, parameters: Dict, api_key
 
     parameters (Dict): A dictionary containing parameters like numberOfCenters (number) 
                        and distanceUnit (enum: "km" or "mi").
+    
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     api_key (str): The Log-hub API key for accessing the center of gravity service.
 
@@ -76,6 +81,7 @@ def forward_center_of_gravity(addresses: pd.DataFrame, parameters: Dict, api_key
         "addresses": addresses.to_dict(orient='records'),
         "parameters": parameters
     }
+    payload = save_scenario_check(save_scenario, payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
@@ -114,7 +120,7 @@ def forward_center_of_gravity_sample_data():
     return {'addresses': addresses_df, 'parameters': parameters}
 
 
-def reverse_center_of_gravity(coordinates: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_center_of_gravity(coordinates: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Calculate reverse center of gravity based on a list of geocodes and their weights.
 
@@ -132,6 +138,10 @@ def reverse_center_of_gravity(coordinates: pd.DataFrame, parameters: Dict, api_k
 
     parameters (Dict): A dictionary containing parameters like numberOfCenters (number) 
                        and distanceUnit (enum: "km" or "mi").
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     api_key (str): The Log-hub API key for accessing the reverse center of gravity service.
 
@@ -180,6 +190,7 @@ def reverse_center_of_gravity(coordinates: pd.DataFrame, parameters: Dict, api_k
         "coordinates": coordinates.to_dict(orient='records'),
         "parameters": parameters
     }
+    payload = save_scenario_check(save_scenario,payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
