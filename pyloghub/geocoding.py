@@ -6,9 +6,10 @@ import logging
 from typing import Optional
 import warnings
 logging.basicConfig(level=logging.INFO)
+from save_to_platform import save_scenario_check
 
 
-def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.DataFrame]:
+def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Perform forward geocoding on a list of addresses.
 
@@ -27,6 +28,10 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.Data
         - searchString (str): Key location details. Information such as country, state, city, street, and zip code, although the zip code cannot be the first entry.
 
     api_key (str): The Log-hub API key for accessing the geocoding service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                            'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                            'scenarioName' (str).
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing the original address information along 
@@ -69,12 +74,17 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str) -> Optional[pd.Data
         "content-type": "application/json"
     }
 
+    payload = {
+        'addresses': addresses.to_dict(orient='records'),
+    }
+    payload = save_scenario_check(save_scenario, payload)
+
     max_retries = 3
     retry_delay = 15  # seconds
 
     for attempt in range(max_retries):
         try:
-            response = requests.post(url, json={'addresses': addresses.to_dict(orient='records')}, headers=headers)
+            response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 response_data = response.json()
                 geocoded_data_df = pd.DataFrame(response_data['geocodes'])
@@ -100,7 +110,7 @@ def forward_geocoding_sample_data():
     addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:F').fillna("")
     return {'addresses': addresses_df}
 
-def reverse_geocoding(geocodes: pd.DataFrame, api_key: str) -> Optional[pd.DataFrame]:
+def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Perform reverse geocoding on a list of latitude and longitude coordinates.
 
@@ -115,6 +125,10 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str) -> Optional[pd.DataF
         - longitude (float): Longitude of the location.
 
     api_key (str): The Log-hub API key for accessing the reverse geocoding service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                            'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                            'scenarioName' (str).
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing the original geocode information along 
@@ -168,13 +182,17 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str) -> Optional[pd.DataF
         "authorization": f"apikey {api_key}",
         "content-type": "application/json"
     }
+    payload = {
+        "geocodes": geocodes.to_dict(orient='records')
+    }
+    payload = save_scenario_check(save_scenario, payload)
 
     max_retries = 3
     retry_delay = 15  # seconds
 
     for attempt in range(max_retries):
         try:
-            response = requests.post(url, json={"geocodes": geocodes.to_dict(orient='records')}, headers=headers)
+            response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 response_data = response.json()
                 reverse_geocoding_df = pd.DataFrame(response_data['addresses'])
@@ -199,15 +217,4 @@ def reverse_geocoding_sample_data():
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'GeocodingSampleDataReverse.xlsx')
     geocodes_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:B')
     return {'geocodes': geocodes_df}
-
-if __name__ == "__main__":
-
-    api_key = "14d872084c972dd5087bee9b6fa1593a5061a2e7"
-
-    sample_for = forward_geocoding_sample_data()
-    out_for = forward_geocoding(sample_for['addresses'],api_key)
-
-    sample_rev = reverse_geocoding_sample_data()
-    out_rev = reverse_geocoding(sample_rev['geocodes'], api_key)
-
     
