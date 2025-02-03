@@ -5,9 +5,9 @@ import time
 import logging
 import warnings
 from typing import Optional, Dict, Tuple
+from save_to_platform import save_scenario_check
 
-
-def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform shipment analysis based on shipments, cost adjustments, consolidation settings, surcharges, and parameters.
 
@@ -62,6 +62,10 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
         - consolidation (bool): Boolean flag to indicate if consolidation should be considered in the analysis.
 
     api_key (str): Log-hub API key for accessing the shipment analyzer service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: Two pandas DataFrames containing shipment analysis and transport analysis.
@@ -130,6 +134,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
         "surcharges": surcharges.to_dict(orient='records'),
         "parameters": parameters
     }
+    payload = save_scenario_check(save_scenario, payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
@@ -171,7 +176,7 @@ def forward_shipment_analyzer_sample_data():
     return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters}
 
 
-def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse shipment analysis based on shipments, cost adjustments, consolidation settings, surcharges, and parameters.
 
@@ -215,6 +220,10 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
         - consolidation (bool): Boolean flag to indicate if consolidation should be considered in the analysis.
 
     api_key (str): API key for accessing the reverse shipment analyzer service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: Two pandas DataFrames containing reverse shipment analysis and transport analysis.
@@ -276,7 +285,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
         "surcharges": surcharges.to_dict(orient='records'),
         "parameters": parameters
     }
-
+    payload = save_scenario_check(save_scenario, payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
