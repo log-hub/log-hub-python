@@ -5,8 +5,9 @@ import time
 import logging
 import warnings
 from typing import Optional, Dict, Tuple
+from save_to_platform import save_scenario_check
 
-def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform transport optimization based on vehicles, jobs, time window profiles, and breaks.
 
@@ -63,7 +64,12 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         - breakDuration (float): Break Duration.
 
     parameters (Dict): Dictionary containing parameters like durationUnit and distanceUnit.
+
     api_key (str): Log-hub API key for accessing the transport optimization service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three pandas DataFrames containing route overview, route details, 
@@ -154,6 +160,7 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         "breaks": breaks.to_dict(orient='records'),
         "parameters": parameters
     }
+    payload = save_scenario_check(save_scenario, payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
@@ -196,7 +203,7 @@ def forward_transport_optimization_plus_sample_data():
     return {'vehicles': vehicles_df, 'shipments': shipments_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters}
 
 
-def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse transport optimization based on vehicles, jobs, time window profiles, and breaks.
 
@@ -248,7 +255,12 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         - breakDuration (float): Break Duration.
 
     parameters (Dict): Dictionary containing parameters like durationUnit and distanceUnit.
+
     api_key (str): Log-hub API key for accessing the reverse transport optimization service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three pandas DataFrames containing route overview, route details, 
@@ -335,6 +347,7 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         "breaks": breaks.to_dict(orient='records'),
         "parameters": parameters
     }
+    payload = save_scenario_check(save_scenario, payload)
     max_retries = 3
     retry_delay = 15  # seconds
 
