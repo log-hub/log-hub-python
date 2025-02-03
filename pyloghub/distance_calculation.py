@@ -5,10 +5,11 @@ import time
 import logging
 from typing import Optional, Dict
 import warnings
+from save_to_platform import save_scenario_check
 
 logging.basicConfig(level=logging.INFO)
 
-def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[pd.DataFrame]:
+def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Calculate distances and durations between pairs of addresses.
 
@@ -31,7 +32,12 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
         - recipientStreet (str): Recipient street name with house number.
 
     parameters (Dict): A dictionary containing parameters like distanceUnit (enum: "km" or "mi"),
-                        durationUnit (enum: "min" or "sec" or "h"), and vehicleType (enum: "truck" or "car").
+                        durationUnit (enum: "min" or "sec" or "h"), vehicleType (enum: "truck" or "car") and 
+                        routePreference (enum: 'recommended' or 'shortest' or 'fastest').
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     api_key (str): The Log-hub API key for accessing the distance calculation service.
 
@@ -77,13 +83,18 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
         "authorization": f"apikey {api_key}",
         "content-type": "application/json"
     }
+    payload = {
+        "addresses": address_pairs.to_dict(orient='records'), 
+        "parameters": parameters,
+        }
+    payload = save_scenario_check(save_scenario, payload)
 
     max_retries = 3
     retry_delay = 15  # seconds
 
     for attempt in range(max_retries):
         try:
-            response = requests.post(url, json={"addresses": address_pairs.to_dict(orient='records'), "parameters": parameters}, headers=headers)
+            response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 response_data = response.json()
                 distance_calculation_df = pd.DataFrame(response_data)
@@ -111,13 +122,14 @@ def forward_distance_calculation_sample_data():
     parameters = {
         "distanceUnit": "km",
         "durationUnit": "min",
-        "vehicleType": "car"
+        "vehicleType": "car",
+        "routePreference": "recommended"
     }
     return {'address_data': addresses_df, 'parameters': parameters}
 
 
 
-def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_key: str) -> Optional[pd.DataFrame]:
+def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Calculate distances and durations between pairs of locations based on coordinates.
 
@@ -136,7 +148,12 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         - recipientLongitude (float): Recipient longitude.
 
     parameters (Dict): A dictionary containing parameters like distanceUnit (enum: "km" or "mi"),
-                        durationUnit (enum: "min" or "sec" or "h"), and vehicleType (enum: "truck" or "car").
+                        durationUnit (enum: "min" or "sec" or "h"), vehicleType (enum: "truck" or "car") and 
+                        routePreference (enum: 'recommended' or 'shortest' or 'fastest').
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
 
     api_key (str): The Log-hub API key for accessing the reverse distance calculation service.
 
@@ -180,13 +197,18 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         "authorization": f"apikey {api_key}",
         "content-type": "application/json"
     }
+    payload = {
+        "geocodes": geocodes.to_dict(orient='records'),
+        "parameters": parameters
+    }
+    payload = save_scenario_check(save_scenario, payload)
 
     max_retries = 3
     retry_delay = 15  # seconds
 
     for attempt in range(max_retries):
         try:
-            response = requests.post(url, json={"geocodes": geocodes.to_dict(orient='records'), "parameters": parameters}, headers=headers)
+            response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 response_data = response.json()
                 distance_calculation_df = pd.DataFrame(response_data)
@@ -215,6 +237,7 @@ def reverse_distance_calculation_sample_data():
     parameters = {
         "distanceUnit": "km",
         "durationUnit": "min",
-        "vehicleType": "car"
+        "vehicleType": "car",
+        "routePreference": "recommended"
     }
     return {'geocode_data': geocode_data_df, 'parameters': parameters}
