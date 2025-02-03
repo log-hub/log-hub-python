@@ -6,6 +6,7 @@ import time
 import logging
 from typing import Optional
 import warnings
+from save_to_platform import save_scenario_check
 
 def convert_df_to_dict_excluding_nan(df, columns_to_check):
         """
@@ -27,7 +28,7 @@ def convert_df_to_dict_excluding_nan(df, columns_to_check):
             records.append(record)
         return records
 
-def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str) -> Optional[pd.DataFrame]:
+def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Calculate the freight matrix for a list of shipments provided in a pandas DataFrame.
 
@@ -57,7 +58,13 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     - loadingMeters (float): The total space in meters required by the shipment on the transport vehicle. Make sure that it is aligned with the dimension that is used in the freight matrix.
 
     matrix_id (str): The Freight Matrix ID from a matrix that was created on the Log-hub Platform.
+
     api_key (str): The Log-hub API key for accessing the freight matrix service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
+
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing evaluated shipments with additional
@@ -87,6 +94,7 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
         "shipments": shipments_list,
         "matrix": {"matrixId": matrix_id}
     }
+    payload = save_scenario_check(save_scenario, payload)
 
     max_retries = 3
     retry_delay = 15  # seconds
@@ -113,7 +121,6 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     return None
 
 
-
 def forward_freight_matrix_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'freightMatrixAddresses.xlsx')
@@ -121,7 +128,7 @@ def forward_freight_matrix_sample_data():
     return {'shipments': shipments_df}
 
 
-def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str) -> Optional[pd.DataFrame]:
+def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Calculate the reverse freight matrix for a list of shipments provided in a pandas DataFrame.
     
@@ -144,7 +151,13 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
         - loadingMeters (float): The total space required by the shipment on the transport vehicle, impacting vehicle utilization.
 
     matrix_id (str): The Freight Matrix ID from a matrix that was created on the Log-hub Platform.
+
     api_key (str): The Log-hub API key for accessing the reverse freight matrix service.
+
+    save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
+                        'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
+                        'scenarioName' (str).
+
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing evaluated shipments with additional
@@ -172,6 +185,7 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
         "shipments": shipments_list,
         "matrix": {"matrixId": matrix_id}
     }
+    payload = save_scenario_check(save_scenario, payload)
 
     max_retries = 3
     retry_delay = 15  # seconds
