@@ -24,11 +24,10 @@ def save_scenario_check(save_scenario_data: dict, payload: dict) -> dict:
     Parameters:
     save_scenario_data (dict): A dictionary with the parameters for saving a scenario:
         - saveScenario (True/False), False by default
-        - overwriteScenario (True/False), True by default
+        - overwriteScenario (True/False), False by default
         - workspaceId (id of an existing workspace)
-        - scenarioName (will be set to "Scenario 1" if the name is not provided)
+        - scenarioName 
     payload (dict): A dictionaty with the data that should be calculated
-    
 
     Returns:
     dict: A dictionary containing input data and the information about saving a scenario.
@@ -36,9 +35,9 @@ def save_scenario_check(save_scenario_data: dict, payload: dict) -> dict:
     save_scenario_parameters = ['saveScenario','overwriteScenario', 'workspaceId', 'scenarioName']
     save_scenario_default_values = {
         'saveScenario' : False,
-        'overwriteScenario': True,
+        'overwriteScenario': False,
         'workspaceId': "",
-        'scenarioName': 'Scenario 1'
+        'scenarioName': ""
     }
     payload['saveScenarioParameters']  = {}
     for par in save_scenario_parameters:
