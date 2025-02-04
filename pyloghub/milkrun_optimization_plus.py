@@ -220,7 +220,13 @@ def forward_milkrun_optimization_plus_sample_data():
     parameters = {
         "durationUnit": "min"
     }
-    return {'depots': depots_df, 'vehicles': vehicles_df, 'jobs': jobs_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'depots': depots_df, 'vehicles': vehicles_df, 'jobs': jobs_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
 def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
@@ -424,4 +430,10 @@ def reverse_milkrun_optimization_plus_sample_data():
     parameters = {
         "durationUnit": "min"
     }
-    return {'depots': depots_df, 'vehicles': vehicles_df, 'jobs': jobs_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'depots': depots_df, 'vehicles': vehicles_df, 'jobs': jobs_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}

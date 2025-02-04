@@ -125,7 +125,13 @@ def forward_distance_calculation_sample_data():
         "vehicleType": "car",
         "routePreference": "recommended"
     }
-    return {'address_data': addresses_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'address_data': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
 
@@ -240,4 +246,10 @@ def reverse_distance_calculation_sample_data():
         "vehicleType": "car",
         "routePreference": "recommended"
     }
-    return {'geocode_data': geocode_data_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'geocode_data': geocode_data_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}

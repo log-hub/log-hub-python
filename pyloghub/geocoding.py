@@ -108,7 +108,13 @@ def forward_geocoding_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'GeocodingSampleDataAddresses.xlsx')
     addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:F').fillna("")
-    return {'addresses': addresses_df}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'addresses': addresses_df, 'saveScenarioParameters': save_scenario}
 
 def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
@@ -216,5 +222,10 @@ def reverse_geocoding_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'GeocodingSampleDataReverse.xlsx')
     geocodes_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:B')
-    return {'geocodes': geocodes_df}
-    
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'geocodes': geocodes_df, 'saveScenarioParameters': save_scenario}

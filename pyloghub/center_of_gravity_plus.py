@@ -123,7 +123,13 @@ def forward_center_of_gravity_plus_sample_data():
         "importanceVolume": 2,
         "importanceRevenue": 7
     }
-    return {'addresses': addresses_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
 def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
@@ -239,4 +245,10 @@ def reverse_center_of_gravity_plus_sample_data():
         "importanceVolume": 2,
         "importanceRevenue": 7
     }
-    return {'coordinates': coordinates_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'coordinates': coordinates_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}

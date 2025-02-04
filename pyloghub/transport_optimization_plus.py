@@ -200,7 +200,14 @@ def forward_transport_optimization_plus_sample_data():
         "durationUnit": "min",
         "distanceUnit": "km"
     }
-    return {'vehicles': vehicles_df, 'shipments': shipments_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'vehicles': vehicles_df, 'shipments': shipments_df, 'timeWindowProfiles': time_window_profiles_df,
+             'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
 def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
@@ -388,4 +395,11 @@ def reverse_transport_optimization_plus_sample_data():
         "durationUnit": "min",
         "distanceUnit": "km"
     }
-    return {'vehicles': vehicles_df, 'shipments': shipments_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'vehicles': vehicles_df, 'shipments': shipments_df, 'timeWindowProfiles': time_window_profiles_df,
+             'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}

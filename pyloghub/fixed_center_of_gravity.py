@@ -137,7 +137,13 @@ def forward_fixed_center_of_gravity_sample_data():
         "numberOfCenters": 5,
         "distanceUnit": "km"
     }
-    return {'customers': customers_df, 'fixedCenters': fixedCenters_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'customers': customers_df, 'fixedCenters': fixedCenters_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
 def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
@@ -262,4 +268,10 @@ def reverse_fixed_center_of_gravity_sample_data():
         "numberOfCenters": 5,
         "distanceUnit": "km"
     }
-    return {'customers': customers_df, 'fixedCenters': fixedCenters_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'customers': customers_df, 'fixedCenters': fixedCenters_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
