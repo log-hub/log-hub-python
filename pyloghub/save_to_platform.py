@@ -42,7 +42,5 @@ def save_scenario_check(save_scenario_data: dict, payload: dict) -> dict:
     payload['saveScenarioParameters']  = {}
     for par in save_scenario_parameters:
         payload['saveScenarioParameters'].update({par: save_scenario_data.get(par, save_scenario_default_values[par])})
-        if par == 'scenarioName' and payload['saveScenarioParameters']['scenarioName'] == '':
-            payload['saveScenarioParameters'].update({par: save_scenario_default_values[par]})
 
     return payload
