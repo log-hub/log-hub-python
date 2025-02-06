@@ -7,37 +7,29 @@ import warnings
 from typing import Optional, Dict, Tuple
 from save_to_platform import save_scenario_check, get_app_name
 
-def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_supply_chain_map_routes(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
-    Creates a map of relations based on the given addresses.
+    Creates a map of routes based on the given route nodes addresses.
 
-    This function takes a DataFrame of addresses pairs with their layers and quantity, along with an API key, 
-    and creates a map of relations using the Log-hub Supply Chain Map service. 
+    This function takes a DataFrame of nodes addresses with their layer and pickup and delivery quantity, along with an API key, 
+    and creates a map of routes using the Log-hub Supply Chain Map service. 
 
     Parameters:
-    addresses (pd.DataFrame): A pandas DataFrame containing addresses pairs with their layers and quantity.
+    addresses (pd.DataFrame): A pandas DataFrame containing nodes addresses with their layer and pickup and delivery quantity.
         Each row should contain:
         - id (number): Identifier.
-        - senderName (str): Name for the start location of the relation.
-        - senderCountry (str): Country code or country name for the start location of the relation. Must have at least 
-                               1 character.
-        - senderState (str): State code for the start location of the relation.
-        - senderPostalCode (str): Postal code for the start location of the relation.
-        - senderSity (str): City name for the start location of the relation.
-        - senderStreet (str): Street name with house number for the start location of the relation.
-        - senderLocationLayer (str): Layer name for the start location.
-        - recipientName (str): Name for the end location of the relation.
-        - recipientCountry (str): Country code or country name for the end location of the relation. Must have at least 
-                               1 character.
-        - recipientState (str): State code for the end location of the relation.
-        - recipientPostalCode (str): Postal code for the end location of the relation.
-        - recipientSity (str): City name for the end location of the relation.
-        - recipientStreet (str): Street name with house number for the end location of the relation.
-        - recipientLocationLayer (str): Layer name for the end location.
-        - relationLayer (str): Layer name for the relation.
-        - quantity (number): Numerical value affecting the thickness of the relation on the map.
+        - routeId (str): A unique route id. All stops with the same routeId belong to the same route.
+        - name (str): Name of the route node.
+        - country (str): Country code. Must have at least 1 character.
+        - state (str): State code.
+        - postalCode (str): Postal code.
+        - city (str): City name.
+        - street (str): Street name with house number.
+        - layer (str): Visual settings of routes in the same layer can be adjusted together.
+        - pickupQuantity (number): Quantity that is picked up at the node.
+        - deliveryQuantity (number): Quantity that is delivered at the node.
 
-    parameters (dict): A dictionary containing parameter 'showLocations' (boolean).
+    parameters (dict): A dictionary containing parameter 'streetLevel' (boolean). 
 
     api_key (str): The Log-hub API key for accessing the center of gravity plus service.
 
@@ -45,8 +37,8 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 'workspaceId' (str) and 'scenarioName' (str).
 
     Returns:
-    pd.DataFrame: A pandas DataFrame containg the addresses pairs and their parsed latitude and longitude. Returns None if 
-                  the process fails.
+    pd.DataFrame: A pandas DataFrame containg the nodes addresses with their layer and pickup and delivery quantity.
+
     """
 
     def validate_and_convert_data_types(df):
@@ -55,8 +47,8 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
         Log an error message if a required column is missing or if conversion fails.
         """
         required_columns = {
-            'id': 'float', 'senderName': 'str', 'senderCountry': 'str', 'senderState': 'str', 'senderPostalCode': 'str',
-            'senderCity': 'str', 'senderStreet': 'str', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientCountry': 'str', 'recipientState': 'str', 'recipientPostalCode': 'str', 'recipientCity': 'str', 'recipientStreet': 'str', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'string'
+            'id': 'float', 'routeId': 'str', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str',
+            'city': 'str', 'street': 'str', 'layer': 'str', 'pickupQuantity': 'float', 'deliveryQuantity': 'float'
         }
         for col, dtype in required_columns.items():
             if col in df.columns:
@@ -77,7 +69,7 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
 
     DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/supplychainmaprelations"
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/supplychainmaproutes"
     
     headers = {
         "accept": "application/json",
@@ -85,8 +77,8 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
         "content-type": "application/json"
     }
     payload = {
-        "distanceCalculationData": addresses.to_dict(orient='records'),
-        'parameters': parameters
+        "geocodingData": addresses.to_dict(orient='records'),
+        "parameters": parameters
     }
     app_name = get_app_name(url)
     payload = save_scenario_check(save_scenario, payload, app_name)
@@ -98,13 +90,13 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
             response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 response_data = response.json()
-                distance_calculation_result_df = pd.DataFrame(response_data['distanceCalculationResult'])
-                return distance_calculation_result_df
+                route_result_df = pd.DataFrame(response_data['inputDataStructure'])
+                return route_result_df
             elif response.status_code == 429:
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in supply chain map relations API: {response.status_code} - {response.text}")
+                logging.error(f"Error in supply chain map routes API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
@@ -115,15 +107,14 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
     logging.error("Max retries exceeded.")
     return None
 
-def forward_supply_chain_map_relations_sample_data():
+def forward_supply_chain_map_routes_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
-    data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'MapRelationsAddresses.xlsx')
-    addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:Q', dtype={'postalCode': str})
+    data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'MapRoutesAddresses.xlsx')
+    addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:K', dtype={'postalCode': str})
 
     parameters = {
-        'showLocations': True
+        'streetLevel': True
     }
-
     save_scenario = {
         'saveScenario': True,
         'overwriteScenario': False,
@@ -133,29 +124,26 @@ def forward_supply_chain_map_relations_sample_data():
     }
     return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_supply_chain_map_routes(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
-    Creates a map of relations based on the given coordinates pairs.
+    Creates a map of routes based on the given route nodes coordinates.
 
-    This function takes a DataFrame of coordinates pairs with their layers and quantity, along with an API key, 
-    and creates a map of relations using the Log-hub Supply Chain Map service. 
+    This function takes a DataFrame of nodes coordinates with their layer and pickup and delivery quantity, along with an API key, 
+    and creates a map of routes using the Log-hub Supply Chain Map service. 
 
     Parameters:
-    coordinates (pd.DataFrame): A pandas DataFrame containing coordinates pairs with their layers and quantity.
+    coordinates (pd.DataFrame): A pandas DataFrame containing coordinates with their layer and pickup and delivery quantity.
         Each row should contain:
         - id (number): Identifier.
-        - senderName (str): Name for the start location of the relation.
-        - senderLatitude (number): Latitude for the start location of the relation.
-        - senderLongitude (number): Longitude for the start location of the relation.
-        - senderLocationLayer (str): Layer name for the start location.
-        - recipientName (str): Name for the end location of the relation.
-        - recipientLatitude (number): Latitude for the end location of the relation.
-        - recipientLongitude (number): Longitude for the end location of the relation.
-        - recipientLocationLayer (str): Layer name for the end location.
-        - relationLayer (str): Layer name for the relation.
-        - quantity (number): Numerical value affecting the thickness of the relation on the map.
-
-    parameters (dict): A dictionary containing parameter 'showLocations' (boolean).
+        - routeId (str): A unique route id. All stops with the same routeId belong to the same route.
+        - name (str): Name of the route node.
+        - latitude (number): Latitude of the route node.
+        - longitude (number): Longitude of the route node.
+        - layer (str): Visual settings of routes in the same layer can be adjusted together.
+        - pickupQuantity (number): Quantity that is picked up at the node.
+        - deliveryQuantity (number): Quantity that is delivered at the node.
+    
+    parameters (dict): A dictionary containing parameter 'streetLevel' (boolean). 
 
     api_key (str): The Log-hub API key for accessing the center of gravity plus service.
 
@@ -163,7 +151,7 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 'workspaceId' (str) and 'scenarioName' (str).
 
     Returns:
-    pd.DataFrame: A pandas DataFrame containg the coordinates pairs. Returns None if the process fails.
+    pd.DataFrame: A pandas DataFrame containg the route nodes coordinates. Returns None if the process fails.
     """
 
     def validate_and_convert_data_types(df):
@@ -172,7 +160,7 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
         Log an error message if a required column is missing or if conversion fails.
         """
         required_columns = {
-            'id': 'float', 'senderName': 'str', 'senderLatitude':'float', 'senderLongitude': 'float', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientLatitude':'float', 'recipientLongitude': 'float', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'str'
+            'id': 'float', 'routeId': 'str', 'name': 'str', 'latitude':'float', 'longitude': 'float', 'layer': 'str', 'pickupQuantity': 'float', 'deliveryQuantity': 'float'
         }
         for col, dtype in required_columns.items():
             if col in df.columns:
@@ -193,7 +181,7 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
 
     DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversesupplychainmaprelations"
+    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversesupplychainmaproutes"
     
     headers = {
         "accept": "application/json",
@@ -201,8 +189,8 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
         "content-type": "application/json"
     }
     payload = {
-        "distanceCalculationData": coordinates.to_dict(orient='records'),
-        'parameters': parameters
+        "routeLatLon": coordinates.to_dict(orient='records'),
+        "parameters": parameters
     }
     app_name = get_app_name(url)
     payload = save_scenario_check(save_scenario, payload, app_name)
@@ -214,13 +202,13 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
             response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 response_data = response.json()
-                distance_calculation_result_df = pd.DataFrame(response_data['distanceCalculationData'])
-                return distance_calculation_result_df
+                route_result_df = pd.DataFrame(response_data['inputDataStructure'])
+                return route_result_df
             elif response.status_code == 429:
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in reverse supply chain map relations API: {response.status_code} - {response.text}")
+                logging.error(f"Error in reverse supply chain map routes API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
@@ -231,15 +219,14 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
     logging.error("Max retries exceeded.")
     return None
 
-def reverse_supply_chain_map_relations_sample_data():
+def reverse_supply_chain_map_routes_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
-    data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'MapRelationsReverse.xlsx')
-    coordinates_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:K')
+    data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'MapRoutesReverse.xlsx')
+    coordinates_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:H')
 
     parameters = {
-        'showLocations': True
+        'streetLevel': True
     }
-
     save_scenario = {
         'saveScenario': True,
         'overwriteScenario': False,

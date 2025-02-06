@@ -86,7 +86,7 @@ def reverse_supply_chain_map_polyline(polyline: pd.DataFrame, api_key: str, save
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in center of gravity plus API: {response.status_code} - {response.text}")
+                logging.error(f"Error in supply chain map polylines API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")

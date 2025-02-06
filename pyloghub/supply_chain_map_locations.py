@@ -92,7 +92,7 @@ def forward_supply_chain_map_locations(addresses: pd.DataFrame, api_key: str, sa
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in center of gravity plus API: {response.status_code} - {response.text}")
+                logging.error(f"Error in supply chain map locations API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
@@ -197,7 +197,7 @@ def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, 
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in center of gravity plus API: {response.status_code} - {response.text}")
+                logging.error(f"Error in reverse supply chain map locations API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
@@ -211,7 +211,7 @@ def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, 
 def reverse_supply_chain_map_locations_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'MapLocationsReverse.xlsx')
-    addresses_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:H', dtype={'postalCode': str})
+    coordinates_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:H')
 
     save_scenario = {
         'saveScenario': True,
@@ -220,4 +220,4 @@ def reverse_supply_chain_map_locations_sample_data():
         "mergeWithExistingScenario": False,
         'scenarioName': 'Your scenario name'
     }
-    return {'coordinates': addresses_df, 'saveScenarioParameters': save_scenario}
+    return {'coordinates': coordinates_df, 'saveScenarioParameters': save_scenario}
