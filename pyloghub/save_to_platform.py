@@ -44,6 +44,7 @@ def save_scenario_check(save_scenario_data: dict, payload: dict, application_nam
     if 'supplychainmap' in application_name:
         save_scenario_parameters.insert(2, 'mergeWithExistingScenario')
         save_scenario_default_values.update({'mergeWithExistingScenario': False})
+        save_scenario_default_values['saveScenario'] = True
     payload['saveScenarioParameters']  = {}
     for par in save_scenario_parameters:
         payload['saveScenarioParameters'].update({par: save_scenario_data.get(par, save_scenario_default_values[par])})
