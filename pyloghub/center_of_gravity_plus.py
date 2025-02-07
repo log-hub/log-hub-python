@@ -5,7 +5,7 @@ import time
 import logging
 import warnings
 from typing import Optional, Dict, Tuple
-from save_to_platform import save_scenario_check
+from pyloghub.save_to_platform import save_scenario_check
 
 def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """

@@ -5,7 +5,7 @@ import time
 import logging
 from typing import Optional, Dict
 import warnings
-from save_to_platform import save_scenario_check
+from pyloghub.save_to_platform import save_scenario_check
 
 logging.basicConfig(level=logging.INFO)
 

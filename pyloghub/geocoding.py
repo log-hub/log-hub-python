@@ -6,7 +6,7 @@ import logging
 from typing import Optional
 import warnings
 logging.basicConfig(level=logging.INFO)
-from save_to_platform import save_scenario_check
+from pyloghub.save_to_platform import save_scenario_check
 
 
 def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:

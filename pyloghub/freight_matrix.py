@@ -6,7 +6,7 @@ import time
 import logging
 from typing import Optional
 import warnings
-from save_to_platform import save_scenario_check
+from pyloghub.save_to_platform import save_scenario_check
 
 def convert_df_to_dict_excluding_nan(df, columns_to_check):
         """

@@ -5,7 +5,7 @@ import time
 import logging
 import warnings
 from typing import Optional, Dict, Tuple
-from save_to_platform import save_scenario_check, get_app_name
+from pyloghub.save_to_platform import save_scenario_check, get_app_name
 
 def reverse_supply_chain_map_polyline(polyline: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
