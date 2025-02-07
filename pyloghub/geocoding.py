@@ -14,8 +14,7 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
     Perform forward geocoding on a list of addresses.
 
     This function takes a DataFrame of addresses and an API key, and performs forward
-    geocoding using the Log-hub geocoding service. The function handles batching and 
-    rate limiting by the API.
+    geocoding using the Log-hub geocoding service. 
 
     Parameters:
     addresses (pd.DataFrame): A pandas DataFrame containing the addresses to be geocoded.
@@ -121,8 +120,7 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) 
     Perform reverse geocoding on a list of latitude and longitude coordinates.
 
     This function takes a DataFrame of geocodes (latitude and longitude) and an API key, 
-    and performs reverse geocoding using the Log-hub reverse geocoding service. The function 
-    handles batching and rate limiting by the API.
+    and performs reverse geocoding using the Log-hub reverse geocoding service. 
 
     Parameters:
     geocodes (pd.DataFrame): A pandas DataFrame containing the geocodes to be reverse geocoded.
