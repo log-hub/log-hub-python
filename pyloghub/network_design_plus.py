@@ -144,14 +144,14 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
                       'truck'), streetLevel (boolean), inboundConsolidation (boolean), outboundConsolidation (boolean), 
                       allowMultisourcing (boolean), minWarehouses (integer number), maxWarehouses (integer number).
 
-    api_key (str): The Log-hub API key for accessing the geocoding service.
+    api_key (str): The Log-hub API key for accessing the network design service.
 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
     Returns:
-    dict: A dictionary containing url and apiServer that should be passed to a Get method in order to get output tables, along with the explanation.
+    dict: A dictionary containing url and apiServer that should be passed to a GET method in order to get output tables, along with the explanation.
     """
     factories_columns = {
         'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
@@ -374,14 +374,14 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
                       'truck'), streetLevel (boolean), inboundConsolidation (boolean), outboundConsolidation (boolean), 
                       allowMultisourcing (boolean), minWarehouses (integer number), maxWarehouses (integer number).
 
-    api_key (str): The Log-hub API key for accessing the geocoding service.
+    api_key (str): The Log-hub API key for accessing the network design service.
 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
     Returns:
-    dict: A dictionary containing url and apiServer that should be passed to a Get method in order to get output tables, along with the explanation. 
+    dict: A dictionary containing url and apiServer that should be passed to a GET method in order to get output tables, along with the explanation. 
     """
     factories_columns = {
         'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'minimumFtlCosts': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'minimumLtlCosts': 'float', 'outboundCostsHalfFtlPercent': 'float'
@@ -463,7 +463,7 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in network design plus API: {response.status_code} - {response.text}")
+                logging.error(f"Error in reverse network design plus API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
