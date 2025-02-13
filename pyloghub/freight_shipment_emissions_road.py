@@ -31,7 +31,7 @@ def validate_and_convert_data_types(df, required_columns):
 
 def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
-    Perform forward freignt emissions by road on a list of addresses.
+    Perform forward freight emissions by road on a list of addresses.
 
     This function takes a DataFrame of addresses and an API key, and performs forward
     freight emissions by road using the Log-hub service. 
@@ -144,7 +144,7 @@ def forward_freight_shipment_emissions_road_sample_data():
 
 def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
-    Perform reverse freignt emissions by road on a list of coordinates.
+    Perform reverse freight emissions by road on a list of coordinates.
 
     This function takes a DataFrame of coordinates and an API key, and performs forward
     freight emissions by road using the Log-hub service. 
@@ -177,7 +177,7 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     Optional[Tuple[pd.DataFrame, pd.DataFrame]]: One pandas DataFrame contains the original coordinates information along 
                   with the calculated CO2 emissions, and the second one contains shipments with no CO2 emission calculated. Returns None if the process fails.
     """
-    
+
     coordinates_columns = {
         'shipmentId': 'str', 'shipmentDate': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLatitude': 'float', 'toLongitude': 'float', 'isRefrigirated': 'str', 'weight': 'float'
     }

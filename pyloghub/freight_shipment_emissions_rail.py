@@ -31,7 +31,7 @@ def validate_and_convert_data_types(df, required_columns):
 
 def forward_freight_shipment_emissions_rail(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
-    Perform forward freignt emissions by rail on a list of UN/LOCODEs.
+    Perform forward freight emissions by rail on a list of UN/LOCODEs.
 
     This function takes a DataFrame of UN/LOCODEs and an API key, and performs forward
     freight emissions by rail using the Log-hub service. 
@@ -131,7 +131,7 @@ def forward_freight_shipment_emissions_rail_sample_data():
 
 def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
-    Perform reverse freignt emissions by rail on a list of coordinates.
+    Perform reverse freight emissions by rail on a list of coordinates.
 
     This function takes a DataFrame of coordinates and an API key, and performs forward
     freight emissions by rail using the Log-hub service. 
