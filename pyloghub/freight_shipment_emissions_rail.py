@@ -48,7 +48,7 @@ def forward_freight_shipment_emissions_rail(addresses: pd.DataFrame, parameters:
 
     parameters (dict): A dictionary containing parameters:
         - fuelType: enum "diesel", "electricity" or "other"
-        - weightUnit: enum "kilograms" or "LBS"
+        - weightUnit: enum "kilograms" or "lbs"
 
     api_key (str): The Log-hub API key for accessing the freight emissions service.
 
@@ -149,7 +149,7 @@ def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameter
 
     parameters (dict): A dictionary containing parameters:
         - fuelType: enum "diesel", "petrol", "hybrid", "CNG", "LPG", "pluginHybrid", "electricity" or "other"
-        - weightUnit: enum "kilograms" or "LBS"
+        - weightUnit: enum "kilograms" or "lbs"
 
     api_key (str): The Log-hub API key for accessing the reverse freight emissions service.
 

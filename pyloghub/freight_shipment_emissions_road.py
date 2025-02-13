@@ -57,7 +57,7 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
     parameters (dict): A dictionary containing parameters:
         - vehicleType: "van(0-3.5)", "truck", "truckUrbanTruck", "truckMGV", "truckHGV", "truckRigid(3.5-7.5)", "truckRigid(7.5-12)", "truckRigid(12-20)" , "truckRigid(20-26)", "truckRigid(26-32)", "truckArticulated(3.5-34)", "truckArticulated(34-40)", "truckArticulated(40-44)", "truckArticulated(44-60)", "truckArticulated(60-72)", "truckGeneral", "truckAutoCarrier", "truckDray", "truckExpedited", "truckFlatbed", "truckHeavybulk", "truckLTL", "truckMixed", "truckMoving", "truckPackage", "truckSpecialized", "truckTanker" or "truckTL" 
         - fuelType: enum "diesel", "petrol", "hybrid", "CNG", "LPG", "pluginHybrid", "electricity" or "other"
-        - weightUnit: enum "kilograms" or "LBS"
+        - weightUnit: enum "kilograms" or "lbs"
         - emissionStandard: enum "EURO_5" or :EURO_6"
 
     api_key (str): The Log-hub API key for accessing the freight emissions service.
@@ -164,7 +164,7 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     parameters (dict): A dictionary containing parameters:
         - vehicleType: "van(0-3.5)", "truck", "truckUrbanTruck", "truckMGV", "truckHGV", "truckRigid(3.5-7.5)", "truckRigid(7.5-12)", "truckRigid(12-20)" , "truckRigid(20-26)", "truckRigid(26-32)", "truckArticulated(3.5-34)", "truckArticulated(34-40)", "truckArticulated(40-44)", "truckArticulated(44-60)", "truckArticulated(60-72)", "truckGeneral", "truckAutoCarrier", "truckDray", "truckExpedited", "truckFlatbed", "truckHeavybulk", "truckLTL", "truckMixed", "truckMoving", "truckPackage", "truckSpecialized", "truckTanker" or "truckTL" 
         - fuelType: enum "diesel", "petrol", "hybrid", "CNG", "LPG", "pluginHybrid", "electricity" or "other"
-        - weightUnit: enum "kilograms" or "LBS"
+        - weightUnit: enum "kilograms" or "lbs"
         - emissionStandard: enum "EURO_5" or :EURO_6"
 
     api_key (str): The Log-hub API key for accessing the reverse freight emissions service.
