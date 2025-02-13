@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import time
 import logging
-from typing import Optional, Tuple
+from typing import Optional
 import warnings
 logging.basicConfig(level=logging.INFO)
 from save_to_platform import save_scenario_check
@@ -71,7 +71,7 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
     if iata_codes is None:
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
     url = f"{LOG_HUB_API_SERVER}/api/applications/v1/co2emissionsair"
     

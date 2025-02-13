@@ -73,7 +73,7 @@ def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters:
     if un_locodes is None:
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
     url = f"{LOG_HUB_API_SERVER}/api/applications/v1/co2emissionssea"
     
@@ -129,19 +129,3 @@ def forward_freight_shipment_emissions_sea_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'unLocodes': un_locodes_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    workspace_id = "7cb180c0d9e15db1a71342df559d19d473c539ad"
-
-    sample = forward_freight_shipment_emissions_sea_sample_data()
-
-    sea = sample['unLocodes']
-    par = sample['parameters']
-    save_scenario = sample['saveScenarioParameters']
-    save_scenario['saveScenario'] = True
-    save_scenario['workspaceId'] = workspace_id
-    save_scenario['scenarioName'] = 'CO2 sea'
-
-    out = forward_freight_shipment_emissions_sea(sea, par, api_key_dev, save_scenario)
