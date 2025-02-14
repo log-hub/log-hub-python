@@ -1,7 +1,5 @@
 import os
-import requests
 import pandas as pd
-import time
 import logging
 from typing import Optional
 import warnings
@@ -132,15 +130,3 @@ def reverse_geocoding_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'geocodes': geocodes_df, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    workspace_id = "7cb180c0d9e15db1a71342df559d19d473c539ad"
-
-    sample = reverse_geocoding_sample_data()
-
-    geocodes = sample['geocodes']
-    save_scenario = sample['saveScenarioParameters']
-
-    out = reverse_geocoding(geocodes, api_key_dev, save_scenario)
