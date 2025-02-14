@@ -6,7 +6,9 @@ import logging
 from typing import Optional
 import warnings
 logging.basicConfig(level=logging.INFO)
-from pyloghub.save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check
+from input_data_validation import validate_and_convert_data_types
+from sending_requests import create_url, create_headers, post_method
 
 
 def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
@@ -37,71 +39,30 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
                   with the geocoded results. Includes latitude and longitude for each address.
                   Returns None if the process fails.
     """
-    
-    def validate_and_convert_data_types(df):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        string_columns = ['country', 'state', 'postalCode', 'city', 'street', 'searchString']
-        for col in string_columns:
-            if col in df.columns:
-                try:
-                    df[col] = df[col].astype(str)
-                except Exception as e:
-                    logging.error(f"Data type conversion failed for column '{col}': {e}")
-                    return None
-            else:
-                logging.error(f"Missing required column: {col}")
-                return None
-        return df
+    geocoding_columns = {'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'searchString': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses)
+    addresses = validate_and_convert_data_types(addresses, geocoding_columns)
     if addresses is None:
         return None
-
-    addresses = addresses.fillna("")
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/geocoding"
+    url = create_url("geocoding")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         'addresses': addresses.to_dict(orient='records'),
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
+    response_data = post_method(url, payload, headers)
+    if response_data is None:
+        return None
+    else:
+        geocoded_data_df = response_data['geocodes']
+        return geocoded_data_df
 
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                geocoded_data_df = pd.DataFrame(response_data['geocodes'])
-                return geocoded_data_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in geocoding API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
 
-    logging.error("Max retries exceeded.")
-    return None
 
 def forward_geocoding_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -139,82 +100,26 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) 
                   with the reverse geocoded address results. Includes fields like country, 
                   state, city, and street. Returns None if the process fails.
     """
-
-    def validate_and_convert_data_types(df):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        float_columns = ['latitude', 'longitude']
-        for col in float_columns:
-            if col in df.columns:
-                try:
-                    df[col] = pd.to_numeric(df[col], errors='raise')
-                except Exception as e:
-                    logging.error(f"Data type conversion failed for column '{col}': {e}")
-                    return None
-            else:
-                logging.error(f"Missing required column: {col}")
-                return None
-        return df
+    geocodes_columns = {'latitude': 'float', 'longitude': 'float'}
 
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes)
+    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns)
     if geocodes is None:
         return None
     
-    # Convert the latitude and longitude columns to a list of dictionaries
-    geocodes = geocodes.applymap(lambda x: x.to_dict() if isinstance(x, pd.Series) else x)
-    geocodes = geocodes.to_dict(orient='records')
-    
-    # Convert the list of dictionaries to a list of lists
-    geocodes = [list(d.values()) for d in geocodes]
-    
-    # Convert the list of lists to a list of dictionaries
-    geocodes = [{"latitude": lat, "longitude": lon} for lat, lon in geocodes]
-    
-    # Convert the list of dictionaries to a pandas DataFrame
-    geocodes = pd.DataFrame(geocodes)
-    
-    
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversegeocoding"
-
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    url = create_url("reversegeocoding")
+    headers = create_headers(api_key)
     payload = {
         "geocodes": geocodes.to_dict(orient='records')
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                reverse_geocoding_df = pd.DataFrame(response_data['addresses'])
-                return reverse_geocoding_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in reverse geocoding API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers)
+    if response_data is None:
+        return None
+    else:
+        addresses_df = response_data['addresses']
+        return addresses_df
 
 def reverse_geocoding_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -227,3 +132,15 @@ def reverse_geocoding_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'geocodes': geocodes_df, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
+    workspace_id = "7cb180c0d9e15db1a71342df559d19d473c539ad"
+
+    sample = reverse_geocoding_sample_data()
+
+    geocodes = sample['geocodes']
+    save_scenario = sample['saveScenarioParameters']
+
+    out = reverse_geocoding(geocodes, api_key_dev, save_scenario)

@@ -1,10 +1,4 @@
-import os
-import requests
-import pandas as pd
 import logging
-import json
-import base64
-from urllib.parse import urlparse
 logging.basicConfig(level=logging.INFO)
 
 # Configure logging

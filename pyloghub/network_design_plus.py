@@ -6,7 +6,7 @@ import logging
 from typing import Optional, Tuple
 import warnings
 logging.basicConfig(level=logging.INFO)
-from pyloghub.save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check
 
 def convert_df_to_dict_excluding_nan(df, columns_to_check):
     """
@@ -196,7 +196,7 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
     if any(df is None for df in [factories, warehouses, customers, product_segments, transport_costs, transport_costs_rules, stepwise_function_weight, stepwise_function_volume, distance_limits]):
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
+    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
     url = f"{LOG_HUB_API_SERVER}/api/applications/v1/networkdesignpluslongrun"
     
@@ -504,4 +504,26 @@ def reverse_network_design_plus_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'factories': factories_df, 'warehouses': warehouses_df, 'customers': customers_df, 'productSegments': product_segments_df, 'transportCosts': transport_costs_df, 'transportCostsRules': transport_costs_rules_df, 'stepwiseCostFunctionWeight': stepwise_function_weight_df, 'stepwiseCostFunctionVolume': stepwise_function_volume_df, 'distanceLimits': distance_limits_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
+    workspace_id = "7cb180c0d9e15db1a71342df559d19d473c539ad"
+
+    sample = forward_network_design_plus_sample_data()
+
+    factories = sample['factories']
+    warehouses = sample['warehouses']
+    customers = sample['customers']
+    prod_segments = sample['productSegments']
+    transport_costs = sample['transportCosts']
+    transport_costs_rules = sample['transportCostsRules']
+    stepwise_weight = sample['stepwiseCostFunctionWeight']
+    stepwise_volume = sample['stepwiseCostFunctionVolume']
+    distance_limits = sample['distanceLimits']
+    par = sample['parameters']
+    save_scenario = sample['saveScenarioParameters']
+
+    out = forward_network_design_plus(factories, warehouses, customers, prod_segments, transport_costs, transport_costs_rules, stepwise_weight, stepwise_volume, distance_limits, par, api_key_dev, save_scenario)
+
 
