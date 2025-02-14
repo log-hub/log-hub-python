@@ -4,10 +4,11 @@ import logging
 from typing import Optional
 import warnings
 logging.basicConfig(level=logging.INFO)
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
 from input_data_validation import validate_and_convert_data_types
-from sending_requests import create_url, create_headers, post_method
-
+from sending_requests import post_method, create_headers, create_url
 
 def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
@@ -53,11 +54,11 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers)
+    response_data = post_method(url, payload, headers, "geocoding")
     if response_data is None:
         return None
     else:
-        geocoded_data_df = response_data['geocodes']
+        geocoded_data_df = pd.DataFrame(response_data['geocodes'])
         return geocoded_data_df
 
 
@@ -112,11 +113,11 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) 
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers)
+    response_data = post_method(url, payload, headers, "reverse geocoding")
     if response_data is None:
         return None
     else:
-        addresses_df = response_data['addresses']
+        addresses_df = pd.DataFrame(response_data['addresses'])
         return addresses_df
 
 def reverse_geocoding_sample_data():

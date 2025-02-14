@@ -8,7 +8,7 @@ def create_url(app_name):
     """
     Creates an url for the given application.
     """
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
     url = f"{LOG_HUB_API_SERVER}/api/applications/v1/"+app_name
 
@@ -23,7 +23,7 @@ def create_headers(api_key):
     }
 
     return headers
-def post_method(url, payload, headers):
+def post_method(url, payload, headers, app_name):
 
     max_retries = 3
     retry_delay = 15  # seconds
@@ -38,7 +38,7 @@ def post_method(url, payload, headers):
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)
             else:
-                logging.error(f"Error in geocoding API: {response.status_code} - {response.text}")
+                logging.error(f"Error in {app_name} API: {response.status_code} - {response.text}")
                 return None
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")

@@ -5,7 +5,11 @@ import time
 import logging
 from typing import Optional, Dict
 import warnings
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
+from input_data_validation import validate_and_convert_data_types
+from sending_requests import post_method, create_headers, create_url
 
 logging.basicConfig(level=logging.INFO)
 
@@ -45,75 +49,35 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     pd.DataFrame: A pandas DataFrame containing the results of the distance calculations. 
                   Returns None if the process fails.
     """
-
-    def validate_and_convert_data_types(df):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        required_columns = {
+    required_columns = {
             'senderCountry': 'str', 'senderState': 'str', 'senderPostalCode': 'str',
             'senderCity': 'str', 'senderStreet': 'str', 'recipientCountry': 'str',
             'recipientState': 'str', 'recipientPostalCode': 'str',
             'recipientCity': 'str', 'recipientStreet': 'str'
         }
-        for col, dtype in required_columns.items():
-            if col in df.columns:
-                try:
-                    df[col] = df[col].astype(dtype)
-                except Exception as e:
-                    logging.error(f"Data type conversion failed for column '{col}': {e}")
-                    return None
-            else:
-                logging.error(f"Missing required column: {col}")
-                return None
-        return df
 
-    # Validate and convert data types
-    address_pairs = validate_and_convert_data_types(address_pairs)
+    address_pairs = validate_and_convert_data_types(address_pairs, required_columns)
     if address_pairs is None:
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/distancecalculation"
+    url = create_url("distancecalculation")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
+
     payload = {
         "addresses": address_pairs.to_dict(orient='records'), 
         "parameters": parameters,
         }
+    
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                distance_calculation_df = pd.DataFrame(response_data)
-                return distance_calculation_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in distance calculation API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "distance calculation")
+    if response_data is None:
+        return None
+    else:
+        distances_df = pd.DataFrame(response_data)
+        return distances_df
+    
 def forward_distance_calculation_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'DistanceCalcSampleDataAddresses.xlsx')
@@ -168,41 +132,19 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
                   Returns None if the process fails.
     """
 
-    def validate_and_convert_data_types(df):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        required_columns = {
+    required_columns = {
             'senderLocation': 'str', 'senderLatitude': 'float', 'senderLongitude': 'float',
             'recipientLocation': 'str', 'recipientLatitude': 'float', 'recipientLongitude': 'float'
         }
-        for col, dtype in required_columns.items():
-            if col in df.columns:
-                try:
-                    df[col] = df[col].astype(dtype)
-                except Exception as e:
-                    logging.error(f"Data type conversion failed for column '{col}': {e}")
-                    return None
-            else:
-                logging.error(f"Missing required column: {col}")
-                return None
-        return df
-
+    
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes)
+    geocodes = validate_and_convert_data_types(geocodes, required_columns)
     if geocodes is None:
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversedistancecalculation"
+    url = create_url("reversedistancecalculation")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
     payload = {
         "geocodes": geocodes.to_dict(orient='records'),
         "parameters": parameters
@@ -212,28 +154,12 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
     max_retries = 3
     retry_delay = 15  # seconds
 
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                distance_calculation_df = pd.DataFrame(response_data)
-                return distance_calculation_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in distance calculation API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "reverse distance calculation")
+    if response_data is None:
+        return None
+    else:
+        distances_df = pd.DataFrame(response_data)
+        return distances_df
 
 def reverse_distance_calculation_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
