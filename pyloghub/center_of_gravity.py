@@ -159,16 +159,3 @@ def reverse_center_of_gravity_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'coordinates': coordinates_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-if __name__ == "__main__":
-
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    workspace_id = "6df5ba5dc72a6f949340df9110bdbe5fb661d1c7"
-
-    sample = reverse_center_of_gravity_sample_data()
-    save_scenario = {
-        'saveScenario': True,
-        'overwriteScenario': False,
-        'workspaceId': workspace_id,
-        'scenarioName': 'CoG reverse'
-    }
-    out = reverse_center_of_gravity(sample['coordinates'], sample['parameters'], api_key_dev, save_scenario)

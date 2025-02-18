@@ -145,8 +145,8 @@ def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameter
     if response_data is None:
         return None
     else:
-            freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputTrain'])
-            return freight_emissions_df
+        freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputTrain'])
+        return freight_emissions_df
 
 def reverse_freight_shipment_emissions_rail_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
