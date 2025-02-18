@@ -1,11 +1,12 @@
 import os
-import requests
 import pandas as pd
-import time
-import logging
 import warnings
 from typing import Optional, Dict, Tuple
-from pyloghub.save_to_platform import save_scenario_check
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
+from save_to_platform import save_scenario_check
+from input_data_validation import validate_and_convert_data_types
+from sending_requests import post_method, create_headers, create_url
 
 def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
@@ -52,23 +53,6 @@ def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
                                        Returns None if the process fails.
     """
     
-    def validate_and_convert_data_types(df, required_columns):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        for col, dtype in required_columns.items():
-            if col in df.columns:
-                try:
-                    df[col] = df[col].astype(dtype)
-                except Exception as e:
-                    logging.error(f"Data type conversion failed for column '{col}': {e}")
-                    return None
-            else:
-                logging.error(f"Missing required column: {col}")
-                return None
-        return df
-
     customer_columns = {
         'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str',
         'city': 'str', 'street': 'str', 'weight': 'float'
@@ -85,15 +69,9 @@ def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     if customers is None or (not fixed_centers.empty and fixed_centers is None):
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/fixedcenterofgravity"
+    url = create_url("fixedcenterofgravity")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         "customers": customers.to_dict(orient='records'),
@@ -101,32 +79,14 @@ def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
-                centers_df = pd.DataFrame(response_data['centers'])
-                return assigned_geocodes_df, centers_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in fixed center of gravity API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "fixedcenterofgravity")
+    if response_data is None:
+        return None
+    else:
+        assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
+        centers_df = pd.DataFrame(response_data['centers'])
+        return assigned_geocodes_df, centers_df
+            
 def forward_fixed_center_of_gravity_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'FixedCOGSampleDataAddresses.xlsx')
@@ -184,23 +144,6 @@ def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
                                        Returns None if the process fails.
     """
 
-    def validate_and_convert_data_types(df, required_columns):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        for col, dtype in required_columns.items():
-            if col in df.columns:
-                try:
-                    df[col] = df[col].astype(dtype)
-                except Exception as e:
-                    logging.error(f"Data type conversion failed for column '{col}': {e}")
-                    return None
-            else:
-                logging.error(f"Missing required column: {col}")
-                return None
-        return df
-
     customer_columns = {
         'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float'
     }
@@ -215,15 +158,9 @@ def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     if customers is None or (not fixed_centers.empty and fixed_centers is None):
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversefixedcenterofgravity"
+    url = create_url("reversefixedcenterofgravity")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         "customers": customers.to_dict(orient='records'),
@@ -231,32 +168,13 @@ def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
-                centers_df = pd.DataFrame(response_data['centers'])
-                return assigned_geocodes_df, centers_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in reverse fixed center of gravity API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "reverse fixed center of gravity")
+    if response_data is None:
+        return None
+    else:
+        assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
+        centers_df = pd.DataFrame(response_data['centers'])
+        return assigned_geocodes_df, centers_df
 
 def reverse_fixed_center_of_gravity_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -275,3 +193,17 @@ def reverse_fixed_center_of_gravity_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'customers': customers_df, 'fixedCenters': fixedCenters_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
+    workspace_id = "6df5ba5dc72a6f949340df9110bdbe5fb661d1c7"
+
+    sample = reverse_fixed_center_of_gravity_sample_data()
+    save_scenario = {
+        'saveScenario': True,
+        'overwriteScenario': True,
+        'workspaceId': workspace_id,
+        'scenarioName': 'fixed rev cog'
+    }
+    out = reverse_fixed_center_of_gravity(sample['customers'], sample['fixedCenters'], sample['parameters'], api_key_dev, save_scenario)

@@ -1,31 +1,11 @@
 import os
-import requests
 import pandas as pd
-import time
-import logging
 import warnings
 from typing import Optional
-
-def convert_dates(df, date_columns):
-        for col in date_columns:
-            df[col] = pd.to_datetime(df[col]).dt.strftime('%Y-%m-%d')
-        return df
-    
-def validate_and_convert_data_types(df, required_columns):
-    """
-    Validate and convert the data types of the DataFrame columns.
-    Log an error message if a required column is missing or if conversion fails.
-    """
-    for col, dtype in required_columns.items():
-        if col not in df.columns:
-            logging.error(f"Missing required column: {col}")
-            return None
-        try:
-            df[col] = df[col].astype(dtype)
-        except Exception as e:
-            logging.error(f"Data type conversion failed for column '{col}': {e}")
-            return None
-    return df
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
+from input_data_validation import validate_and_convert_data_types, convert_dates
+from sending_requests import post_method, create_headers, create_url
 
 def demand_forecasting(past_demand_data: pd.DataFrame, future_impact_factors: pd.DataFrame, sku_parameters: pd.DataFrame, api_key: str) -> Optional[pd.DataFrame]:
     """
@@ -76,22 +56,17 @@ def demand_forecasting(past_demand_data: pd.DataFrame, future_impact_factors: pd
     past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_columns)
     future_impact_factors = validate_and_convert_data_types(future_impact_factors, future_impact_factors_columns)
     sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_columns)
-    past_demand_data = convert_dates(past_demand_data, ['date'])
-    future_impact_factors = convert_dates(future_impact_factors, ['date'])
+    if not any(df is None for df in [past_demand_data, future_impact_factors]):
+        past_demand_data = convert_dates(past_demand_data, ['date'])
+        future_impact_factors = convert_dates(future_impact_factors, ['date'])
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [past_demand_data, future_impact_factors, sku_parameters]):
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/demandforecasting"
+    url = create_url("demandforecasting")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         "pastDemandData": past_demand_data.to_dict(orient='records'),
@@ -99,30 +74,13 @@ def demand_forecasting(past_demand_data: pd.DataFrame, future_impact_factors: pd
         "skuParameters": sku_parameters.to_dict(orient='records'),
     }
     
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                prediction_df = pd.DataFrame(response_data['prediction'])
-                return prediction_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in demand forecasting API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers, "demand forecasting")
+    if response_data is None:
+        return None
+    else:
+        prediction_df = pd.DataFrame(response_data['prediction'])
+        return prediction_df
+            
 
 def demand_forecasting_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -132,4 +90,3 @@ def demand_forecasting_sample_data():
     sku_parameters_df = pd.read_excel(data_path, sheet_name='skuParameters', usecols='A:L').fillna("")
 
     return {'pastDemandData': past_demand_data_df, 'futureImpactFactors': future_impact_factors_df, 'skuParameters': sku_parameters_df}
-

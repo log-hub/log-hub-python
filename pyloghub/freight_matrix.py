@@ -1,32 +1,12 @@
 import os
-import requests
-import numpy as np
 import pandas as pd
-import time
-import logging
 from typing import Optional
 import warnings
-from pyloghub.save_to_platform import save_scenario_check
-
-def convert_df_to_dict_excluding_nan(df, columns_to_check):
-        """
-        Convert a DataFrame to a list of dictionaries, excluding specified keys if their values are NaN.
-
-        Parameters:
-        df (pd.DataFrame): The DataFrame to convert.
-        columns_to_check (list): List of column names to check for NaN values.
-
-        Returns:
-        list: A list of dictionaries representing the rows of the DataFrame, excluding keys for NaN values in specified columns.
-        """
-        records = []
-        for _, row in df.iterrows():
-            record = {}
-            for column, value in row.items():
-                if pd.notna(value) or column not in columns_to_check:
-                    record[column] = value
-            records.append(record)
-        return records
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
+from save_to_platform import save_scenario_check
+from input_data_validation import convert_df_to_dict_excluding_nan
+from sending_requests import post_method, create_headers, create_url
 
 def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
@@ -65,22 +45,11 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
-
     Returns:
     pd.DataFrame: A pandas DataFrame containing evaluated shipments with additional
                   details such as fromLatitude, fromLongitude, toLatitude, toLongitude, costs, etc.
                   Returns None if the process fails.
     """
-    
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/freightmatrixplus"
-    
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
     
     float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
     for column in float_columns:
@@ -90,36 +59,21 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
     
+    url = create_url("freightmatrixplus")
+    
+    headers = create_headers(api_key)
     payload = {
         "shipments": shipments_list,
         "matrix": {"matrixId": matrix_id}
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                evaluated_shipments = pd.DataFrame(response.json().get('evaluatedShipments', []))
-                return evaluated_shipments
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in freight matrix API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-                
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "freight matrix")
+    if response_data is None:
+        return None
+    else:
+        evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
+        return evaluated_shipments
 
 def forward_freight_matrix_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -158,21 +112,11 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
-
     Returns:
     pd.DataFrame: A pandas DataFrame containing evaluated shipments with additional
                   details such as costs, weight class, distance class, and price per unit. Returns None if the process fails.
     """
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversefreightmatrixplus"
-    
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
-    
+
     float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
     for column in float_columns:
         if column in shipments_df.columns:
@@ -181,35 +125,21 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
     
+    url = create_url("reversefreightmatrixplus")
+    
+    headers = create_headers(api_key)
     payload = {
         "shipments": shipments_list,
         "matrix": {"matrixId": matrix_id}
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                evaluated_shipments = pd.DataFrame(response.json().get('evaluatedShipments', []))
-                return evaluated_shipments
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in reverse freight matrix API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers, "reverse freight matrix")
+    if response_data is None:
+        return None
+    else:
+        evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
+        return evaluated_shipments
 
 def reverse_freight_matrix_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)

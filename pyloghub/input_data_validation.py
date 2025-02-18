@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 
 def validate_and_convert_data_types(df, required_columns):
     """
@@ -15,3 +16,28 @@ def validate_and_convert_data_types(df, required_columns):
             logging.error(f"Data type conversion failed for column '{col}': {e}")
             return None
     return df
+
+def convert_dates(df, date_columns):
+        for col in date_columns:
+            df[col] = pd.to_datetime(df[col]).dt.strftime('%Y-%m-%d')
+        return df
+
+def convert_df_to_dict_excluding_nan(df, columns_to_check):
+        """
+        Convert a DataFrame to a list of dictionaries, excluding specified keys if their values are NaN.
+
+        Parameters:
+        df (pd.DataFrame): The DataFrame to convert.
+        columns_to_check (list): List of column names to check for NaN values.
+
+        Returns:
+        list: A list of dictionaries representing the rows of the DataFrame, excluding keys for NaN values in specified columns.
+        """
+        records = []
+        for _, row in df.iterrows():
+            record = {}
+            for column, value in row.items():
+                if pd.notna(value) or column not in columns_to_check:
+                    record[column] = value
+            records.append(record)
+        return records

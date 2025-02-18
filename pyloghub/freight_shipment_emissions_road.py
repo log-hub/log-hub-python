@@ -1,33 +1,14 @@
 import os
-import requests
 import pandas as pd
-import time
 import logging
 from typing import Optional, Tuple
 import warnings
 logging.basicConfig(level=logging.INFO)
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-
-def convert_dates(df, date_columns):
-        for col in date_columns:
-            df[col] = pd.to_datetime(df[col]).dt.strftime('%Y-%m-%d')
-        return df
-    
-def validate_and_convert_data_types(df, required_columns):
-    """
-    Validate and convert the data types of the DataFrame columns.
-    Log an error message if a required column is missing or if conversion fails.
-    """
-    for col, dtype in required_columns.items():
-        if col not in df.columns:
-            logging.error(f"Missing required column: {col}")
-            return None
-        try:
-            df[col] = df[col].astype(dtype)
-        except Exception as e:
-            logging.error(f"Data type conversion failed for column '{col}': {e}")
-            return None
-    return df
+from input_data_validation import convert_dates, validate_and_convert_data_types
+from sending_requests import post_method, create_headers, create_url
 
 def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
@@ -77,19 +58,14 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
 
     # Validate and convert data types
     addresses = validate_and_convert_data_types(addresses, addresses_columns)
-    addresses = convert_dates(addresses, ['shipmentDate'])
+    if not addresses is None:
+        addresses = convert_dates(addresses, ['shipmentDate'])
     if addresses is None:
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/co2emissionsroad"
+    url = create_url("co2emissionsroad")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         'freightShipmentEmissionsByRoad': addresses.to_dict(orient='records'),
@@ -97,31 +73,13 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputStandardRoad'])
-                not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsStandardRoad'])
-                return freight_emissions_df, not_evaluated_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in freight emission by road API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers, "co2 emissions road")
+    if response_data is None:
+        return None
+    else:
+        freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputStandardRoad'])
+        not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsStandardRoad'])
+        return freight_emissions_df, not_evaluated_df
 
 def forward_freight_shipment_emissions_road_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -184,19 +142,13 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
 
     # Validate and convert data types
     coordinates = validate_and_convert_data_types(coordinates, coordinates_columns)
-    coordinates = convert_dates(coordinates, ['shipmentDate'])
+    if not coordinates is None:
+        coordinates = convert_dates(coordinates, ['shipmentDate'])
     if coordinates is None:
         return None
+    url = create_url("reverseco2emissionsroad")
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reverseco2emissionsroad"
-    
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         'freightShipmentEmissionsByRoad': coordinates.to_dict(orient='records'),
@@ -204,31 +156,13 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputReverseRoad'])
-                not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsReverseRoad'])
-                return freight_emissions_df, not_evaluated_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in freight emission by road API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers, "reverse co2 emissions road")
+    if response_data is None:
+        return None
+    else:
+        freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputReverseRoad'])
+        not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsReverseRoad'])
+        return freight_emissions_df, not_evaluated_df
 
 def reverse_freight_shipment_emissions_road_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
