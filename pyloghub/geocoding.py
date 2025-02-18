@@ -61,8 +61,6 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
         geocoded_data_df = pd.DataFrame(response_data['geocodes'])
         return geocoded_data_df
 
-
-
 def forward_geocoding_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'GeocodingSampleDataAddresses.xlsx')

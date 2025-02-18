@@ -1,7 +1,5 @@
 import os
-import requests
 import pandas as pd
-import time
 import logging
 from typing import Optional, Dict
 import warnings
@@ -150,9 +148,6 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-
-    max_retries = 3
-    retry_delay = 15  # seconds
 
     response_data = post_method(url, payload, headers, "reverse distance calculation")
     if response_data is None:
