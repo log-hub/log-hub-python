@@ -1,18 +1,19 @@
 import os
-import requests
 import pandas as pd
-import time
-import logging
 import warnings
 from typing import Optional, Dict, Tuple
-from pyloghub.save_to_platform import save_scenario_check
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
+from save_to_platform import save_scenario_check
+from input_data_validation import convert_timestamps, validate_and_convert_data_types
+from sending_requests import post_method, create_headers, create_url
 
 def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
-    Perform milk run optimization based on depots, vehicles, jobs, time window profiles, and breaks.
+    Perform milkrun optimization based on depots, vehicles, jobs, time window profiles, and breaks.
 
     This function takes five DataFrames representing depots, vehicles, jobs, time window profiles, and breaks, 
-    along with a parameters dictionary and an API key. It performs milk run optimization using the Log-hub service.
+    along with a parameters dictionary and an API key. It performs milkrun optimization using the Log-hub service.
 
     Parameters:
     depots (pd.DataFrame): DataFrame containing depot information.
@@ -84,7 +85,7 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
 
     parameters (Dict): Dictionary containing parameters like durationUnit.
 
-    api_key (str): Log-hub API key for accessing the milk run optimization service.
+    api_key (str): Log-hub API key for accessing the milkrun optimization service.
 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
@@ -95,34 +96,12 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
                                                      and external orders. Returns None if the process fails.
     """
 
-    def convert_timestamps(df):
-        for col in df.columns:
-            if pd.api.types.is_datetime64_any_dtype(df[col]):
-                df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        return df
-
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     depots = convert_timestamps(depots)
     vehicles = convert_timestamps(vehicles)
     jobs = convert_timestamps(jobs)
     timeWindowProfiles = convert_timestamps(timeWindowProfiles)
     breaks = convert_timestamps(breaks)
-
-    def validate_and_convert_data_types(df, required_columns):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        for col, dtype in required_columns.items():
-            if col not in df.columns:
-                logging.error(f"Missing required column: {col}")
-                return None
-            try:
-                df[col] = df[col].astype(dtype)
-            except Exception as e:
-                logging.error(f"Data type conversion failed for column '{col}': {e}")
-                return None
-        return df
 
     # Define expected columns and data types for each DataFrame
     depot_columns = {
@@ -161,15 +140,9 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     if any(df is None for df in [depots, vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/milkrunoptimizationplus"
+    url = create_url("milkrunoptimizationplus")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         "depots": depots.to_dict(orient='records'),
@@ -180,33 +153,14 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                route_overview_df = pd.DataFrame(response_data['routeOverview'])
-                route_details_df = pd.DataFrame(response_data['routeDetails'])
-                external_orders_df = pd.DataFrame(response_data['externalOrders'])
-                return route_overview_df, route_details_df, external_orders_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in milkrun optimization API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "milkrun optimization plus")
+    if response_data is None:
+        return None
+    else:
+        route_overview_df = pd.DataFrame(response_data['routeOverview'])
+        route_details_df = pd.DataFrame(response_data['routeDetails'])
+        external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        return route_overview_df, route_details_df, external_orders_df
 
 def forward_milkrun_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -231,10 +185,10 @@ def forward_milkrun_optimization_plus_sample_data():
 
 def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
-    Perform reverse milk run optimization based on depots, vehicles, jobs, time window profiles, and breaks.
+    Perform reverse milkrun optimization based on depots, vehicles, jobs, time window profiles, and breaks.
 
     This function takes five DataFrames representing depots, vehicles, jobs, time window profiles, and breaks, 
-    along with a parameters dictionary and an API key. It performs reverse milk run optimization using the Log-hub service.
+    along with a parameters dictionary and an API key. It performs reverse milkrun optimization using the Log-hub service.
 
     Parameters:
     depots (pd.DataFrame): DataFrame containing depot information, with columns:
@@ -297,7 +251,7 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
 
     parameters (Dict): Dictionary containing parameters like durationUnit.
 
-    api_key (str): Log-hub API key for accessing the reverse milk run optimization service.
+    api_key (str): Log-hub API key for accessing the reverse milkrun optimization service.
 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
@@ -308,34 +262,12 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
                                                      and external orders. Returns None if the process fails.
     """
 
-    def convert_timestamps(df):
-        for col in df.columns:
-            if pd.api.types.is_datetime64_any_dtype(df[col]):
-                df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        return df
-
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     depots = convert_timestamps(depots)
     vehicles = convert_timestamps(vehicles)
     jobs = convert_timestamps(jobs)
     timeWindowProfiles = convert_timestamps(timeWindowProfiles)
     breaks = convert_timestamps(breaks)
-
-    def validate_and_convert_data_types(df, required_columns):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        for col, dtype in required_columns.items():
-            if col not in df.columns:
-                logging.error(f"Missing required column: {col}")
-                return None
-            try:
-                df[col] = df[col].astype(dtype)
-            except Exception as e:
-                logging.error(f"Data type conversion failed for column '{col}': {e}")
-                return None
-        return df
 
     # Define expected columns and data types for each DataFrame
     depot_columns = {
@@ -371,15 +303,9 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     if any(df is None for df in [depots, vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversemilkrunoptimizationplus"
+    url = create_url("reversemilkrunoptimizationplus")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         "depots": depots.to_dict(orient='records'),
@@ -390,33 +316,14 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                route_overview_df = pd.DataFrame(response_data['routeOverview'])
-                route_details_df = pd.DataFrame(response_data['routeDetails'])
-                external_orders_df = pd.DataFrame(response_data['externalOrders'])
-                return route_overview_df, route_details_df, external_orders_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in reverse milk run optimization API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "reverse milkrun optimization plus")
+    if response_data is None:
+        return None
+    else:
+        route_overview_df = pd.DataFrame(response_data['routeOverview'])
+        route_details_df = pd.DataFrame(response_data['routeDetails'])
+        external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        return route_overview_df, route_details_df, external_orders_df
 
 def reverse_milkrun_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)

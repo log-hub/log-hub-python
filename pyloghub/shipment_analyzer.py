@@ -1,13 +1,15 @@
 import os
-import requests
 import pandas as pd
-import time
 import logging
 import warnings
 from typing import Optional, Dict, Tuple
-from pyloghub.save_to_platform import save_scenario_check
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
+from save_to_platform import save_scenario_check
+from input_data_validation import convert_dates, convert_to_string, convert_to_float, validate_boolean, convert_df_to_dict_excluding_nan
+from sending_requests import post_method, create_headers, create_url
 
-def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform shipment analysis based on shipments, cost adjustments, consolidation settings, surcharges, and parameters.
 
@@ -72,28 +74,6 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
                                     Returns None if the process fails.
     """
 
-    def convert_dates(df, date_columns):
-        for col in date_columns:
-            df[col] = pd.to_datetime(df[col]).dt.strftime('%Y-%m-%d')
-        return df
-
-    # Convert date columns to string format (YYYY-MM-DD)
-    date_columns = ['shippingDate', 'expectedDeliveryDate', 'actualDeliveryDate']
-    shipments = convert_dates(shipments, date_columns)
-
-    def convert_to_string(df, string_columns):
-        for col in string_columns:
-            df[col] = df[col].astype(str)
-        return df
-
-    def convert_to_float(df, float_columns):
-        for col in float_columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-        return df
-
-    def validate_boolean(value):
-        return isinstance(value, bool)
-
     # Convert date columns to string format (YYYY-MM-DD)
     date_columns = ['shippingDate', 'expectedDeliveryDate', 'actualDeliveryDate']
     shipments = convert_dates(shipments, date_columns)
@@ -108,60 +88,41 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
     # Convert numeric columns to float
     numeric_columns = ['weight', 'volume', 'pallets', 'shipmentValue', 'freightCosts']
     shipments = convert_to_float(shipments, numeric_columns)
-    costAdjustment = convert_to_float(costAdjustment, ['factor', 'flatOnTop'])
+    cost_adjustment = convert_to_float(cost_adjustment, ['factor', 'flatOnTop'])
     consolidation = convert_to_float(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'])
     surcharges = convert_to_float(surcharges, ['flatOnTop'])
+    shipments = convert_df_to_dict_excluding_nan(shipments, numeric_columns)
+    cost_adjustment = convert_df_to_dict_excluding_nan(cost_adjustment, ['factor', 'flatOnTop'])
+    consolidation = convert_df_to_dict_excluding_nan(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'])
+    surcharges = convert_df_to_dict_excluding_nan(surcharges, ['flatOnTop'])
 
     # Validate boolean parameter
     if 'consolidation' in parameters and not validate_boolean(parameters['consolidation']):
         logging.error("Invalid type for 'consolidation' in parameters. It should be boolean.")
         return None
+    if any(df is None for df in [shipments, cost_adjustment, consolidation,surcharges]):
+        return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/shipmentanalyzerplus"
+    url = create_url("shipmentanalyzerplus")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
-        "shipments": shipments.to_dict(orient='records'),
-        "costAdjustment": costAdjustment.to_dict(orient='records'),
-        "consolidation": consolidation.to_dict(orient='records'),
-        "surcharges": surcharges.to_dict(orient='records'),
+        "shipments": shipments,
+        "costAdjustment": cost_adjustment,
+        "consolidation": consolidation,
+        "surcharges": surcharges,
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                shipments_df = pd.DataFrame(response_data['shipments'])
-                transports_df = pd.DataFrame(response_data['transports'])
-                return shipments_df, transports_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in shipment analyzer API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
-
+    response_data = post_method(url, payload, headers, "shipment analyzer plus")
+    if response_data is None:
+        return None
+    else:
+        shipments_df = pd.DataFrame(response_data['shipments'])
+        transports_df = pd.DataFrame(response_data['transports'])
+        return shipments_df, transports_df
+           
 def forward_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'shipmentAnalyzerAddresses.xlsx')
@@ -177,7 +138,7 @@ def forward_shipment_analyzer_sample_data():
     return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters}
 
 
-def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse shipment analysis based on shipments, cost adjustments, consolidation settings, surcharges, and parameters.
 
@@ -233,25 +194,6 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
                                       Returns None if the process fails.
     """
 
-    # Conversion functions (similar to forward_shipment_analyzer)
-    def convert_dates(df, date_columns):
-        for col in date_columns:
-            df[col] = pd.to_datetime(df[col]).dt.strftime('%Y-%m-%d')
-        return df
-
-    def convert_to_string(df, string_columns):
-        for col in string_columns:
-            df[col] = df[col].astype(str)
-        return df
-
-    def convert_to_float(df, float_columns):
-        for col in float_columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-        return df
-
-    def validate_boolean(value):
-        return isinstance(value, bool)
-
     # Convert data types according to the schema
     date_columns = ['shippingDate', 'expectedDeliveryDate', 'actualDeliveryDate']
     shipments = convert_dates(shipments, date_columns)
@@ -262,57 +204,42 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, costAdjustment: pd.DataFr
     float_columns = ['fromLatitude', 'fromLongitude', 'toLatitude', 'toLongitude', 'weight', 'volume', 'pallets', 'shipmentValue', 'freightCosts']
     shipments = convert_to_float(shipments, float_columns)
 
-    # Convert and validate other dataframes as in forward_shipment_analyzer...
+    cost_adjustment = convert_to_float(cost_adjustment, ['factor', 'flatOnTop'])
+    consolidation = convert_to_float(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'])
+    surcharges = convert_to_float(surcharges, ['flatOnTop'])
+    shipments = convert_df_to_dict_excluding_nan(shipments, float_columns)
+    cost_adjustment = convert_df_to_dict_excluding_nan(cost_adjustment, ['factor', 'flatOnTop'])
+    consolidation = convert_df_to_dict_excluding_nan(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'])
+    surcharges = convert_df_to_dict_excluding_nan(surcharges, ['flatOnTop'])
 
     # Validate boolean parameter
     if 'consolidation' in parameters and not validate_boolean(parameters['consolidation']):
         logging.error("Invalid type for 'consolidation' in parameters. It should be boolean.")
         return None
+    if any(df is None for df in [shipments, cost_adjustment, consolidation,surcharges]):
+        return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reverseshipmentanalyzerplus"
+    url = create_url("reverseshipmentanalyzerplus")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
-        "shipments": shipments.to_dict(orient='records'),
-        "costAdjustment": costAdjustment.to_dict(orient='records'),
-        "consolidation": consolidation.to_dict(orient='records'),
-        "surcharges": surcharges.to_dict(orient='records'),
+        "shipments": shipments,
+        "costAdjustment": cost_adjustment,
+        "consolidation": consolidation,
+        "surcharges": surcharges,
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                shipments_df = pd.DataFrame(response_data['shipments'])
-                transports_df = pd.DataFrame(response_data['transports'])
-                return shipments_df, transports_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in shipment analyzer API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    
+    response_data = post_method(url, payload, headers, "reverse shipment analyzer plus")
+    if response_data is None:
+        return None
+    else:
+        shipments_df = pd.DataFrame(response_data['shipments'])
+        transports_df = pd.DataFrame(response_data['transports'])
+        return shipments_df, transports_df
+            
 def reverse_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'shipmentAnalyzerReverse.xlsx')

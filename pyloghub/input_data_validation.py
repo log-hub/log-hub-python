@@ -22,6 +22,16 @@ def convert_dates(df, date_columns):
             df[col] = pd.to_datetime(df[col]).dt.strftime('%Y-%m-%d')
         return df
 
+def convert_to_string(df, string_columns):
+        for col in string_columns:
+            df[col] = df[col].astype(str)
+        return df
+
+def convert_to_float(df, float_columns):
+        for col in float_columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+        return df
+
 def convert_df_to_dict_excluding_nan(df, columns_to_check):
         """
         Convert a DataFrame to a list of dictionaries, excluding specified keys if their values are NaN.
@@ -41,3 +51,12 @@ def convert_df_to_dict_excluding_nan(df, columns_to_check):
                     record[column] = value
             records.append(record)
         return records
+
+def convert_timestamps(df):
+        for col in df.columns:
+            if pd.api.types.is_datetime64_any_dtype(df[col]):
+                df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        return df
+
+def validate_boolean(value):
+        return isinstance(value, bool)

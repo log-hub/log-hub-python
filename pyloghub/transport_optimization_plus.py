@@ -1,11 +1,13 @@
 import os
-import requests
+
 import pandas as pd
-import time
-import logging
 import warnings
 from typing import Optional, Dict, Tuple
-from pyloghub.save_to_platform import save_scenario_check
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
+from save_to_platform import save_scenario_check
+from input_data_validation import convert_timestamps, validate_and_convert_data_types
+from sending_requests import post_method, create_headers, create_url
 
 def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
@@ -76,33 +78,11 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
                                                      and external orders. Returns None if the process fails.
     """
 
-    def convert_timestamps(df):
-        for col in df.columns:
-            if pd.api.types.is_datetime64_any_dtype(df[col]):
-                df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        return df
-
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     vehicles = convert_timestamps(vehicles)
     jobs = convert_timestamps(jobs)
     timeWindowProfiles = convert_timestamps(timeWindowProfiles)
     breaks = convert_timestamps(breaks)
-
-    def validate_and_convert_data_types(df, required_columns):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        for col, dtype in required_columns.items():
-            if col not in df.columns:
-                logging.error(f"Missing required column: {col}")
-                return None
-            try:
-                df[col] = df[col].astype(dtype)
-            except Exception as e:
-                logging.error(f"Data type conversion failed for column '{col}': {e}")
-                return None
-        return df
 
     # Define expected columns and data types for each DataFrame
     vehicle_columns = {
@@ -143,15 +123,9 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
     if any(df is None for df in [vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/transportoptimizationplus"
+    url = create_url("transportoptimizationplus")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         "vehicles": vehicles.to_dict(orient='records'),
@@ -161,33 +135,16 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                route_overview_df = pd.DataFrame(response_data['routeOverview'])
-                route_details_df = pd.DataFrame(response_data['routeDetails'])
-                external_orders_df = pd.DataFrame(response_data['externalOrders'])
-                return route_overview_df, route_details_df, external_orders_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in transport optimization API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    
+    response_data = post_method(url, payload, headers, "transport optimization plus")
+    if response_data is None:
+        return None
+    else:
+        route_overview_df = pd.DataFrame(response_data['routeOverview'])
+        route_details_df = pd.DataFrame(response_data['routeDetails'])
+        external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        return route_overview_df, route_details_df, external_orders_df
+           
 def forward_transport_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'transportPlusAddresses.xlsx')
@@ -274,33 +231,11 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
                                                      and external orders. Returns None if the process fails.
     """
 
-    def convert_timestamps(df):
-        for col in df.columns:
-            if pd.api.types.is_datetime64_any_dtype(df[col]):
-                df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        return df
-
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     vehicles = convert_timestamps(vehicles)
     jobs = convert_timestamps(jobs)
     timeWindowProfiles = convert_timestamps(timeWindowProfiles)
     breaks = convert_timestamps(breaks)
-
-    def validate_and_convert_data_types(df, required_columns):
-        """
-        Validate and convert the data types of the DataFrame columns.
-        Log an error message if a required column is missing or if conversion fails.
-        """
-        for col, dtype in required_columns.items():
-            if col not in df.columns:
-                logging.error(f"Missing required column: {col}")
-                return None
-            try:
-                df[col] = df[col].astype(dtype)
-            except Exception as e:
-                logging.error(f"Data type conversion failed for column '{col}': {e}")
-                return None
-        return df
 
     # Define expected columns and data types for each DataFrame
     vehicle_columns = {
@@ -337,16 +272,9 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
     if any(df is None for df in [vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversetransportoptimizationplus"
+    url  =create_url("reversetransportoptimizationplus")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
-
+    headers = create_headers(api_key)
     payload = {
         "vehicles": vehicles.to_dict(orient='records'),
         "jobs": jobs.to_dict(orient='records'),
@@ -355,33 +283,14 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                route_overview_df = pd.DataFrame(response_data['routeOverview'])
-                route_details_df = pd.DataFrame(response_data['routeDetails'])
-                external_orders_df = pd.DataFrame(response_data['externalOrders'])
-                return route_overview_df, route_details_df, external_orders_df
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in reverse transport optimization API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "reverse transport optimization plus")
+    if response_data is None:
+        return None
+    else:
+        route_overview_df = pd.DataFrame(response_data['routeOverview'])
+        route_details_df = pd.DataFrame(response_data['routeDetails'])
+        external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        return route_overview_df, route_details_df, external_orders_df
 
 def reverse_transport_optimization_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -403,3 +312,10 @@ def reverse_transport_optimization_plus_sample_data():
     }
     return {'vehicles': vehicles_df, 'shipments': shipments_df, 'timeWindowProfiles': time_window_profiles_df,
              'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
+    sample1 = reverse_transport_optimization_plus_sample_data()
+
+    out = reverse_transport_optimization_plus(sample1['vehicles'], sample1['shipments'], sample1['timeWindowProfiles'], sample1['breaks'], sample1['parameters'], api_key_dev)
