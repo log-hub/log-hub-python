@@ -48,3 +48,29 @@ def post_method(url, payload, headers, app_name):
 
     logging.error("Max retries exceeded.")
     return None
+
+def get_method(api_server, url, headers, app_name):
+
+    #api_server = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
+    
+    retry_delay = 15  # seconds
+    timeout = 3600
+    start_time = time.time()
+    while True:
+        response = requests.get(api_server + url, headers = headers)
+        if response.status_code == 200:
+            response_data = response.json()
+            if response_data['calculationRunning']:
+                elapsed_time = time.time() - start_time
+                if elapsed_time > timeout:
+                    logging.error("Timeout of one hour is reached with the calculation still running. Try running the calculation again.")
+                    return None
+                
+                logging.info(f"Calculation is still running with the progress {response_data['progress']}%.")
+                time.sleep(retry_delay)
+            else:
+                return response_data
+        else:
+            logging.error(f"Error in {app_name} API: {response.status_code} - {response.text}")
+            return None
+    

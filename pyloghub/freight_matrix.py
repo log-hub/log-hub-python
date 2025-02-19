@@ -5,7 +5,7 @@ import warnings
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-from input_data_validation import convert_df_to_dict_excluding_nan
+from input_data_validation import convert_df_to_dict_excluding_nan, convert_to_float
 from sending_requests import post_method, create_headers, create_url
 
 def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
@@ -52,9 +52,7 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     """
     
     float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
-    for column in float_columns:
-        if column in shipments_df.columns:
-            shipments_df[column] = pd.to_numeric(shipments_df[column], errors='coerce')
+    shipments_df = convert_to_float(shipments_df, float_columns)
 
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
@@ -118,9 +116,7 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     """
 
     float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
-    for column in float_columns:
-        if column in shipments_df.columns:
-            shipments_df[column] = pd.to_numeric(shipments_df[column], errors='coerce')
+    shipments_df = convert_to_float(shipments_df, float_columns)
 
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)

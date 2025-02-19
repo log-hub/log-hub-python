@@ -1,43 +1,16 @@
 import os
-import requests
 import pandas as pd
-import time
 import logging
-from typing import Optional, Tuple
 import warnings
 logging.basicConfig(level=logging.INFO)
+from typing import Optional, Tuple
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
+from input_data_validation import exclude_nan_depending_on_dtype
+from sending_requests import post_method, create_headers, create_url, get_method
 
-def convert_df_to_dict_excluding_nan(df, columns_to_check):
-    """
-    Convert a DataFrame to a list of dictionaries, excluding specified keys if their values are NaN.
-
-    Parameters:
-    df (pd.DataFrame): The DataFrame to convert.
-    columns_to_check (list): List of column names to check for NaN values.
-
-    Returns:
-    list: A list of dictionaries representing the rows of the DataFrame, excluding keys for NaN values in specified columns.
-    """
-    records = []
-    for ind, row in df.iterrows():
-        record = {}
-        for column, value in row.items():
-            if column not in columns_to_check:
-                logging.error(f"Missing required column: {column}")
-                return None
-            elif columns_to_check[column] == 'float':
-                df.loc[ind, column] = pd.to_numeric(df[column][ind], errors='coerce')
-                if pd.notna(df[column][ind]):
-                    record[column] = float(df[column][ind])
-            elif columns_to_check[column] == 'str':
-                df.loc[ind, column] = str(df[column][ind])
-                record[column] = df[column].loc[ind]
-        records.append(record)
-    return records
-
-
-def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> dict:
+def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform network design plus based on factories, warehouses, customers, product segments, transport costs, transport costs rules, stepwise functions for weight and volume, and distance limits.
 
@@ -151,7 +124,7 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
                             'scenarioName' (str).
 
     Returns:
-    dict: A dictionary containing url and apiServer that should be passed to a GET method in order to get output tables, along with the explanation.
+    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Four dataframes with the information about opened warehouses, factory and customer assignment, and solution kpis. Returns None if the process fails.
     """
     factories_columns = {
         'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
@@ -183,28 +156,22 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
         }
 
     # Validate and convert data types
-    factories = convert_df_to_dict_excluding_nan(factories, factories_columns)
-    warehouses = convert_df_to_dict_excluding_nan(warehouses, warehouses_columns)
-    customers = convert_df_to_dict_excluding_nan(customers, customers_columns)
-    product_segments = convert_df_to_dict_excluding_nan(product_segments, product_segments_columns)
-    transport_costs = convert_df_to_dict_excluding_nan(transport_costs, transport_costs_columns)
-    transport_costs_rules = convert_df_to_dict_excluding_nan(transport_costs_rules, transport_costs_rules_columns)
-    stepwise_function_weight = convert_df_to_dict_excluding_nan(stepwise_function_weight, stepwise_function_weight_columns)
-    stepwise_function_volume = convert_df_to_dict_excluding_nan(stepwise_function_volume, stepwise_function_volume_columns)
-    distance_limits = convert_df_to_dict_excluding_nan(distance_limits, distance_limits_columns)
+    factories = exclude_nan_depending_on_dtype(factories, factories_columns)
+    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
+    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
+    product_segments = exclude_nan_depending_on_dtype(product_segments, product_segments_columns)
+    transport_costs = exclude_nan_depending_on_dtype(transport_costs, transport_costs_columns)
+    transport_costs_rules = exclude_nan_depending_on_dtype(transport_costs_rules, transport_costs_rules_columns)
+    stepwise_function_weight = exclude_nan_depending_on_dtype(stepwise_function_weight, stepwise_function_weight_columns)
+    stepwise_function_volume = exclude_nan_depending_on_dtype(stepwise_function_volume, stepwise_function_volume_columns)
+    distance_limits = exclude_nan_depending_on_dtype(distance_limits, distance_limits_columns)
 
     if any(df is None for df in [factories, warehouses, customers, product_segments, transport_costs, transport_costs_rules, stepwise_function_weight, stepwise_function_volume, distance_limits]):
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/networkdesignpluslongrun"
+    url = create_url("networkdesignpluslongrun")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         'factories': factories,
@@ -220,30 +187,20 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                result = response_data['result']
-                return result
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in network design plus API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers, "network design plus")
+    if response_data is None:
+        return None
+    else:
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "network design plus")
+        if get_method_result is None:
+            return None
+        else:
+            open_warehouses = pd.DataFrame(get_method_result['openWarehouses'])
+            factory_assignment = pd.DataFrame(get_method_result['factoryAssignment'])
+            customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
+            solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            return open_warehouses, factory_assignment, customer_assignment,solution_kpis
 
 def forward_network_design_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -276,7 +233,7 @@ def forward_network_design_plus_sample_data():
     }
     return {'factories': factories_df, 'warehouses': warehouses_df, 'customers': customers_df, 'productSegments': product_segments_df, 'transportCosts': transport_costs_df, 'transportCostsRules': transport_costs_rules_df, 'stepwiseCostFunctionWeight': stepwise_function_weight_df, 'stepwiseCostFunctionVolume': stepwise_function_volume_df, 'distanceLimits': distance_limits_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> dict:
+def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse network design plus based on factories, warehouses, customers, product segments, transport costs, transport costs rules, stepwise functions for weight and volume, and distance limits.
 
@@ -381,7 +338,7 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
                             'scenarioName' (str).
 
     Returns:
-    dict: A dictionary containing url and apiServer that should be passed to a GET method in order to get output tables, along with the explanation. 
+    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Four dataframes with the information about opened warehouses, factory and customer assignment, and solution kpis. Returns None if the process fails.
     """
     factories_columns = {
         'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'minimumFtlCosts': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'minimumLtlCosts': 'float', 'outboundCostsHalfFtlPercent': 'float'
@@ -412,28 +369,22 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
         }
 
     # Validate and convert data types
-    factories = convert_df_to_dict_excluding_nan(factories, factories_columns)
-    warehouses = convert_df_to_dict_excluding_nan(warehouses, warehouses_columns)
-    customers = convert_df_to_dict_excluding_nan(customers, customers_columns)
-    product_segments = convert_df_to_dict_excluding_nan(product_segments, product_segments_columns)
-    transport_costs = convert_df_to_dict_excluding_nan(transport_costs, transport_costs_columns)
-    transport_costs_rules = convert_df_to_dict_excluding_nan(transport_costs_rules, transport_costs_rules_columns)
-    stepwise_function_weight = convert_df_to_dict_excluding_nan(stepwise_function_weight, stepwise_function_weight_columns)
-    stepwise_function_volume = convert_df_to_dict_excluding_nan(stepwise_function_volume, stepwise_function_volume_columns)
-    distance_limits = convert_df_to_dict_excluding_nan(distance_limits, distance_limits_columns)
+    factories = exclude_nan_depending_on_dtype(factories, factories_columns)
+    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
+    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
+    product_segments = exclude_nan_depending_on_dtype(product_segments, product_segments_columns)
+    transport_costs = exclude_nan_depending_on_dtype(transport_costs, transport_costs_columns)
+    transport_costs_rules = exclude_nan_depending_on_dtype(transport_costs_rules, transport_costs_rules_columns)
+    stepwise_function_weight = exclude_nan_depending_on_dtype(stepwise_function_weight, stepwise_function_weight_columns)
+    stepwise_function_volume = exclude_nan_depending_on_dtype(stepwise_function_volume, stepwise_function_volume_columns)
+    distance_limits = exclude_nan_depending_on_dtype(distance_limits, distance_limits_columns)
 
     if any(df is None for df in [factories, warehouses, customers, product_segments, transport_costs, transport_costs_rules, stepwise_function_weight, stepwise_function_volume, distance_limits]):
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reversenetworkdesignpluslongrun"
+    url = create_url("reversenetworkdesignpluslongrun")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         'factories': factories,
@@ -449,31 +400,21 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                result = response_data['result']
-                return result
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in reverse network design plus API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
-
+    response_data = post_method(url, payload, headers, "network design plus")
+    if response_data is None:
+        return None
+    else:
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "network design plus")
+        if get_method_result is None:
+            return None
+        else:
+            open_warehouses = pd.DataFrame(get_method_result['openWarehouses'])
+            factory_assignment = pd.DataFrame(get_method_result['factoryAssignment'])
+            customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
+            solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            return open_warehouses, factory_assignment, customer_assignment,solution_kpis
+        
 def reverse_network_design_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'NetworkDesignPlusReverse.xlsx')
@@ -504,26 +445,5 @@ def reverse_network_design_plus_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'factories': factories_df, 'warehouses': warehouses_df, 'customers': customers_df, 'productSegments': product_segments_df, 'transportCosts': transport_costs_df, 'transportCostsRules': transport_costs_rules_df, 'stepwiseCostFunctionWeight': stepwise_function_weight_df, 'stepwiseCostFunctionVolume': stepwise_function_volume_df, 'distanceLimits': distance_limits_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    workspace_id = "7cb180c0d9e15db1a71342df559d19d473c539ad"
-
-    sample = forward_network_design_plus_sample_data()
-
-    factories = sample['factories']
-    warehouses = sample['warehouses']
-    customers = sample['customers']
-    prod_segments = sample['productSegments']
-    transport_costs = sample['transportCosts']
-    transport_costs_rules = sample['transportCostsRules']
-    stepwise_weight = sample['stepwiseCostFunctionWeight']
-    stepwise_volume = sample['stepwiseCostFunctionVolume']
-    distance_limits = sample['distanceLimits']
-    par = sample['parameters']
-    save_scenario = sample['saveScenarioParameters']
-
-    out = forward_network_design_plus(factories, warehouses, customers, prod_segments, transport_costs, transport_costs_rules, stepwise_weight, stepwise_volume, distance_limits, par, api_key_dev, save_scenario)
 
 

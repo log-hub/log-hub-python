@@ -1,43 +1,16 @@
 import os
-import requests
 import pandas as pd
-import time
 import logging
-from typing import Optional, Tuple
 import warnings
 logging.basicConfig(level=logging.INFO)
+from typing import Optional, Tuple
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
+from input_data_validation import exclude_nan_depending_on_dtype
+from sending_requests import post_method, create_headers, create_url, get_method
 
-def convert_df_to_dict_excluding_nan(df, columns_to_check):
-    """
-    Convert a DataFrame to a list of dictionaries, excluding specified keys if their values are NaN.
-
-    Parameters:
-    df (pd.DataFrame): The DataFrame to convert.
-    columns_to_check (list): List of column names to check for NaN values.
-
-    Returns:
-    list: A list of dictionaries representing the rows of the DataFrame, excluding keys for NaN values in specified columns.
-    """
-    records = []
-    for ind, row in df.iterrows():
-        record = {}
-        for column, value in row.items():
-            if column not in columns_to_check:
-                logging.error(f"Missing required column: {column}")
-                return None
-            elif columns_to_check[column] == 'float':
-                df.loc[ind, column] = pd.to_numeric(df[column][ind], errors='coerce')
-                if pd.notna(df[column][ind]):
-                    record[column] = float(df[column][ind])
-            elif columns_to_check[column] == 'str':
-                df.loc[ind, column] = str(df[column][ind])
-                record[column] = df[column].loc[ind]
-        records.append(record)
-    return records
-
-
-def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> dict:
+def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform location planning based on customers, warehouses, and costs adjustment.
 
@@ -88,7 +61,7 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
                             'scenarioName' (str).
 
     Returns:
-    dict: A dictionary containing url and apiServer that should be passed to a GET method in order to get output tables, along with the explanation.
+    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three dataframes with the information about opened warehouses, customer assignment, and solution kpis. Returns None if the process fails.
     """
     customers_columns = {
         'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'
@@ -101,22 +74,16 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
         }
 
     # Validate and convert data types
-    warehouses = convert_df_to_dict_excluding_nan(warehouses, warehouses_columns)
-    customers = convert_df_to_dict_excluding_nan(customers, customers_columns)
-    costs_adjustments = convert_df_to_dict_excluding_nan(costs_adjustments, costs_adjustments_columns)
+    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
+    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
+    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_columns)
 
     if any(df is None for df in [warehouses, customers, costs_adjustments]):
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/locationplanninglongrun"
+    url = create_url("locationplanninglongrun")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         'customers': customers,
@@ -126,30 +93,19 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                result = response_data['result']
-                return result
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in location planning API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers, "location planning")
+    if response_data is None:
+        return None
+    else:
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "location planning")
+        if get_method_result is None:
+            return None
+        else:
+            open_warehouses = pd.DataFrame(get_method_result['openWarehouses'])
+            customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
+            solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            return open_warehouses, customer_assignment,solution_kpis
 
 def forward_location_planning_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -163,8 +119,8 @@ def forward_location_planning_sample_data():
         "streetLevel": False,
         "weightUnit": "kg",
         "volumeUnit": "cbm",
-        "minWarehouses": 1,
-        "maxWarehouses": 2
+        "minWarehouses": 5,
+        "maxWarehouses": 6
 
     }
     save_scenario = {
@@ -175,7 +131,7 @@ def forward_location_planning_sample_data():
     }
     return {'warehouses': warehouses_df, 'customers': customers_df, 'costsAdjustments': costs_adjustments_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> dict:
+def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse location planning based on customers, warehouses, and costs adjustment.
 
@@ -220,7 +176,7 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
                             'scenarioName' (str).
 
     Returns:
-    dict: A dictionary containing url and apiServer that should be passed to a GET method in order to get output tables, along with the explanation.
+    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three dataframes with the information about opened warehouses, customer assignment, and solution kpis. Returns None if the process fails.
     """
     customers_columns = {
         'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'
@@ -233,22 +189,16 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
         }
 
     # Validate and convert data types
-    warehouses = convert_df_to_dict_excluding_nan(warehouses, warehouses_columns)
-    customers = convert_df_to_dict_excluding_nan(customers, customers_columns)
-    costs_adjustments = convert_df_to_dict_excluding_nan(costs_adjustments, costs_adjustments_columns)
+    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
+    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
+    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_columns)
 
     if any(df is None for df in [warehouses, customers, costs_adjustments]):
         return None
     
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
-    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}/api/applications/v1/reverselocationplanninglongrun"
+    url = create_url("reverselocationplanninglongrun")
     
-    headers = {
-        "accept": "application/json",
-        "authorization": f"apikey {api_key}",
-        "content-type": "application/json"
-    }
+    headers = create_headers(api_key)
 
     payload = {
         'customers': customers,
@@ -258,30 +208,19 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    max_retries = 3
-    retry_delay = 15  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code == 200:
-                response_data = response.json()
-                result = response_data['result']
-                return result
-            elif response.status_code == 429:
-                logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-            else:
-                logging.error(f"Error in reverse location planning API: {response.status_code} - {response.text}")
-                return None
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            if attempt < max_retries - 1:
-                logging.info(f"Retrying in {retry_delay} seconds.")
-                time.sleep(retry_delay)
-
-    logging.error("Max retries exceeded.")
-    return None
+    response_data = post_method(url, payload, headers, "reverse location planning")
+    if response_data is None:
+        return None
+    else:
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "reverse location planning")
+        if get_method_result is None:
+            return None
+        else:
+            open_warehouses = pd.DataFrame(get_method_result['openWarehouses'])
+            customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
+            solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            return open_warehouses, customer_assignment,solution_kpis
 
 def reverse_location_planning_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -295,8 +234,8 @@ def reverse_location_planning_sample_data():
         "streetLevel": False,
         "weightUnit": "kg",
         "volumeUnit": "cbm",
-        "minWarehouses": 1,
-        "maxWarehouses": 2
+        "minWarehouses": 5,
+        "maxWarehouses": 6
 
     }
     save_scenario = {
@@ -306,20 +245,3 @@ def reverse_location_planning_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'warehouses': warehouses_df, 'customers': customers_df, 'costsAdjustments': costs_adjustments_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    workspace_id = "7cb180c0d9e15db1a71342df559d19d473c539ad"
-
-    sample = reverse_location_planning_sample_data()
-
-    customer = sample['customers']
-    warehouses = sample['warehouses']
-    costs_adjustments = sample['costsAdjustments']
-    par = sample['parameters']
-    save_scenario = sample['saveScenarioParameters']
-    save_scenario['saveScenario'] = True
-    save_scenario['workspaceId'] = workspace_id
-    save_scenario['scenarioName'] = 'Location planning'
-
-    out = reverse_location_planning(customer, warehouses, costs_adjustments, par, api_key_dev, save_scenario)
