@@ -312,10 +312,3 @@ def reverse_transport_optimization_plus_sample_data():
     }
     return {'vehicles': vehicles_df, 'shipments': shipments_df, 'timeWindowProfiles': time_window_profiles_df,
              'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    sample1 = reverse_transport_optimization_plus_sample_data()
-
-    out = reverse_transport_optimization_plus(sample1['vehicles'], sample1['shipments'], sample1['timeWindowProfiles'], sample1['breaks'], sample1['parameters'], api_key_dev)

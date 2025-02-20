@@ -220,7 +220,7 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
             open_warehouses = pd.DataFrame(get_method_result['openWarehouses'])
             customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
-            return open_warehouses, customer_assignment,solution_kpis
+            return open_warehouses, customer_assignment, solution_kpis
 
 def reverse_location_planning_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
