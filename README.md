@@ -181,6 +181,13 @@ reverse_distance_calculation_df = reverse_distance_calculation(geocode_data_df, 
 reverse_distance_calculation_df.head()
 ```
 
+<p align="left">
+  <img src="../examples\assets\supply_chain_maps.png" alt="Header Image"  width="980"/>
+</p>
+
+#### Creating a Supply Chain Map
+In order to create a Supply Chain Map, a Workspace Id is required. Please, go to the platform and click on the "three dots" next to the workspace in which you want to save the map. Click on "Copy Workspace Id" and paste the corresponding workspace id instead of "YOUR WORKSPACE ID". If there are no workspaces, please create one using the GUI.
+
 #### Forward Supply Chain Map Locations
 Creating a map of locations based on their addresses.
 
@@ -376,6 +383,10 @@ parameters = sample_data['parameters']
 assigned_geocodes_df, centers_df = reverse_center_of_gravity(coordinates_df, parameters, api_key)
 ```
 
+<p align="left">
+  <img src="../examples\assets\fixed_center_of_gravity.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Forward Fixed Center of Gravity
 Calculating the optimal locations for new warehouses based on the address location of customers, their respective weights and existing warehouses.
 
@@ -414,19 +425,12 @@ display(assigned_geocodes_df.head())
 display(centers_df.head())
 ```
 
-from IPython.display import display
-from pyloghub.fixed_center_of_gravity import reverse_fixed_center_of_gravity_sample_data, reverse_fixed_center_of_gravity
+<p align="left">
+  <img src="../examples\assets\center_of_gravity_plus.png" alt="Header Image"  width="980"/>
+</p>
 
-sample_data = reverse_fixed_center_of_gravity_sample_data()
-
-customers_df = sample_data['customers']
-fixed_centers_df = sample_data['fixedCenters']
-parameters =sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
-
-assigned_geocodes_df, centers_df = reverse_fixed_center_of_gravity(customers_df, fixed_centers_df, parameters, api_key, save_scenario)
-display(assigned_geocodes_df.head())
-display(centers_df.head())
+#### Forward Center of Gravity Plus
+Calculating the optimal location for new warehouses given the address location of customers and their respective weights, volumes and revenues.
 
 ```python
 from IPython.display import display
@@ -460,6 +464,10 @@ assigned_geocodes_df, centers_df = reverse_center_of_gravity_plus(coordinates_df
 display(assigned_geocodes_df.head())
 display(centers_df.head())
 ```
+
+<p align="left">
+  <img src="../examples\assets\nearest_warehouses.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Forward Nearest Warehouses
 Calculating a given number of the nearest warehouses from a customer address.
@@ -496,6 +504,10 @@ nearest_warehouses_df, unassigned_df = reverse_nearest_warehouses(warehouses_df,
 display(nearest_warehouses_df.head())
 display(unassigned_df.head())
 ```
+
+<p align="left">
+  <img src="../examples\assets\network_design_plus.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Forward Network Design Plus
 Finds the optimal number and locations of warehouses based on transport, handling and fixed warehouse costs.
@@ -550,6 +562,10 @@ display(factory_assignement.head())
 display(customer_assignement.head())
 display(solution_kpis.head())
 ```
+
+<p align="left">
+  <img src="../examples\assets\location_planning.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Forward Location Planning
 Optimizing flows from the warehouses to the customers.
@@ -765,13 +781,17 @@ from pyloghub.freight_matrix import reverse_freight_matrix, reverse_freight_matr
 
 sample_data = reverse_freight_matrix_sample_data()
 shipments_df = sample_data['shipments']
-matrix_id = "b27926604e2ac3af4de90f414e027100792cb7de"
+matrix_id = "Your freight matrix id"
 
 evaluated_shipments_df = reverse_freight_matrix(shipments_df, matrix_id, api_key)
 evaluated_shipments_df.head()
 ```
 You can create a freight matrix on the Log-hub Platform. Therefore, please create a workspace and click within the workspace on "Create Freight Matrix". There you can provide the matrix a name, select the matrix type and define all other parameters. 
 To get the matrix id, please click on the "gear" icon. There you can copy & paste the matrix id that is needed in your API request.
+
+<p align="left">
+  <img src="../examples\assets\CO2_emissions.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Forward CO2 Emissions Road
 Calculating a CO2 footprint based on your shipments transported by road.
@@ -866,6 +886,9 @@ save_scenario = sample_data['saveScenarioParameters']
 freight_emissions_df = forward_freight_shipment_emissions_sea(un_locodes_df, parameters, api_key, save_scenario)
 freight_emissions_df.head()
 ```
+<p align="left">
+  <img src="../examples\assets\demand_forecasting.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Demand Forecasting
 Predicting future demand for your products based on the past demand data.
