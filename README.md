@@ -182,7 +182,7 @@ reverse_distance_calculation_df.head()
 ```
 
 <p align="left">
-  <img src="../examples\assets\supply_chain_maps.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\supply_chain_maps.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Creating a Supply Chain Map
@@ -384,7 +384,7 @@ assigned_geocodes_df, centers_df = reverse_center_of_gravity(coordinates_df, par
 ```
 
 <p align="left">
-  <img src="../examples\assets\fixed_center_of_gravity.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\fixed_center_of_gravity.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward Fixed Center of Gravity
@@ -426,7 +426,7 @@ display(centers_df.head())
 ```
 
 <p align="left">
-  <img src="../examples\assets\center_of_gravity_plus.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\center_of_gravity_plus.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward Center of Gravity Plus
@@ -466,7 +466,7 @@ display(centers_df.head())
 ```
 
 <p align="left">
-  <img src="../examples\assets\nearest_warehouses.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\nearest_warehouses.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward Nearest Warehouses
@@ -506,7 +506,7 @@ display(unassigned_df.head())
 ```
 
 <p align="left">
-  <img src="../examples\assets\network_design_plus.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\network_design_plus.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward Network Design Plus
@@ -564,7 +564,7 @@ display(solution_kpis.head())
 ```
 
 <p align="left">
-  <img src="../examples\assets\location_planning.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\location_planning.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward Location Planning
@@ -790,7 +790,7 @@ You can create a freight matrix on the Log-hub Platform. Therefore, please creat
 To get the matrix id, please click on the "gear" icon. There you can copy & paste the matrix id that is needed in your API request.
 
 <p align="left">
-  <img src="../examples\assets\CO2_emissions.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\CO2_emissions.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward CO2 Emissions Road
@@ -887,7 +887,7 @@ freight_emissions_df = forward_freight_shipment_emissions_sea(un_locodes_df, par
 freight_emissions_df.head()
 ```
 <p align="left">
-  <img src="../examples\assets\demand_forecasting.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\demand_forecasting.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Demand Forecasting

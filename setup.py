@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='pyloghub',
-    version='0.1.3',
+    version='0.1.4',
     packages=find_packages(),
     description='The `pyloghub` package provides convinient access to various Log-hub API services for Supply Chain Visualization, Network Design Optimization, and Transport Optimization as well as access to the Log-hub platform data.',
     long_description=open('README.md').read(),

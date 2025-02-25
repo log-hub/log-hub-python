@@ -1,8 +1,5 @@
 import os
-import requests
 import pandas as pd
-import time
-import logging
 import warnings
 from typing import Optional
 import sys
