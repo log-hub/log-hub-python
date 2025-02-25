@@ -81,10 +81,10 @@ def create_the_button(workspace_id, api_key, entity_name):
     # Create a button
     button = widgets.Button(
         description="Open the map",
-        button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
+        button_style='succes',  # 'success', 'info', 'warning', 'danger' or ''
         tooltip='Click to open the map',
         icon='map',  # (FontAwesome names without the `fa-` prefix)
-        layout=widgets.Layout(width='200px', height='40px')
+        layout=widgets.Layout(width='200px', height='40px', border = 'none')
     )
     button.on_click(open_map)
 
