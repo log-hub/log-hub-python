@@ -2,7 +2,7 @@ import logging
 import os
 logging.basicConfig(level=logging.INFO)
 import webbrowser
-from IPython.display import display, HTML
+from IPython.display import display, Javascript
 import ipywidgets as widgets
 from pyloghub.sending_requests import get_workspace_entities
 
@@ -80,7 +80,7 @@ def create_the_button(workspace_id, api_key, entity_name):
 
     # Create a button
     button = widgets.Button(
-        description="Open the map",
+        description="Open the MAP",
         button_style='succes',  # 'success', 'info', 'warning', 'danger' or ''
         tooltip='Click to open the map',
         icon='map',  # (FontAwesome names without the `fa-` prefix)
@@ -89,19 +89,25 @@ def create_the_button(workspace_id, api_key, entity_name):
 
     button.on_click(open_map)
     display(button)
-
-def add_custom_css():
+    def add_custom_css():
         styles = """
-        <style>
-            .output_area {
-            background-color: black; /* Change background color */
-            border: 1px solid #ccc; /* Change border */
-            padding: 10px; /* Add padding */
-            border-radius: 5px; /* Add rounded corners */
-            }
-        </style>
+        .jp-OutputArea-output {
+        background-color: #f0f0f0 !important; /* Change background color */
+        border: 1px solid #ccc !important; /* Change border */
+        padding: 10px !important; /* Add padding */
+        border-radius: 5px !important; /* Add rounded corners */
+        }
         """
-        display(HTML(styles))
+        display(Javascript(f"""
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = `{styles}`;
+        document.getElementsByTagName('head')[0].appendChild(style);
+        """))
+
+    add_custom_css()
+    
+
 
 
 
