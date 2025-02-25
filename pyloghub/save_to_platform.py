@@ -1,4 +1,5 @@
 import logging
+import os
 logging.basicConfig(level=logging.INFO)
 
 # Configure logging
@@ -44,3 +45,24 @@ def save_scenario_check(save_scenario_data: dict, payload: dict, application_nam
         payload['saveScenarioParameters'].update({par: save_scenario_data.get(par, save_scenario_default_values[par])})
 
     return payload
+
+def get_map_link(data, scenario_name):
+
+    map_id = ''
+
+    for line in data:
+        if line['name'] == scenario_name and line['type'] == 'MAP':
+            map_id = line['_id']
+            workspace_id = line['workspaceId']
+            break
+    
+    if  map_id == '':
+        logging.info(f"There is not a map in the folder {scenario_name}")
+    
+    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+    url = f"{LOG_HUB_API_SERVER}/sca/platform/workspaces/" + workspace_id + "/maps/" + map_id
+    
+    return url
+
+
