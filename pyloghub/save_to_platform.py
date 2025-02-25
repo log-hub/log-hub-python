@@ -2,7 +2,7 @@ import logging
 import os
 logging.basicConfig(level=logging.INFO)
 import webbrowser
-from IPython.display import display
+from IPython.display import display, HTML
 import ipywidgets as widgets
 from pyloghub.sending_requests import get_workspace_entities
 
@@ -84,9 +84,9 @@ def create_the_button(workspace_id, api_key, entity_name):
         button_style='succes',  # 'success', 'info', 'warning', 'danger' or ''
         tooltip='Click to open the map',
         icon='map',  # (FontAwesome names without the `fa-` prefix)
-        layout=widgets.Layout(width='200px', height='40px', border = 'none')
+        layout=widgets.Layout(width='200px', height='50px')
     )
+
     button.on_click(open_map)
 
-    # Display the button
     display(button)
