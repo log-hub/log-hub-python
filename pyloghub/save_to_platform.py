@@ -1,6 +1,10 @@
 import logging
 import os
 logging.basicConfig(level=logging.INFO)
+import webbrowser
+from IPython.display import display
+import ipywidgets as widgets
+from pyloghub.sending_requests import get_workspace_entities
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -65,4 +69,24 @@ def get_map_link(data, scenario_name):
     
     return url
 
+def create_the_button(workspace_id, api_key, entity_name):
 
+    response_data = get_workspace_entities(workspace_id, api_key)
+    map_link = get_map_link(response_data['data'], entity_name)
+
+    # Define a function to open the map link
+    def open_map(b):
+        webbrowser.open(map_link)
+
+    # Create a button
+    button = widgets.Button(
+        description="Open the map",
+        button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
+        tooltip='Click to open the map',
+        icon='map',  # (FontAwesome names without the `fa-` prefix)
+        layout=widgets.Layout(width='200px', height='40px')
+    )
+    button.on_click(open_map)
+
+    # Display the button
+    display(button)
