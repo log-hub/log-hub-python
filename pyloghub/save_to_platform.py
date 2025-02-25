@@ -88,5 +88,21 @@ def create_the_button(workspace_id, api_key, entity_name):
     )
 
     button.on_click(open_map)
-
     display(button)
+
+def add_custom_css():
+        styles = """
+        <style>
+            .output_area {
+            background-color: black; /* Change background color */
+            border: 1px solid #ccc; /* Change border */
+            padding: 10px; /* Add padding */
+            border-radius: 5px; /* Add rounded corners */
+            }
+        </style>
+        """
+        display(HTML(styles))
+
+
+
+    
