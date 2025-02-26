@@ -47,14 +47,13 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     pd.DataFrame: A pandas DataFrame containing the results of the distance calculations. 
                   Returns None if the process fails.
     """
-    required_columns = {
-            'senderCountry': 'str', 'senderState': 'str', 'senderPostalCode': 'str',
-            'senderCity': 'str', 'senderStreet': 'str', 'recipientCountry': 'str',
-            'recipientState': 'str', 'recipientPostalCode': 'str',
-            'recipientCity': 'str', 'recipientStreet': 'str'
+    mandatory_columns = {
+            'senderCountry': 'str', 'recipientCountry': 'str'
         }
+    optional_columns = {'senderState': 'str', 'senderPostalCode': 'str', 'senderCity': 'str', 'senderStreet': 'str', 'recipientState': 'str',
+                        'recipientPostalCode': 'str', 'recipientCity': 'str', 'recipientStreet': 'str'}
 
-    address_pairs = validate_and_convert_data_types(address_pairs, required_columns)
+    address_pairs = validate_and_convert_data_types(address_pairs, mandatory_columns)
     if address_pairs is None:
         return None
 

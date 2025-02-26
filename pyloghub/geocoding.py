@@ -38,10 +38,14 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
                   with the geocoded results. Includes latitude and longitude for each address.
                   Returns None if the process fails.
     """
-    geocoding_columns = {'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'searchString': 'str'}
+    mandatory_columns = {'country': 'str'}
+    optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'searchString': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, geocoding_columns)
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    if not addresses is None:
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+
     if addresses is None:
         return None
     
@@ -100,7 +104,7 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) 
     geocodes_columns = {'latitude': 'float', 'longitude': 'float'}
 
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns)
+    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns, 'mandatory')
     if geocodes is None:
         return None
     
@@ -129,3 +133,12 @@ def reverse_geocoding_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'geocodes': geocodes_df, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
+    sample = reverse_geocoding_sample_data()
+    df = sample['geocodes']
+    save_scenario = sample['saveScenarioParameters']
+    #df = df.drop(columns = ['state', 'postalCode', 'street', 'searchString'])
+    df['latitude'].loc[0] = str(df['latitude'].loc[0])
+    output = reverse_geocoding(df, api_key_dev, save_scenario)

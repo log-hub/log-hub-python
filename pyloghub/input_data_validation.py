@@ -1,33 +1,49 @@
 import logging
 import pandas as pd
 
-def validate_and_convert_data_types(df, required_columns):
+def validate_and_convert_data_types(df, required_columns, column_type):
     """
     Validate and convert the data types of the DataFrame columns.
-    Log an error message if a required column is missing or if conversion fails.
+    Log an error message if a mandatory column is missing or if conversion fails.
     """
     for col, dtype in required_columns.items():
-        if col not in df.columns:
-            logging.error(f"Missing required column: {col}")
-            return None
-        try:
-            df[col] = df[col].astype(dtype)
-        except Exception as e:
-            logging.error(f"Data type conversion failed for column '{col}': {e}")
-            return None
+        if column_type == 'mandatory':
+            if col not in df.columns:
+                logging.error(f"Missing a mandatory column: {col}")
+                return None
+            try:
+                df[col] = df[col].astype(dtype)
+            except Exception as e:
+                logging.error(f"Data type conversion failed for column '{col}': {e}")
+                return None
+        elif column_type == 'optional':
+            if col in df.columns:
+                try:
+                    df[col] = df[col].astype(dtype)
+                except Exception as e:
+                    logging.info(f"Data type conversion failed for column '{col}': {e}")
     return df
 
 def convert_dates(df, date_columns):
+        """
+        Converts the DataFrame date columns.
+        """
         for col in date_columns:
             df[col] = pd.to_datetime(df[col]).dt.strftime('%Y-%m-%d')
         return df
 
 def convert_to_string(df, string_columns):
+        """
+        Converts the DataFrame string columns.
+        """
         for col in string_columns:
             df[col] = df[col].astype(str)
         return df
 
 def convert_to_float(df, float_columns):
+        """
+        Converts the DataFrame numeric columns.
+        """
         for col in float_columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
         return df
@@ -53,12 +69,18 @@ def convert_df_to_dict_excluding_nan(df, columns_to_check):
         return records
 
 def convert_timestamps(df):
+        """
+        Converts the DataFrame date columns to a timestamp format.
+        """
         for col in df.columns:
             if pd.api.types.is_datetime64_any_dtype(df[col]):
                 df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         return df
 
 def validate_boolean(value):
+        """
+        Validating the boolean values.
+        """
         return isinstance(value, bool)
 
 
