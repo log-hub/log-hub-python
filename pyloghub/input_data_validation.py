@@ -21,7 +21,7 @@ def validate_and_convert_data_types(df, required_columns, column_type):
                 try:
                     df[col] = df[col].astype(dtype)
                 except Exception as e:
-                    logging.info(f"Data type conversion failed for column '{col}': {e}")
+                    logging.error(f"Data type conversion failed for column '{col}': {e}")
     return df
 
 def convert_dates(df, date_columns):
