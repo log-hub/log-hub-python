@@ -2,7 +2,7 @@ import logging
 import os
 logging.basicConfig(level=logging.INFO)
 import webbrowser
-from IPython.display import display, Javascript
+from IPython.display import display, Javascript, HTML
 import ipywidgets as widgets
 from pyloghub.sending_requests import get_workspace_entities
 
@@ -61,7 +61,7 @@ def get_map_link(data, scenario_name):
             break
     
     if  map_id == '':
-        logging.info(f"There is not a map in the folder {scenario_name}")
+        return None
     
     DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
@@ -74,41 +74,48 @@ def create_the_button(workspace_id, api_key, entity_name):
     response_data = get_workspace_entities(workspace_id, api_key)
     map_link = get_map_link(response_data['data'], entity_name)
 
-    # Define a function to open the map link
-    def open_map(b):
-        webbrowser.open(map_link)
+    if not map_link is None:
+        # Define a function to open the map link
+        def open_map(b):
+            webbrowser.open(map_link)
 
-    # Create a button
-    button = widgets.Button(
-        description="Open the MAP",
-        button_style='succes',  # 'success', 'info', 'warning', 'danger' or ''
-        tooltip='Click to open the map',
-        icon='map',  # (FontAwesome names without the `fa-` prefix)
-        layout=widgets.Layout(width='200px', height='50px')
-    )
+        # Create a button
+        button = widgets.Button(
+            description="Open the map",
+            button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
+            tooltip='Click to open the map',
+            icon='map',  # (FontAwesome names without the `fa-` prefix)
+            layout=widgets.Layout(width='200px', height='50px')
+        )
 
-    button.on_click(open_map)
-    display(button)
-    def add_custom_css():
-        styles = """
-        .jp-OutputArea-output {
-        background-color: #f0f0f0 !important; /* Change background color */
-        border: 1px solid #ccc !important; /* Change border */
-        padding: 10px !important; /* Add padding */
-        border-radius: 5px !important; /* Add rounded corners */
-        }
-        """
-        display(Javascript(f"""
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        style.innerHTML = `{styles}`;
-        document.getElementsByTagName('head')[0].appendChild(style);
-        """))
+        button.on_click(open_map)
+        display(button)
+    else:
+        logging.error(f"There is not a map in the folder {entity_name} to be shown.")
 
-    add_custom_css()
-    
+def add_custom_css():
+    styles = """
+    .jp-OutputArea-output {
+        background-color: #f0f0f0 !important; /* Change to your desired background color */
+        border: 1px solid #ccc !important; /* Optional: Change border */
+        padding: 10px !important; /* Optional: Add padding */
+        border-radius: 5px !important; /* Optional: Add rounded corners */
+    }
+    """
+    js_code = f"""
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = `{styles}`;
+    document.getElementsByTagName('head')[0].appendChild(style);
 
-
-
+    var outputs = document.querySelectorAll('.jp-OutputArea-output');
+    outputs.forEach(function(output) {{
+        output.style.backgroundColor = "#f0f0f0"; /* Change to your desired background color */
+        output.style.border = "1px solid #ccc"; /* Optional: Change border */
+        output.style.padding = "10px"; /* Optional: Add padding */
+        output.style.borderRadius = "5px"; /* Optional: Add rounded corners */
+    }});
+    """
+    display(Javascript(js_code))
 
     
