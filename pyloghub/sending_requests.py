@@ -8,7 +8,7 @@ def create_url(app_name):
     """
     Creates an url for the given application.
     """
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
     url = f"{LOG_HUB_API_SERVER}/api/applications/v1/"+app_name
 

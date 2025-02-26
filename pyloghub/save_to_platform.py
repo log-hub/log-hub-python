@@ -4,7 +4,9 @@ logging.basicConfig(level=logging.INFO)
 import webbrowser
 from IPython.display import display, Javascript, HTML
 import ipywidgets as widgets
-from pyloghub.sending_requests import get_workspace_entities
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
+from sending_requests import get_workspace_entities
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
