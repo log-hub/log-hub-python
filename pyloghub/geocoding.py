@@ -6,7 +6,7 @@ import warnings
 logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check, create_button, get_map_link
+from save_to_platform import save_scenario_check, create_button, get_entities_link
 from input_data_validation import validate_and_convert_data_types
 from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
@@ -60,14 +60,10 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodes'])
         response_data = get_workspace_entities(save_scenario['workspaceId'], api_key)
-        map_link = get_map_link(response_data['data'], save_scenario['scenarioName'])
-        button = create_button(link=map_link, text="🌍 Show Map")
-        #button = create_button(link="https://www.example.com", text="📊 Show Dashboard")
-        output = {
-            'outputDf': geocoded_data_df,
-            'mapButton': button
-        }
-        return output
+        entities_link = get_entities_link(response_data['data'], save_scenario['scenarioName'])
+        create_button(links = [entities_link['map'], entities_link['dashboard'], entities_link['inputDataset'], entities_link['outputDataset']], texts = ["🌍 Show Map", "📊 Show Dashboard", "📋 Show Input Table", "📋 Show Output Table"])
+        
+        return geocoded_data_df
 
 def forward_geocoding_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -137,14 +133,3 @@ def reverse_geocoding_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'geocodes': geocodes_df, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    sample = forward_geocoding_sample_data()
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    save_scenario = sample['saveScenarioParameters']
-    save_scenario['saveScenario'] = True
-    save_scenario['workspaceId'] = "2a975c3e3d4ed9c89767289a21a4cda56dafc8ea"
-    save_scenario['scenarioName'] = "New Button"
-    save_scenario['overwriteScenario'] = True
-    out = forward_geocoding(sample['addresses'], api_key_dev, save_scenario)
