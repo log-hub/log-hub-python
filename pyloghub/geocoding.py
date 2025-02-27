@@ -133,12 +133,3 @@ def reverse_geocoding_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'geocodes': geocodes_df, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    sample = reverse_geocoding_sample_data()
-    df = sample['geocodes']
-    save_scenario = sample['saveScenarioParameters']
-    #df = df.drop(columns = ['state', 'postalCode', 'street', 'searchString'])
-    df['latitude'].loc[0] = str(df['latitude'].loc[0])
-    output = reverse_geocoding(df, api_key_dev, save_scenario)
