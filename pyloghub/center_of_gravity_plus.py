@@ -45,14 +45,14 @@ def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, ap
                                        DataFrame contains the details of the centers.
                                        Returns None if the process fails.
     """
-
-    required_columns = {
-            'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str',
-            'city': 'str', 'street': 'str', 'weight': 'float', 'volume': 'float', 'revenue': 'float'
-        }
+    mandatory_columns = {'country': 'str', 'weight': 'float', 'volume': 'float', 'revenue': 'float'}
+    optional_columns = {'id': 'float', 'name': 'str',  'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, required_columns)
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    if not addresses is None:
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+
     if addresses is None:
         return None
 
@@ -125,13 +125,14 @@ def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, 
                                        DataFrame contains the details of the centers.
                                        Returns None if the process fails.
     """
-    required_columns = {
-            'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float',
-            'weight': 'float', 'volume': 'float', 'revenue': 'float'
-        }
+    mandatory_columns = {'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'revenue': 'float'}
+    optional_columns = {'id': 'float', 'name': 'str'}
     
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, required_columns)
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory')
+    if not coordinates is None:
+        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional')
+
     if coordinates is None:
         return None
 
