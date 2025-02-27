@@ -47,13 +47,13 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     pd.DataFrame: A pandas DataFrame containing the results of the distance calculations. 
                   Returns None if the process fails.
     """
-    mandatory_columns = {
-            'senderCountry': 'str', 'recipientCountry': 'str'
-        }
+    mandatory_columns = {'senderCountry': 'str', 'recipientCountry': 'str'}
     optional_columns = {'senderState': 'str', 'senderPostalCode': 'str', 'senderCity': 'str', 'senderStreet': 'str', 'recipientState': 'str',
                         'recipientPostalCode': 'str', 'recipientCity': 'str', 'recipientStreet': 'str'}
 
-    address_pairs = validate_and_convert_data_types(address_pairs, mandatory_columns)
+    address_pairs = validate_and_convert_data_types(address_pairs, mandatory_columns, 'mandatory')
+    if not address_pairs is None:
+        address_pairs = validate_and_convert_data_types(address_pairs, optional_columns, 'optional')
     if address_pairs is None:
         return None
 
@@ -129,13 +129,13 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
                   Returns None if the process fails.
     """
 
-    required_columns = {
+    mandatory_columns = {
             'senderLocation': 'str', 'senderLatitude': 'float', 'senderLongitude': 'float',
             'recipientLocation': 'str', 'recipientLatitude': 'float', 'recipientLongitude': 'float'
         }
     
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes, required_columns)
+    geocodes = validate_and_convert_data_types(geocodes, mandatory_columns, 'mandatory')
     if geocodes is None:
         return None
 
@@ -173,3 +173,13 @@ def reverse_distance_calculation_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'geocode_data': geocode_data_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
+    sample = forward_distance_calculation_sample_data()
+
+    address = sample['address_data']
+    address = address.drop(columns = ['senderState', 'senderPostalCode', 'senderStreet', 'recipientState',
+                        'recipientPostalCode', 'recipientStreet'])
+    out = forward_distance_calculation(address, sample['parameters'], api_key_dev)
