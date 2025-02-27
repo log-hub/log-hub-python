@@ -5,7 +5,7 @@ import warnings
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-from input_data_validation import convert_df_to_dict_excluding_nan, convert_to_float
+from input_data_validation import convert_df_to_dict_excluding_nan, convert_to_float, validate_and_convert_data_types
 from sending_requests import post_method, create_headers, create_url
 
 def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
@@ -52,8 +52,12 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     """
     
     float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
-    shipments_df = convert_to_float(shipments_df, float_columns)
-
+    shipments_df = convert_to_float(shipments_df, float_columns, 'optional')
+    mandatory_columns = {'shipmentId': 'str', 'fromLocationId': 'str', 'fromCountry': 'str', 'toLocationId': 'str', 'toCountry': 'str'}
+    optional_columns = {'fromState': 'str', 'fromCity': 'str', 'fromPostalCode': 'str', 'fromStreet': 'str', 'fromZone': 'str', 'toState': 'str', 'toCity': 'str', 'toPostalCode': 'str', 'toStreet': 'str', 'toZone': 'str'}
+    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory')
+    if not shipments_df is None:
+        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional')
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
     
@@ -116,7 +120,12 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     """
 
     float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
-    shipments_df = convert_to_float(shipments_df, float_columns)
+    shipments_df = convert_to_float(shipments_df, float_columns, 'optional')
+    mandatory_columns = {'shipmentId': 'str', 'fromLocationId': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLocationId': 'str', 'toLatitude': 'float', 'toLongitude': 'float'}
+    optional_columns = {'fromState': 'str', 'fromZone': 'str', 'toZone': 'str'}
+    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory')
+    if not shipments_df is None:
+        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional')
 
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
@@ -142,3 +151,12 @@ def reverse_freight_matrix_sample_data():
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'freightMatrixReverse.xlsx')
     shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:O', dtype={'shipmentId': str, 'shipmentDate': str, 'fromLocationId': str, 'toLocationId': str, 'weight': float, 'volume': float, 'pallets': float, 'loadingMeters': float})
     return {'shipments': shipments_df}
+
+if __name__ == "__main__":
+
+    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
+
+    sample = reverse_freight_matrix_sample_data()
+    shipments = sample['shipments']
+    shipments = shipments.drop(columns=['volume'])
+    output = reverse_freight_matrix(shipments, "4a389cc22ede08d9a499471fac7e26864d831905", api_key_dev)

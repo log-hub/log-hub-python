@@ -41,12 +41,16 @@ def convert_to_string(df, string_columns):
             df[col] = df[col].astype(str)
         return df
 
-def convert_to_float(df, float_columns):
+def convert_to_float(df, float_columns, column_type):
         """
         Converts the DataFrame numeric columns.
         """
         for col in float_columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
+            if column_type == 'mandatory':
+                df[col] = pd.to_numeric(df[col], errors='coerce')
+            elif column_type == 'optional':
+                 if col in df.columns:
+                      df[col] = pd.to_numeric(df[col], errors='coerce')
         return df
 
 def convert_df_to_dict_excluding_nan(df, columns_to_check):
