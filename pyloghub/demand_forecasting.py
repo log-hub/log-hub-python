@@ -42,23 +42,24 @@ def demand_forecasting(past_demand_data: pd.DataFrame, future_impact_factors: pd
     pd.DataFrame: A DataFrame containing demands prediction. Returns None if the process fails.
     """
     # Define expected columns and data types for each DataFrame
-    past_demand_data_columns = {
-        'sku': 'str', 'date': 'str', 'demand': 'float', 'futureImpactFactor1': 'str', 'futureImpactFactor2': 'str', 'futureImpactFactor3': 'str'
-    }
-    future_impact_factors_columns = {
-        'sku': 'str', 'date': 'str', 'futureImpactFactor1': 'str', 'futureImpactFactor2': 'str', 'futureImpactFactor3': 'str'
-    }
-    sku_parameters_columns = {
-        'sku': 'str', 'forecastPeriods': 'float', 'demandFrequency': 'str', 'lowerTrendLimit':'str', 'upperTrendLimit': 'str', 'seasonality': 'str', 'seasonalityType': 'str', 'confidenceInterval': 'str', 'futureImpactFactor1': 'str', 'futureImpactFactor2': 'str', 'futureImpactFactor3': 'str'
-    }
+    past_demand_data_mandatory_columns = {'sku': 'str', 'date': 'str', 'demand': 'float'}
+    past_demand_data_optional_columns = {'futureImpactFactor1': 'str', 'futureImpactFactor2': 'str', 'futureImpactFactor3': 'str'}
+    future_impact_factors_optional_columns = {'sku': 'str', 'date': 'str', 'futureImpactFactor1': 'str', 'futureImpactFactor2': 'str', 'futureImpactFactor3': 'str'}
+    sku_parameters_mandatory_columns = {'sku': 'str', 'forecastPeriods': 'float'}
+    sku_parameters_optional_columns = {'demandFrequency': 'str', 'lowerTrendLimit':'str', 'upperTrendLimit': 'str', 'seasonality': 'str', 'seasonalityType': 'str', 'confidenceInterval': 'str', 'futureImpactFactor1': 'str', 'futureImpactFactor2': 'str', 'futureImpactFactor3': 'str'}
 
     # Perform validation and conversion for each DataFrame
-    past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_columns)
-    future_impact_factors = validate_and_convert_data_types(future_impact_factors, future_impact_factors_columns)
-    sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_columns)
+    past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_mandatory_columns, 'mandatory')
+    if not past_demand_data is None:
+        past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_optional_columns, 'optional')
+    future_impact_factors = validate_and_convert_data_types(future_impact_factors, future_impact_factors_optional_columns, 'optional')
+    sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_mandatory_columns, 'mandatory')
+    if not sku_parameters is None:
+        sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_optional_columns, 'optional')
     if not any(df is None for df in [past_demand_data, future_impact_factors]):
         past_demand_data = convert_dates(past_demand_data, ['date'])
-        future_impact_factors = convert_dates(future_impact_factors, ['date'])
+        if 'date' in future_impact_factors.columns:
+            future_impact_factors = convert_dates(future_impact_factors, ['date'])
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [past_demand_data, future_impact_factors, sku_parameters]):
