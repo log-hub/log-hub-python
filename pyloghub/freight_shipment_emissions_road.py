@@ -52,12 +52,13 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
                   with the calculated CO2 emissions, and the second one contains shipments with no CO2 emission calculated. Returns None if the process fails.
     """
         
-    addresses_columns = {
-        'shipmentId': 'str', 'shipmentDate': 'str', 'fromCountry': 'str', 'fromState': 'str', 'fromPostalCode': 'str', 'fromCity': 'str', 'fromStreet': 'str', 'toCountry': 'str', 'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 'toStreet': 'str', 'isRefrigirated': 'str', 'weight': 'float'
-    }
+    addresses_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromCountry': 'str', 'toCountry': 'str', 'weight': 'float'}
+    addresses_optional_columns = {'fromState': 'str', 'fromPostalCode': 'str', 'fromCity': 'str', 'fromStreet': 'str', 'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 'toStreet': 'str', 'isRefrigirated': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, addresses_columns)
+    addresses = validate_and_convert_data_types(addresses, addresses_mandatory_columns, 'mandatory')
+    if not addresses is None:
+        addresses = validate_and_convert_data_types(addresses, addresses_optional_columns, 'optional')
     if not addresses is None:
         addresses = convert_dates(addresses, ['shipmentDate'])
     if addresses is None:
@@ -136,12 +137,13 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
                   with the calculated CO2 emissions, and the second one contains shipments with no CO2 emission calculated. Returns None if the process fails.
     """
 
-    coordinates_columns = {
-        'shipmentId': 'str', 'shipmentDate': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLatitude': 'float', 'toLongitude': 'float', 'isRefrigirated': 'str', 'weight': 'float'
-    }
+    coordinates_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLatitude': 'float', 'toLongitude': 'float', 'weight': 'float'}
+    coordinates_optional_columns = {'isRefrigirated': 'str'}
 
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, coordinates_columns)
+    coordinates = validate_and_convert_data_types(coordinates, coordinates_mandatory_columns, 'mandatory')
+    if not coordinates is None:
+        coordinates = validate_and_convert_data_types(coordinates, coordinates_optional_columns, 'optional')
     if not coordinates is None:
         coordinates = convert_dates(coordinates, ['shipmentDate'])
     if coordinates is None:

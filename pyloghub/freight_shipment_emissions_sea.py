@@ -44,12 +44,13 @@ def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters:
                   with the calculated CO2 emissions. Returns None if the process fails.
     """
         
-    un_locodes_columns = {
-        'shipmentId': 'str', 'shipmentDate': 'str', 'fromUnLocode': 'str', 'toUnLocode': 'str', 'vesselId': 'str', 'isRefrigirated': 'str', 'weight': 'float'
-    }
+    un_locodes_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromUnLocode': 'str', 'toUnLocode': 'str', 'weight': 'float'}
+    un_locodes_optional_columns = {'vesselId': 'str', 'isRefrigirated': 'str'}
 
     # Validate and convert data types
-    un_locodes = validate_and_convert_data_types(un_locodes, un_locodes_columns)
+    un_locodes = validate_and_convert_data_types(un_locodes, un_locodes_mandatory_columns, 'mandatory')
+    if not un_locodes is None:
+        un_locodes = validate_and_convert_data_types(un_locodes, un_locodes_optional_columns, 'optional')
     if not un_locodes is None:
         un_locodes = convert_dates(un_locodes, ['shipmentDate'])
     if un_locodes is None:

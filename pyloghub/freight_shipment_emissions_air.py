@@ -42,12 +42,13 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
                   with the calculated CO2 emissions. Returns None if the process fails.
     """
         
-    iata_codes_columns = {
-        'shipmentId': 'str', 'shipmentDate': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'flightNumber': 'str', 'isRefrigirated': 'str', 'weight': 'float'
-    }
+    iata_codes_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'weight': 'float'}
+    iata_codes_optional_columns = {'flightNumber': 'str', 'isRefrigirated': 'str'}
 
     # Validate and convert data types
-    iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_columns)
+    iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_mandatory_columns, 'mandatory')
+    if not iata_codes is None:
+        iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_optional_columns, 'optional')
     if not iata_codes is None:
         iata_codes = convert_dates(iata_codes, ['shipmentDate'])
     if iata_codes is None:
