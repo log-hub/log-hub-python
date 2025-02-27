@@ -120,4 +120,34 @@ def add_custom_css():
     """
     display(Javascript(js_code))
 
-    
+from IPython.display import display, HTML
+ 
+def create_button(link, text):
+    """
+    Creates a clean, minimal button for Jupyter Notebook output that links to the specified URL.
+ 
+    Parameters:
+      link (str): The URL to open when the button is clicked.
+      text (str): The text displayed on the button.
+    """
+    button_html = f'''
+    <a href="{link}" target="_blank" style="text-decoration: none;">
+      <button style="
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 600;
+        background-color: #F7F8FA;
+        color: #111;
+        border: 1px solid #E5E7EB;
+        padding: 10px 20px;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        border-radius: 6px;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      "
+      onmouseover="this.style.backgroundColor='#E5E7EB'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+      onmouseout="this.style.backgroundColor='#F7F8FA'; this.style.boxShadow='none';">
+        {text}
+      </button>
+    </a>
+    '''
+    display(HTML(button_html))
