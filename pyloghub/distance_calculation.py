@@ -5,13 +5,13 @@ from typing import Optional, Dict
 import warnings
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
 logging.basicConfig(level=logging.INFO)
 
-def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Calculate distances and durations between pairs of addresses.
 
@@ -41,12 +41,18 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     api_key (str): The Log-hub API key for accessing the distance calculation service.
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing the results of the distance calculations. 
                   Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
     required_columns = {
             'senderCountry': 'str', 'senderState': 'str', 'senderPostalCode': 'str',
             'senderCity': 'str', 'senderStreet': 'str', 'recipientCountry': 'str',
@@ -74,6 +80,10 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
         return None
     else:
         distances_df = pd.DataFrame(response_data)
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return distances_df
     
 def forward_distance_calculation_sample_data():
@@ -97,7 +107,7 @@ def forward_distance_calculation_sample_data():
 
 
 
-def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Calculate distances and durations between pairs of locations based on coordinates.
 
@@ -123,12 +133,18 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     api_key (str): The Log-hub API key for accessing the reverse distance calculation service.
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing the results of the reverse distance calculations.
                   Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     required_columns = {
             'senderLocation': 'str', 'senderLatitude': 'float', 'senderLongitude': 'float',
@@ -154,6 +170,10 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         return None
     else:
         distances_df = pd.DataFrame(response_data)
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return distances_df
 
 def reverse_distance_calculation_sample_data():

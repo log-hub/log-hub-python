@@ -2,13 +2,14 @@ import os
 import pandas as pd
 import warnings
 from typing import Optional
+import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def reverse_supply_chain_map_polyline(polyline: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_supply_chain_map_polyline(polyline: pd.DataFrame, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Creates a polyline on the map.
 
@@ -24,15 +25,20 @@ def reverse_supply_chain_map_polyline(polyline: pd.DataFrame, api_key: str, save
         - longitude (number): Longitude of the polyline.
         - layer (str): Layer that polyline is going to be assigned to.
         
-
     api_key (str): The Log-hub API key for accessing the supply chain map service.
 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 'workspaceId' (str) and 'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     pd.DataFrame: A pandas DataFrame containg the polylines. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     required_columns = {
             'id': 'float', 'polyline': 'str', 'latitude':'float', 'longitude': 'float', 'layer': 'str'
@@ -57,8 +63,11 @@ def reverse_supply_chain_map_polyline(polyline: pd.DataFrame, api_key: str, save
         return None
     else:
         polyline_df = pd.DataFrame(response_data['polylineData'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return polyline_df
-
 
 def reverse_supply_chain_map_polyline_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)

@@ -3,12 +3,13 @@ import pandas as pd
 import warnings
 from typing import Optional
 import sys
+import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_supply_chain_map_locations(addresses: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_supply_chain_map_locations(addresses: pd.DataFrame, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Creates a map of locations based on the given addresses.
 
@@ -34,11 +35,16 @@ def forward_supply_chain_map_locations(addresses: pd.DataFrame, api_key: str, sa
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 'workspaceId' (str) and 'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containg the addresses and their parsed latitude and longitude. Returns None if 
                   the process fails.
     """
-
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
     required_columns = {
             'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str',
             'city': 'str', 'street': 'str', 'layer': 'str', 'quantity': 'float', 'nameDescription1': 'str', 'nameDescription2': 'str'
@@ -64,6 +70,10 @@ def forward_supply_chain_map_locations(addresses: pd.DataFrame, api_key: str, sa
         return None
     else:
         geocoding_result_df = pd.DataFrame(response_data['geocodingResult'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return geocoding_result_df
 
 def forward_supply_chain_map_locations_sample_data():
@@ -80,7 +90,7 @@ def forward_supply_chain_map_locations_sample_data():
     }
     return {'addresses': addresses_df, 'saveScenarioParameters': save_scenario}
 
-def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Creates a map of locations based on the given coordinates.
 
@@ -103,10 +113,15 @@ def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 'workspaceId' (str) and 'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containg the coordinates. Returns None if the process fails.
     """
-
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
     required_columns = {
             'id': 'float', 'name': 'str', 'latitude':'float', 'longitude': 'float', 'layer': 'str', 'quantity': 'float', 'nameDescription1': 'str', 'nameDescription2': 'str'
         }
@@ -129,6 +144,10 @@ def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, 
         return None
     else:
         geocoding_data_df = pd.DataFrame(response_data['geocodingData'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return geocoding_data_df
 
 def reverse_supply_chain_map_locations_sample_data():

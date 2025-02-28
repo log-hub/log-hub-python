@@ -6,11 +6,11 @@ import warnings
 logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_dates, validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform forward freight emissions by road on a list of addresses.
 
@@ -46,11 +46,17 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Optional[Tuple[pd.DataFrame, pd.DataFrame]]: One pandas DataFrame contains the original address information along 
                   with the calculated CO2 emissions, and the second one contains shipments with no CO2 emission calculated. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
         
     addresses_columns = {
         'shipmentId': 'str', 'shipmentDate': 'str', 'fromCountry': 'str', 'fromState': 'str', 'fromPostalCode': 'str', 'fromCity': 'str', 'fromStreet': 'str', 'toCountry': 'str', 'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 'toStreet': 'str', 'isRefrigirated': 'str', 'weight': 'float'
@@ -79,6 +85,10 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputStandardRoad'])
         not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsStandardRoad'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return freight_emissions_df, not_evaluated_df
 
 def forward_freight_shipment_emissions_road_sample_data():
@@ -100,7 +110,7 @@ def forward_freight_shipment_emissions_road_sample_data():
     return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse freight emissions by road on a list of coordinates.
 
@@ -130,11 +140,17 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Optional[Tuple[pd.DataFrame, pd.DataFrame]]: One pandas DataFrame contains the original coordinates information along 
                   with the calculated CO2 emissions, and the second one contains shipments with no CO2 emission calculated. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     coordinates_columns = {
         'shipmentId': 'str', 'shipmentDate': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLatitude': 'float', 'toLongitude': 'float', 'isRefrigirated': 'str', 'weight': 'float'
@@ -162,6 +178,10 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputReverseRoad'])
         not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsReverseRoad'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return freight_emissions_df, not_evaluated_df
 
 def reverse_freight_shipment_emissions_road_sample_data():

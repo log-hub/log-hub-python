@@ -6,7 +6,6 @@ from IPython.display import display, Javascript, HTML
 import ipywidgets as widgets
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from sending_requests import get_workspace_entities
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

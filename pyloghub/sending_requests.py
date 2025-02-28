@@ -2,7 +2,7 @@ import os
 import requests
 import logging
 import time
-
+from save_to_platform import get_entities_link
 
 def create_url(app_name):
     """
@@ -51,7 +51,7 @@ def post_method(url, payload, headers, app_name):
 
 def get_method(api_server, url, headers, app_name):
 
-    #api_server = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
+    api_server = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
     
     retry_delay = 15  # seconds
     timeout = 3600
@@ -74,11 +74,11 @@ def get_method(api_server, url, headers, app_name):
             logging.error(f"Error in {app_name} API: {response.status_code} - {response.text}")
             return None
     
-def get_workspace_entities(workspace_id, api_key):
+def get_workspace_entities(save_scenario, api_key):
 
     DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}api/v1/workspace/"+ workspace_id + "/entitiesWithTables"
+    url = f"{LOG_HUB_API_SERVER}api/v1/workspace/"+ save_scenario['workspaceId'] + "/entitiesWithTables"
 
     max_retries = 3
     retry_delay = 15  # seconds
@@ -88,7 +88,8 @@ def get_workspace_entities(workspace_id, api_key):
             response = requests.get(url, headers={"authorization": f"apikey {api_key}"})
             if response.status_code == 200:
                 response_data = response.json()
-                return response_data
+                links = get_entities_link(response_data['data'], save_scenario['scenarioName'])
+                return links
             elif response.status_code == 429:
                 logging.info(f"Rate limit exceeded. Retrying in {retry_delay} seconds.")
                 time.sleep(retry_delay)

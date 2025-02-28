@@ -2,13 +2,14 @@ import os
 import pandas as pd
 import warnings
 from typing import Optional, Dict, Tuple
+import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_timestamps, validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform milkrun optimization based on depots, vehicles, jobs, time window profiles, and breaks.
 
@@ -91,10 +92,16 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three pandas DataFrames containing route overview, route details, 
                                                      and external orders. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     depots = convert_timestamps(depots)
@@ -160,6 +167,10 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         route_overview_df = pd.DataFrame(response_data['routeOverview'])
         route_details_df = pd.DataFrame(response_data['routeDetails'])
         external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_overview_df, route_details_df, external_orders_df
 
 def forward_milkrun_optimization_plus_sample_data():
@@ -183,7 +194,7 @@ def forward_milkrun_optimization_plus_sample_data():
     return {'depots': depots_df, 'vehicles': vehicles_df, 'jobs': jobs_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse milkrun optimization based on depots, vehicles, jobs, time window profiles, and breaks.
 
@@ -257,10 +268,16 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three pandas DataFrames containing route overview, route details, 
                                                      and external orders. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     depots = convert_timestamps(depots)
@@ -323,6 +340,10 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         route_overview_df = pd.DataFrame(response_data['routeOverview'])
         route_details_df = pd.DataFrame(response_data['routeDetails'])
         external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_overview_df, route_details_df, external_orders_df
 
 def reverse_milkrun_optimization_plus_sample_data():
