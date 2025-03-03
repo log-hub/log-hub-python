@@ -89,7 +89,7 @@ def validate_boolean(value):
         return isinstance(value, bool)
 
 
-def exclude_nan_depending_on_dtype(df, columns_to_check):
+def exclude_nan_depending_on_dtype(df, columns_to_check, df_name):
     """
     Convert a DataFrame to a list of dictionaries, excluding specified keys if their values are NaN.
 
@@ -101,18 +101,28 @@ def exclude_nan_depending_on_dtype(df, columns_to_check):
     list: A list of dictionaries representing the rows of the DataFrame, excluding keys for NaN values in specified columns.
     """
     records = []
-    for ind, row in df.iterrows():
-        record = {}
-        for column, value in row.items():
-            if column not in columns_to_check:
-                logging.error(f"Missing required column: {column}")
-                return None
-            elif columns_to_check[column] == 'float':
-                df.loc[ind, column] = pd.to_numeric(df[column][ind], errors='coerce')
-                if pd.notna(df[column][ind]):
-                    record[column] = float(df[column][ind])
-            elif columns_to_check[column] == 'str':
-                df.loc[ind, column] = str(df[column][ind])
-                record[column] = df[column].loc[ind]
-        records.append(record)
-    return records
+    if len(set(columns_to_check) - set(df.columns))>0:
+        missing_columns = set(columns_to_check) - set(df.columns) 
+        logging.error(f"Table {df_name} is missing mandatory column: {', '.join(list(missing_columns))}")
+        return None
+    else:
+        for ind, row in df.iterrows():
+            record = {}
+            for column, value in row.items():
+                if columns_to_check[column] == 'float':
+                    df.loc[ind, column] = pd.to_numeric(df[column][ind], errors='coerce')
+                    if pd.notna(df[column][ind]):
+                        record[column] = float(df[column][ind])
+                elif columns_to_check[column] == 'str':
+                    df.loc[ind, column] = str(df[column][ind])
+                    record[column] = df[column].loc[ind]
+            records.append(record)
+        return records
+
+def remove_nonexisting_optional_columns(optional_columns, sent_columns):
+    updated_optional_columns = optional_columns.copy()
+    for col in optional_columns.keys():
+        if not col in sent_columns:
+            updated_optional_columns.pop(col) 
+
+    return updated_optional_columns

@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-from input_data_validation import exclude_nan_depending_on_dtype
+from input_data_validation import exclude_nan_depending_on_dtype, remove_nonexisting_optional_columns
 from sending_requests import post_method, create_headers, create_url, get_method
 
 def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
@@ -63,16 +63,25 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three dataframes with the information about opened warehouses, customer assignment, and solution kpis. Returns None if the process fails.
     """
+    #removes missing optional columns from the list and merges optional and mandatory columns, then validates data types
     customers_mandatory_columns = {'name': 'str', 'country': 'str', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'}
     customers_optional_columns = {'id': 'float', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
+    sent_optional_columns = set(customers.columns) - set(customers_mandatory_columns.keys())
+    customers_optional_columns = remove_nonexisting_optional_columns(customers_optional_columns, sent_optional_columns)
+    customers_mandatory_columns.update(customers_optional_columns)
+    customers = exclude_nan_depending_on_dtype(customers, customers_mandatory_columns, 'customers')
+
     warehouses_mandatory_columns = {'name': 'str', 'country': 'str', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float'}
     warehouses_optional_columns = {'id': 'float', 'state' : 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'penaltyCostsWeight': 'float', 'penaltyCostsVolume': 'float'}
-    costs_adjustments_optional_columns = {'id': 'float', 'customerCountryIso2': 'str',  'warehouseCountryIso2': 'str', 'customerName': 'str', 'warehouseName': 'str', 'adjustmentFactor': 'float', 'flatOnTop': 'float'}
+    sent_optional_columns = set(warehouses.columns) - set(warehouses_mandatory_columns.keys())
+    warehouses_optional_columns = remove_nonexisting_optional_columns(warehouses_optional_columns, sent_optional_columns)
+    warehouses_mandatory_columns.update(warehouses_optional_columns)
+    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_mandatory_columns, 'warehouses')
 
-    # Validate and convert data types
-    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_mandatory_columns, 'mandatory')
-    customers = exclude_nan_depending_on_dtype(customers, customers_mandatory_columns)
-    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_optional_columns)
+    costs_adjustments_optional_columns = {'id': 'float', 'customerCountryIso2': 'str',  'warehouseCountryIso2': 'str', 'customerName': 'str', 'warehouseName': 'str', 'adjustmentFactor': 'float', 'flatOnTop': 'float'}
+    sent_optional_columns = set(costs_adjustments.columns)
+    costs_adjustments_optional_columns = remove_nonexisting_optional_columns(costs_adjustments_optional_columns, sent_optional_columns)
+    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_optional_columns, 'costs_adjustments')
 
     if any(df is None for df in [warehouses, customers, costs_adjustments]):
         return None
@@ -174,20 +183,25 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three dataframes with the information about opened warehouses, customer assignment, and solution kpis. Returns None if the process fails.
     """
-    customers_columns = {
-        'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'
-    }
-    warehouses_columns = {
-        'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'penaltyCostsWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'penaltyCostsVolume': 'float','fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float'
-    }
-    costs_adjustments_columns = {
-        'id': 'float', 'customerCountryIso2': 'str',  'warehouseCountryIso2': 'str', 'customerName': 'str', 'warehouseName': 'str', 'adjustmentFactor': 'float', 'flatOnTop': 'float'
-        }
+    #removes missing optional columns from the list and merges optional and mandatory columns, then validates data types
+    customers_mandatory_columns = {'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'}
+    customers_optional_columns = {'id': 'float'}
+    sent_optional_columns = set(customers.columns) - set(customers_mandatory_columns.keys())
+    customers_optional_columns = remove_nonexisting_optional_columns(customers_optional_columns, sent_optional_columns)
+    customers_mandatory_columns.update(customers_optional_columns)
+    customers = exclude_nan_depending_on_dtype(customers, customers_mandatory_columns, 'customers')
 
-    # Validate and convert data types
-    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
-    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
-    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_columns)
+    warehouses_mandatory_columns = {'name': 'str', 'latitude': 'float', 'longitude': 'float', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float'}
+    warehouses_optional_columns = {'id': 'float', 'penaltyCostsWeight': 'float', 'penaltyCostsVolume': 'float'}
+    sent_optional_columns = set(warehouses.columns) - set(warehouses_mandatory_columns.keys())
+    warehouses_optional_columns = remove_nonexisting_optional_columns(warehouses_optional_columns, sent_optional_columns)
+    warehouses_mandatory_columns.update(warehouses_optional_columns)
+    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_mandatory_columns, 'warehouses')
+
+    costs_adjustments_optional_columns = {'id': 'float', 'customerCountryIso2': 'str',  'warehouseCountryIso2': 'str', 'customerName': 'str', 'warehouseName': 'str', 'adjustmentFactor': 'float', 'flatOnTop': 'float'}
+    sent_optional_columns = set(costs_adjustments.columns)
+    costs_adjustments_optional_columns = remove_nonexisting_optional_columns(costs_adjustments_optional_columns, sent_optional_columns)
+    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_optional_columns, 'costs_adjustments')
 
     if any(df is None for df in [warehouses, customers, costs_adjustments]):
         return None
@@ -241,3 +255,19 @@ def reverse_location_planning_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'warehouses': warehouses_df, 'customers': customers_df, 'costsAdjustments': costs_adjustments_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    api_key_dev = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
+
+    sample = reverse_location_planning_sample_data()
+    customers = sample['customers']
+    warehouses = sample['warehouses']
+    cost_adjustments = sample['costsAdjustments']
+    par = sample['parameters']
+
+    #customers = customers.drop(columns = ['name'])
+    warehouses = warehouses.drop(columns = ['penaltyCostsWeight'])
+    cost_adjustments = cost_adjustments.drop(columns = ['flatOnTop'])
+
+    out = reverse_location_planning(customers, warehouses, cost_adjustments, par, api_key_dev)
