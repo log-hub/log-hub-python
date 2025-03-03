@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-from input_data_validation import exclude_nan_depending_on_dtype
+from input_data_validation import exclude_nan_depending_on_dtype, convert_to_float, validate_and_convert_data_types, convert_df_to_dict_excluding_nan
 from sending_requests import post_method, create_headers, create_url, get_method
 
 def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
@@ -126,45 +126,92 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Four dataframes with the information about opened warehouses, factory and customer assignment, and solution kpis. Returns None if the process fails.
     """
-    factories_columns = {
-        'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
-        'street': 'str', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'minimumFtlCosts': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'minimumLtlCosts': 'float', 'outboundCostsHalfFtlPercent': 'float'
+    factories_mandatory_columns = {
+       'name': 'str', 'country': 'str', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'outboundCostsHalfFtlPercent': 'float'
     }
-    warehouses_columns = {
-        'id': 'float', 'name': 'str', 'country': 'str', 'state' : 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'penaltyCostsWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'penaltyCostsVolume': 'float','fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'minimumFtlCosts': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'minimumLtlCosts': 'float', 'outboundCostsHalfFtlPercent': 'float', 'minimumInboundReplenishmentFrequency': 'float', 'minimumOutboundReplenishmentFrequency': 'float', 'weightCostFunction': 'str', 'volumeCostFunction': 'str'
+    factories_optional_columns = { 'id': 'float', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
+    factories_optional_float = ['minimumFtlCosts', 'minimumLtlCosts']
+    warehouses_mandatory_columns = {
+        'name': 'str', 'country': 'str', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float','fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'outboundCostsHalfFtlPercent': 'float'
     }
-    customers_columns = {
-        'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float', 'productSegments': 'str', 'factory': 'str', 'warehouse': 'str', 'maximumWarehouseDistance': 'float', 'penaltyCostsWarehouseDistance': 'float',
+    warehouses_optional_columns = {'id': 'float', 'state' : 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'weightCostFunction': 'str', 'volumeCostFunction': 'str'}
+    warehouses_optional_float = ['penaltyCostsWeight', 'penaltyCostsVolume', 'minimumFtlCosts', 'minimumLtlCosts', 'minimumInboundReplenishmentFrequency', 'minimumOutboundReplenishmentFrequency']
+    customers_mandatory_columns = {
+        'name': 'str', 'country': 'str', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'
     }
-    product_segments_columns = {
+    customers_optional_columns = {'id': 'float', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'productSegments': 'str', 'factory': 'str', 'warehouse': 'str'}
+    customers_optional_float = ['maximumWarehouseDistance', 'penaltyCostsWarehouseDistance']
+    product_segments_optional_columns = {
         'id': 'float', 'segmentName': 'str', 'availableWarehouses': 'str'
     }
-    transport_costs_columns = {
-        'id': 'float', 'startLocationName': 'str', 'endLocationName': 'str', 'weightCapacity': 'float', 'volumeCapacity': 'float', 'costsPerUnit': 'float',
+    transport_costs_mandatory_columns = {
+        'startLocationName': 'str', 'endLocationName': 'str', 'volumeCapacity': 'float', 'costsPerUnit': 'float',
     }
-    transport_costs_rules_columns = {
-        'id': 'float', 'fromCountryIso2': 'str', 'fromZip': 'str',  'fromName': 'str', 'toCountryIso2': 'str', 'toZip': 'str', 'toName': 'str', 'layer': 'str', 'distance': 'float', 'weightCapacityPerUnit': 'float', 'volumeCapacityPerUnit': 'float', 'costsPerUnit': 'float'
+    transport_costs_optional_columns = {'id': 'float'}
+    transport_costs_optional_float = ['weightCapacity']
+    transport_costs_rules_optional_columns = {
+        'id': 'float', 'fromCountryIso2': 'str', 'fromZip': 'str',  'fromName': 'str', 'toCountryIso2': 'str', 'toZip': 'str', 'toName': 'str', 'layer': 'str'
     }
-    stepwise_function_weight_columns = {
-        'id': 'float', 'stepFunctionId': 'str', 'stepEnd': 'float', 'fixedCost': 'float', 'costPerWeightUnit': 'float',
+    transport_costs_rules_optional_float = ['distance', 'weightCapacityPerUnit', 'volumeCapacityPerUnit', 'costsPerUnit']
+    stepwise_function_weight_optional_columns = {
+        'id': 'float', 'stepFunctionId': 'str'
         }
-    stepwise_function_volume_columns = {
-        'id': 'float', 'stepFunctionId': 'str', 'stepEnd': 'float', 'fixedCost': 'float', 'costPerVolumeUnit': 'float',
+    stepwise_function_weight_optional_float = ['stepEnd', 'fixedCost', 'costPerWeightUnit']
+    stepwise_function_volume_optional_columns = {
+        'id': 'float', 'stepFunctionId': 'str'
         }
+    stepwise_function_volume_optional_float = ['stepEnd', 'fixedCost', 'costPerVolumeUnit']
     distance_limits_columns = {
         'id': 'float', 'distanceLimit': 'str',  'weightPercentage': 'str', 'volumePercentage': 'str', 'distanceLimitPenalty': 'str', 
         }
 
     # Validate and convert data types
-    factories = exclude_nan_depending_on_dtype(factories, factories_columns)
-    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
-    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
-    product_segments = exclude_nan_depending_on_dtype(product_segments, product_segments_columns)
-    transport_costs = exclude_nan_depending_on_dtype(transport_costs, transport_costs_columns)
-    transport_costs_rules = exclude_nan_depending_on_dtype(transport_costs_rules, transport_costs_rules_columns)
-    stepwise_function_weight = exclude_nan_depending_on_dtype(stepwise_function_weight, stepwise_function_weight_columns)
-    stepwise_function_volume = exclude_nan_depending_on_dtype(stepwise_function_volume, stepwise_function_volume_columns)
-    distance_limits = exclude_nan_depending_on_dtype(distance_limits, distance_limits_columns)
+    factories = validate_and_convert_data_types(factories, factories_mandatory_columns, 'mandatory')
+    if not factories is None:
+        factories = validate_and_convert_data_types(factories, factories_optional_columns, 'optional')
+        if not factories is None:
+            factories = convert_to_float(factories, factories_optional_float, 'optional')
+            factories = convert_df_to_dict_excluding_nan(factories, factories_optional_float)
+
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory')
+    if not warehouses is None:
+        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional')
+        if not warehouses is None:
+            warehouses = convert_to_float(warehouses, warehouses_optional_float, 'optional')
+            warehouses = convert_df_to_dict_excluding_nan(warehouses,warehouses_optional_float)
+
+    customers = validate_and_convert_data_types(customers, customers_mandatory_columns, 'mandatory')
+    if not customers is None:
+        customers = validate_and_convert_data_types(customers, customers_optional_columns, 'optional')
+        if not customers is None:
+            customers = convert_to_float(customers, customers_optional_float, 'optional')
+            customers = convert_df_to_dict_excluding_nan(customers, customers_optional_float)
+
+    product_segments = validate_and_convert_data_types(product_segments, product_segments_optional_columns, 'optional')
+    
+    transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_mandatory_columns, 'mandatory')
+    if not transport_costs is None:
+        transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_optional_columns, 'optional')
+        if not transport_costs is None:
+            transport_costs = convert_to_float(transport_costs, transport_costs_optional_float, 'optional')
+            transport_costs = convert_df_to_dict_excluding_nan(transport_costs, transport_costs_optional_float)
+
+    transport_costs_rules = validate_and_convert_data_types(transport_costs_rules, transport_costs_rules_optional_columns, 'optional')
+    if not transport_costs_rules is None:
+        transport_costs_rules = convert_to_float(transport_costs_rules, transport_costs_rules_optional_float, 'optional')
+        transport_costs_rules = convert_df_to_dict_excluding_nan(transport_costs_rules, transport_costs_rules_optional_float)
+
+    stepwise_function_weight = validate_and_convert_data_types(stepwise_function_weight, stepwise_function_weight_optional_columns, 'optional')
+    if not stepwise_function_weight is None:
+        stepwise_function_weight = convert_to_float(stepwise_function_weight, stepwise_function_weight_optional_float, 'optional')
+        stepwise_function_weight = convert_df_to_dict_excluding_nan(stepwise_function_weight, stepwise_function_weight_optional_float)
+
+    stepwise_function_volume = validate_and_convert_data_types(stepwise_function_volume, stepwise_function_volume_optional_columns, 'optional')
+    if not stepwise_function_volume is None:
+        stepwise_function_volume = convert_to_float(stepwise_function_volume, stepwise_function_volume_optional_float, 'optional')
+        stepwise_function_volume = convert_df_to_dict_excluding_nan(stepwise_function_volume, stepwise_function_volume_optional_float)
+
+    distance_limits = validate_and_convert_data_types(distance_limits, distance_limits_columns, 'optional')
 
     if any(df is None for df in [factories, warehouses, customers, product_segments, transport_costs, transport_costs_rules, stepwise_function_weight, stepwise_function_volume, distance_limits]):
         return None
@@ -177,12 +224,12 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
         'factories': factories,
         'warehouses': warehouses,
         'customers': customers,
-        'productSegments': product_segments,
+        'productSegments': product_segments.to_dict(orient='records'),
         'transportCosts': transport_costs,
         'transportsCostsRules': transport_costs_rules,
         'stepwiseCostFunctionWeight': stepwise_function_weight,
         'stepwiseCostFunctionVolume': stepwise_function_volume,
-        'distanceLimits': distance_limits,
+        'distanceLimits': distance_limits.to_dict(orient='records'),
         'parameters': parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -340,44 +387,89 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Four dataframes with the information about opened warehouses, factory and customer assignment, and solution kpis. Returns None if the process fails.
     """
-    factories_columns = {
-        'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'minimumFtlCosts': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'minimumLtlCosts': 'float', 'outboundCostsHalfFtlPercent': 'float'
+    factories_mandatory_columns = {
+        'name': 'str', 'latitude': 'float', 'longitude': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'outboundCostsHalfFtlPercent': 'float'
     }
-    warehouses_columns = {
-        'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'penaltyCostsWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'penaltyCostsVolume': 'float','fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'minimumFtlCosts': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'minimumLtlCosts': 'float', 'outboundCostsHalfFtlPercent': 'float', 'minimumInboundReplenishmentFrequency': 'float', 'minimumOutboundReplenishmentFrequency': 'float', 'weightCostFunction': 'str', 'volumeCostFunction': 'str'
+    factories_optional_float = ['id', 'minimumFtlCosts', 'minimumLtlCosts']
+    warehouses_mandatory_columns = {
+        'name': 'str', 'latitude': 'float', 'longitude': 'float', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'outboundCostsHalfFtlPercent': 'float'
     }
-    customers_columns = {
-        'id': 'float', 'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float', 'productSegments': 'str', 'factory': 'str', 'warehouse': 'str', 'maximumWarehouseDistance': 'float', 'penaltyCostsWarehouseDistance': 'float',
+    warehouses_optional_columns = {'weightCostFunction': 'str', 'volumeCostFunction': 'str'}
+    warehouses_optional_float = ['id', 'penaltyCostsWeight', 'penaltyCostsVolume', 'minimumFtlCosts', 'minimumLtlCosts', 'minimumInboundReplenishmentFrequency', 'minimumOutboundReplenishmentFrequency']
+    customers_mandatory_columns = {
+        'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'
     }
-    product_segments_columns = {
+    customers_optional_columns = {'productSegments': 'str', 'factory': 'str', 'warehouse': 'str'}
+    customers_optional_float = ['id', 'maximumWarehouseDistance', 'penaltyCostsWarehouseDistance']
+    product_segments_optional_columns = {
         'id': 'float', 'segmentName': 'str', 'availableWarehouses': 'str'
     }
-    transport_costs_columns = {
-        'id': 'float', 'startLocationName': 'str', 'endLocationName': 'str', 'weightCapacity': 'float', 'volumeCapacity': 'float', 'costsPerUnit': 'float',
+    transport_costs_mandatory_columns = {
+        'startLocationName': 'str', 'endLocationName': 'str', 'volumeCapacity': 'float', 'costsPerUnit': 'float',
     }
-    transport_costs_rules_columns = {
-        'id': 'float', 'fromCountryIso2': 'str', 'fromZip': 'str',  'fromName': 'str', 'toCountryIso2': 'str', 'toZip': 'str', 'toName': 'str', 'layer': 'str', 'distance': 'float', 'weightCapacityPerUnit': 'float', 'volumeCapacityPerUnit': 'float', 'costsPerUnit': 'float'
+    transport_costs_optional_columns = {'id': 'float'}
+    transport_costs_optional_float = ['weightCapacity']
+    transport_costs_rules_optional_columns = {
+        'id': 'float', 'fromCountryIso2': 'str', 'fromZip': 'str',  'fromName': 'str', 'toCountryIso2': 'str', 'toZip': 'str', 'toName': 'str', 'layer': 'str'
     }
-    stepwise_function_weight_columns = {
-        'id': 'float', 'stepFunctionId': 'str', 'stepEnd': 'float', 'fixedCost': 'float', 'costPerWeightUnit': 'float',
+    transport_costs_rules_optional_float = ['distance', 'weightCapacityPerUnit', 'volumeCapacityPerUnit', 'costsPerUnit']
+    stepwise_function_weight_optional_columns = {
+        'id': 'float', 'stepFunctionId': 'str'
         }
-    stepwise_function_volume_columns = {
-        'id': 'float', 'stepFunctionId': 'str', 'stepEnd': 'float', 'fixedCost': 'float', 'costPerVolumeUnit': 'float',
+    stepwise_function_weight_optional_float = ['stepEnd', 'fixedCost', 'costPerWeightUnit']
+    stepwise_function_volume_optional_columns = {
+        'id': 'float', 'stepFunctionId': 'str'
         }
+    stepwise_function_volume_optional_float = ['stepEnd', 'fixedCost', 'costPerVolumeUnit']
     distance_limits_columns = {
         'id': 'float', 'distanceLimit': 'str',  'weightPercentage': 'str', 'volumePercentage': 'str', 'distanceLimitPenalty': 'str', 
         }
 
     # Validate and convert data types
-    factories = exclude_nan_depending_on_dtype(factories, factories_columns)
-    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
-    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
-    product_segments = exclude_nan_depending_on_dtype(product_segments, product_segments_columns)
-    transport_costs = exclude_nan_depending_on_dtype(transport_costs, transport_costs_columns)
-    transport_costs_rules = exclude_nan_depending_on_dtype(transport_costs_rules, transport_costs_rules_columns)
-    stepwise_function_weight = exclude_nan_depending_on_dtype(stepwise_function_weight, stepwise_function_weight_columns)
-    stepwise_function_volume = exclude_nan_depending_on_dtype(stepwise_function_volume, stepwise_function_volume_columns)
-    distance_limits = exclude_nan_depending_on_dtype(distance_limits, distance_limits_columns)
+    factories = validate_and_convert_data_types(factories, factories_mandatory_columns, 'mandatory')
+    if not factories is None:
+        factories = convert_to_float(factories, factories_optional_float, 'optional')
+        factories = convert_df_to_dict_excluding_nan(factories, factories_optional_float)
+
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory')
+    if not warehouses is None:
+        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional')
+        if not warehouses is None:
+            warehouses = convert_to_float(warehouses, warehouses_optional_float, 'optional')
+            warehouses = convert_df_to_dict_excluding_nan(warehouses,warehouses_optional_float)
+
+    customers = validate_and_convert_data_types(customers, customers_mandatory_columns, 'mandatory')
+    if not customers is None:
+        customers = validate_and_convert_data_types(customers, customers_optional_columns, 'optional')
+        if not customers is None:
+            customers = convert_to_float(customers, customers_optional_float, 'optional')
+            customers = convert_df_to_dict_excluding_nan(customers, customers_optional_float)
+
+    product_segments = validate_and_convert_data_types(product_segments, product_segments_optional_columns, 'optional')
+    
+    transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_mandatory_columns, 'mandatory')
+    if not transport_costs is None:
+        transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_optional_columns, 'optional')
+        if not transport_costs is None:
+            transport_costs = convert_to_float(transport_costs, transport_costs_optional_float, 'optional')
+            transport_costs = convert_df_to_dict_excluding_nan(transport_costs, transport_costs_optional_float)
+
+    transport_costs_rules = validate_and_convert_data_types(transport_costs_rules, transport_costs_rules_optional_columns, 'optional')
+    if not transport_costs_rules is None:
+        transport_costs_rules = convert_to_float(transport_costs_rules, transport_costs_rules_optional_float, 'optional')
+        transport_costs_rules = convert_df_to_dict_excluding_nan(transport_costs_rules, transport_costs_rules_optional_float)
+    
+    stepwise_function_weight = validate_and_convert_data_types(stepwise_function_weight, stepwise_function_weight_optional_columns, 'optional')
+    if not stepwise_function_weight is None:
+        stepwise_function_weight = convert_to_float(stepwise_function_weight, stepwise_function_weight_optional_float, 'optional')
+        stepwise_function_weight = convert_df_to_dict_excluding_nan(stepwise_function_weight, stepwise_function_weight_optional_float)
+
+    stepwise_function_volume = validate_and_convert_data_types(stepwise_function_volume, stepwise_function_volume_optional_columns, 'optional')
+    if not stepwise_function_volume is None:
+        stepwise_function_volume = convert_to_float(stepwise_function_volume, stepwise_function_volume_optional_float, 'optional')
+        stepwise_function_volume = convert_df_to_dict_excluding_nan(stepwise_function_volume, stepwise_function_volume_optional_float)
+
+    distance_limits = validate_and_convert_data_types(distance_limits, distance_limits_columns, 'optional')
 
     if any(df is None for df in [factories, warehouses, customers, product_segments, transport_costs, transport_costs_rules, stepwise_function_weight, stepwise_function_volume, distance_limits]):
         return None
@@ -390,12 +482,12 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
         'factories': factories,
         'warehouses': warehouses,
         'customers': customers,
-        'productSegments': product_segments,
+        'productSegments': product_segments.to_dict(orient='records'),
         'transportCosts': transport_costs,
         'transportsCostsRules': transport_costs_rules,
         'stepwiseCostFunctionWeight': stepwise_function_weight,
         'stepwiseCostFunctionVolume': stepwise_function_volume,
-        'distanceLimits': distance_limits,
+        'distanceLimits': distance_limits.to_dict(orient='records'),
         'parameters': parameters
     }
     payload = save_scenario_check(save_scenario, payload)
