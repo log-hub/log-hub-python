@@ -49,16 +49,18 @@ def forward_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
     Optional[Tuple[pd.DataFrame, pd.DataFrame]]: A pandas DataFrame containing information about the nearest warehouses for each 
                                                  customer, and a pandas DataFrame for unassigned customers. Returns None if the process fails.
     """
-    warehouses_columns = {
-        'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'
-    }
-    customer_columns = {
-        'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'
-    }
+    warehouses_mandatory_columns = {'name': 'str', 'country': 'str'}
+    warehouses_optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
+    customer_mandatory_columns = {'name': 'str', 'country': 'str'}
+    customer_optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
     # Validate and convert data types
-    warehouses = validate_and_convert_data_types(warehouses, warehouses_columns)
-    customers = validate_and_convert_data_types(customers, customer_columns)
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory')
+    if not warehouses is None:
+        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional')
+    customers = validate_and_convert_data_types(customers, customer_mandatory_columns, 'mandatory')
+    if not customers is None:
+        customers = validate_and_convert_data_types(customers, customer_optional_columns, 'optional')
 
     if any(df is None for df in [warehouses, customers]):
         return None
@@ -141,8 +143,8 @@ def reverse_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
     }
 
     # Validate and convert data types
-    warehouses = validate_and_convert_data_types(warehouses, warehouses_columns)
-    customers = validate_and_convert_data_types(customers, customer_columns)
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_columns, 'mandatory')
+    customers = validate_and_convert_data_types(customers, customer_columns, 'mandatory')
 
     if any(df is None for df in [warehouses, customers]):
         return None
