@@ -63,20 +63,16 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three dataframes with the information about opened warehouses, customer assignment, and solution kpis. Returns None if the process fails.
     """
-    customers_columns = {
-        'id': 'float', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'
-    }
-    warehouses_columns = {
-        'id': 'float', 'name': 'str', 'country': 'str', 'state' : 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'penaltyCostsWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'penaltyCostsVolume': 'float','fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float'
-    }
-    costs_adjustments_columns = {
-        'id': 'float', 'customerCountryIso2': 'str',  'warehouseCountryIso2': 'str', 'customerName': 'str', 'warehouseName': 'str', 'adjustmentFactor': 'float', 'flatOnTop': 'float'
-        }
+    customers_mandatory_columns = {'name': 'str', 'country': 'str', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'}
+    customers_optional_columns = {'id': 'float', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
+    warehouses_mandatory_columns = {'name': 'str', 'country': 'str', 'fixed': 'float', 'minWeight': 'float', 'maxWeight': 'float', 'minVolume': 'float', 'maxVolume': 'float', 'fixedCosts': 'float','costsPerWeightUnit': 'float', 'costsPerVolumeUnit': 'float'}
+    warehouses_optional_columns = {'id': 'float', 'state' : 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'penaltyCostsWeight': 'float', 'penaltyCostsVolume': 'float'}
+    costs_adjustments_optional_columns = {'id': 'float', 'customerCountryIso2': 'str',  'warehouseCountryIso2': 'str', 'customerName': 'str', 'warehouseName': 'str', 'adjustmentFactor': 'float', 'flatOnTop': 'float'}
 
     # Validate and convert data types
-    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_columns)
-    customers = exclude_nan_depending_on_dtype(customers, customers_columns)
-    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_columns)
+    warehouses = exclude_nan_depending_on_dtype(warehouses, warehouses_mandatory_columns, 'mandatory')
+    customers = exclude_nan_depending_on_dtype(customers, customers_mandatory_columns)
+    costs_adjustments = exclude_nan_depending_on_dtype(costs_adjustments, costs_adjustments_optional_columns)
 
     if any(df is None for df in [warehouses, customers, costs_adjustments]):
         return None
