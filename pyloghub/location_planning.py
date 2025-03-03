@@ -255,19 +255,3 @@ def reverse_location_planning_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'warehouses': warehouses_df, 'customers': customers_df, 'costsAdjustments': costs_adjustments_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    api_key_dev = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
-
-    sample = reverse_location_planning_sample_data()
-    customers = sample['customers']
-    warehouses = sample['warehouses']
-    cost_adjustments = sample['costsAdjustments']
-    par = sample['parameters']
-
-    #customers = customers.drop(columns = ['name'])
-    warehouses = warehouses.drop(columns = ['penaltyCostsWeight'])
-    cost_adjustments = cost_adjustments.drop(columns = ['flatOnTop'])
-
-    out = reverse_location_planning(customers, warehouses, cost_adjustments, par, api_key_dev)
