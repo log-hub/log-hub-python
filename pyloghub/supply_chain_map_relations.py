@@ -50,13 +50,13 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
                   the process fails.
     """
 
-    required_columns = {
-            'id': 'float', 'senderName': 'str', 'senderCountry': 'str', 'senderState': 'str', 'senderPostalCode': 'str',
-            'senderCity': 'str', 'senderStreet': 'str', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientCountry': 'str', 'recipientState': 'str', 'recipientPostalCode': 'str', 'recipientCity': 'str', 'recipientStreet': 'str', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'string'
-        }
+    mandatory_columns = {'senderCountry': 'str',  'recipientCountry': 'str'}
+    optional_columns = {'id': 'float', 'senderName': 'str', 'senderState': 'str', 'senderPostalCode': 'str', 'senderCity': 'str', 'senderStreet': 'str', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientState': 'str', 'recipientPostalCode': 'str', 'recipientCity': 'str', 'recipientStreet': 'str', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'string'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, required_columns)
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    if not addresses is None:
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
     if addresses is None:
         return None
 
@@ -125,12 +125,14 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
     Returns:
     pd.DataFrame: A pandas DataFrame containg the coordinates pairs. Returns None if the process fails.
     """
-    required_columns = {
-            'id': 'float', 'senderName': 'str', 'senderLatitude':'float', 'senderLongitude': 'float', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientLatitude':'float', 'recipientLongitude': 'float', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'str'
+    mandatory_columns = {
+            'senderLatitude':'float', 'senderLongitude': 'float', 'recipientLatitude':'float', 'recipientLongitude': 'float'
         }
-    
+    optional_columns = {'id': 'float', 'senderName': 'str', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'str'}
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, required_columns)
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory')
+    if not coordinates is None:
+        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional')
     if coordinates is None:
         return None
 

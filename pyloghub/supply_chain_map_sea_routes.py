@@ -5,7 +5,7 @@ from typing import Optional
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-from input_data_validation import validate_and_convert_data_types
+from input_data_validation import validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
 from sending_requests import post_method, create_headers, create_url
 
 def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
@@ -44,13 +44,16 @@ def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dic
                   along with the parsed latitude and longitude, parsed country name and distance.
 
     """
-
-    required_columns = {
-            'id': 'float', 'fromName': 'str', 'fromUnLocode': 'str', 'toName': 'str', 'toUnLocode': 'str', 'quantity': 'float',
-            'routingOptions': 'str'
-        }
+    mandatory_columns = {'fromName': 'str', 'fromUnLocode': 'str', 'toName': 'str', 'toUnLocode': 'str'}
+    optional_columns = {'routingOptions': 'str'}
+    optional_floats = ['id', 'quantity']
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, required_columns)
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    if not addresses is None:
+         addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+         if not addresses is None:
+              addresses = convert_to_float(addresses, optional_floats, 'optional')
+              addresses = convert_df_to_dict_excluding_nan(addresses, optional_floats)
     if addresses is None:
         return None
 
@@ -58,7 +61,7 @@ def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dic
     
     headers = create_headers(api_key)
     payload = {
-        "seaRoutesAddressesData": addresses.to_dict(orient='records'),
+        "seaRoutesAddressesData": addresses,
         "parameters": parameters
     }
     
@@ -127,12 +130,16 @@ def reverse_supply_chain_map_sea_routes(coordinates: pd.DataFrame, parameters: d
 
     """
 
-    required_columns = {
-            'id': 'float', 'fromName': 'str', 'fromLatitude':'float', 'fromLongitude': 'float', 'toName': 'str', 'toLatitude': 'float', 'toLongitude': 'float', 'quantity': 'float', 'routingOptions': 'str'
-        }
-    
+    mandatory_columns = {'fromName': 'str', 'fromLatitude':'float', 'fromLongitude': 'float', 'toName': 'str', 'toLatitude': 'float', 'toLongitude': 'float'}
+    optional_columns = {'routingOptions': 'str'}
+    optional_floats = ['id', 'quantity']
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, required_columns)
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory')
+    if not coordinates is None:
+         coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional')
+         if not coordinates is None:
+              coordinates = convert_to_float(coordinates, optional_floats, 'optional')
+              coordinates = convert_df_to_dict_excluding_nan(coordinates, optional_floats)
     if coordinates is None:
         return None
 
@@ -140,7 +147,7 @@ def reverse_supply_chain_map_sea_routes(coordinates: pd.DataFrame, parameters: d
     
     headers = create_headers(api_key)
     payload = {
-        "seaRoutesCoordinatesData": coordinates.to_dict(orient='records'),
+        "seaRoutesCoordinatesData": coordinates,
         "parameters": parameters
     }
     
