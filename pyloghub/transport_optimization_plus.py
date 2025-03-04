@@ -6,7 +6,7 @@ from typing import Optional, Dict, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-from input_data_validation import convert_timestamps, validate_and_convert_data_types
+from input_data_validation import convert_timestamps, validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
 from sending_requests import post_method, create_headers, create_url
 
 def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
@@ -78,46 +78,55 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
                                                      and external orders. Returns None if the process fails.
     """
 
-    # Convert datetime columns in each DataFrame to string format (ISO 8601)
-    vehicles = convert_timestamps(vehicles)
-    jobs = convert_timestamps(jobs)
-    timeWindowProfiles = convert_timestamps(timeWindowProfiles)
-    breaks = convert_timestamps(breaks)
-
     # Define expected columns and data types for each DataFrame
-    vehicle_columns = {
-        'vehicleTypeId': 'str', 'availableVehicles': 'int', 'startId': 'str', 
-        'startCountry': 'str', 'startState': 'str', 'startPostalCode': 'str', 
-        'startCity': 'str', 'startStreet': 'str', 'endId': 'str', 
-        'endCountry': 'str', 'endState': 'str', 'endPostalCode': 'str', 
-        'endCity': 'str', 'endStreet': 'str', 'maxWeight': 'float', 
-        'maxVolume': 'float', 'maxPallets': 'int', 'maxStops': 'int', 
-        'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 
-        'speedFactor': 'float', 'fixed': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
+    vehicle_mandatory_columns = {
+        'vehicleTypeId': 'str', 'availableVehicles': 'int'
     }
-    job_columns = {
-        'shipmentId': 'str', 'fromName': 'str', 'fromCountry': 'str', 
-        'fromState': 'str', 'fromPostalCode': 'str', 'fromCity': 'str', 
-        'fromStreet': 'str', 'senderStopDuration': 'float', 
-        'senderTimeWindowProfile': 'str', 'toName': 'str', 'toCountry': 'str', 
-        'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 
-        'toStreet': 'str', 'recipientStopDuration': 'float', 
-        'recipientTimeWindowProfile': 'str', 'weight': 'float', 
-        'volume': 'float', 'pallets': 'int', 'vehicleTypeId': 'str', 'external_costs': 'float'
+    vehicle_optional_columns = {
+        'startId': 'str', 'startCountry': 'str', 'startState': 'str', 'startPostalCode': 'str', 'startCity': 'str', 'startStreet': 'str', 'endId': 'str', 
+        'endCountry': 'str', 'endState': 'str', 'endPostalCode': 'str', 'endCity': 'str', 'endStreet': 'str', 
+        'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 'breakId': 'str'
     }
-    timeWindowProfile_columns = {
-        'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 
-        'timeWindowProfileEnd': 'str'
+    vehicle_optional_floats = ['maxWeight', 'maxVolume', 'maxPallets', 'maxStops', 'speedFactor', 'fixed', 'perHour', 'perKilometer', 'costPerStop', 'minimumTravelTime', 'maxTravelTime', 'max_distance', 'maximumDistanceBetweenStops']
+    job_mandatory_columns = {
+        'shipmentId': 'str', 'fromName': 'str', 'fromCountry': 'str', 'toName': 'str', 'toCountry': 'str', 'vehicleTypeId': 'str'
     }
-    break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
+    job_optional_columns = {
+        'fromState': 'str', 'fromPostalCode': 'str', 'fromCity': 'str', 'fromStreet': 'str', 'senderTimeWindowProfile': 'str', 'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 
+        'toStreet': 'str', 'recipientTimeWindowProfile': 'str',
     }
+    job_optional_floats = ['senderStopDuration', 'recipientStopDuration', 'weight', 'volume', 'pallets', 'external_costs']
+    timeWindowProfile_optional_columns = {
+        'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 'timeWindowProfileEnd': 'str'
+    }
+    break_optional_columns = {
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str'
+    }
+    break_optional_floats = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_columns)
-    jobs = validate_and_convert_data_types(jobs, job_columns)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_columns)
-    breaks = validate_and_convert_data_types(breaks, break_columns)
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory')
+    if not vehicles is None:
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional')
+        if not vehicles is None:
+            vehicles = convert_timestamps(vehicles)
+            vehicles = convert_to_float(vehicles, vehicle_optional_floats, 'optional')
+            vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_floats)
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory')
+    if not jobs is None:
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional')
+        if not jobs is None:
+            jobs = convert_timestamps(jobs)
+            jobs = convert_to_float(jobs, job_optional_floats, 'optional')
+            jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_floats)
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional')
+    if not timeWindowProfiles is None:
+        timeWindowProfiles = convert_timestamps(timeWindowProfiles)
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional')
+    if not breaks is None:
+        breaks = convert_timestamps(breaks)
+        breaks = convert_to_float(breaks, break_optional_floats, 'optional')
+        breaks = convert_df_to_dict_excluding_nan(breaks, break_optional_floats)
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [vehicles, jobs, timeWindowProfiles, breaks]):
@@ -128,10 +137,10 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
     headers = create_headers(api_key)
 
     payload = {
-        "vehicles": vehicles.to_dict(orient='records'),
-        "jobs": jobs.to_dict(orient='records'),
+        "vehicles": vehicles,
+        "jobs": jobs,
         "timeWindowProfiles": timeWindowProfiles.to_dict(orient='records'),
-        "breaks": breaks.to_dict(orient='records'),
+        "breaks": breaks,
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -231,55 +240,65 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
                                                      and external orders. Returns None if the process fails.
     """
 
-    # Convert datetime columns in each DataFrame to string format (ISO 8601)
-    vehicles = convert_timestamps(vehicles)
-    jobs = convert_timestamps(jobs)
-    timeWindowProfiles = convert_timestamps(timeWindowProfiles)
-    breaks = convert_timestamps(breaks)
-
     # Define expected columns and data types for each DataFrame
-    vehicle_columns = {
-        'vehicleTypeId': 'str', 'availableVehicles': 'int', 'startId': 'str', 
-        'startLatitude': 'float', 'startLongitude': 'float', 'endId': 'str', 
-        'endLatitude': 'float', 'endLongitude': 'float', 'maxWeight': 'float', 
-        'maxVolume': 'float', 'maxPallets': 'int', 'maxStops': 'int', 
-        'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 
-        'speedFactor': 'float', 'fixed': 'float', 'perHour': 'float',  'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
+    vehicle_mandatory_columns = {
+        'vehicleTypeId': 'str', 'availableVehicles': 'int'
     }
-    job_columns = {
-        'shipmentId': 'str', 'fromName': 'str', 'fromLatitude': 'float', 
-        'fromLongitude': 'float', 'senderStopDuration': 'float', 
-        'senderTimeWindowProfile': 'str', 'toName': 'str', 'toLatitude': 'float', 
-        'toLongitude': 'float', 'recipientStopDuration': 'float', 
-        'recipientTimeWindowProfile': 'str', 'weight': 'float', 
-        'volume': 'float', 'pallets': 'int', 'vehicleTypeId': 'str', 'external_costs': 'float'
+    vehicle_optional_columns = {
+        'startId': 'str', 'endId': 'str', 'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 'breakId': 'str'
     }
-    timeWindowProfile_columns = {
-        'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 
-        'timeWindowProfileEnd': 'str'
+    vehicle_optional_floats = ['startLatitude', 'startLongitude', 'endLatitude', 'endLongitude', 'maxWeight', 'maxVolume', 'maxPallets', 'maxStops', 'speedFactor', 'fixed', 'perHour',  'perKilometer', 'costPerStop', 'minimumTravelTime', 'maxTravelTime', 'max_distance', 'maximumDistanceBetweenStops']
+    job_mandatory_columns = {
+        'shipmentId': 'str', 'fromName': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toName': 'str', 'toLatitude': 'float', 'toLongitude': 'float'
     }
-    break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
+    job_optional_columns = {
+        'senderTimeWindowProfile': 'str', 'recipientTimeWindowProfile': 'str', 'vehicleTypeId': 'str',
     }
+    job_optional_floats = ['senderStopDuration', 'recipientStopDuration', 'weight', 'volume', 'pallets', 'external_costs']
+    timeWindowProfile_optional_columns = {
+        'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 'timeWindowProfileEnd': 'str'
+    }
+    break_optional_columns = {
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str'
+    }
+    break_optional_floats = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_columns)
-    jobs = validate_and_convert_data_types(jobs, job_columns)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_columns)
-    breaks = validate_and_convert_data_types(breaks, break_columns)
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory')
+    if not vehicles is None:
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional')
+        if not vehicles is None:
+            vehicles = convert_timestamps(vehicles)
+            vehicles = convert_to_float(vehicles, vehicle_optional_floats, 'optional')
+            vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_floats)
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory')
+    if not jobs is None:
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional')
+        if not jobs is None:
+            jobs = convert_timestamps(jobs)
+            jobs = convert_to_float(jobs, job_optional_floats, 'optional')
+            jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_floats)
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional')
+    if not timeWindowProfiles is None:
+        timeWindowProfiles = convert_timestamps(timeWindowProfiles)
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional')
+    if not breaks is None:
+        breaks = convert_timestamps(breaks)
+        breaks = convert_to_float(breaks, break_optional_floats, 'optional')
+        breaks = convert_df_to_dict_excluding_nan(breaks, break_optional_floats)
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [vehicles, jobs, timeWindowProfiles, breaks]):
         return None
 
-    url  =create_url("reversetransportoptimizationplus")
+    url = create_url("reversetransportoptimizationplus")
     
     headers = create_headers(api_key)
     payload = {
-        "vehicles": vehicles.to_dict(orient='records'),
-        "jobs": jobs.to_dict(orient='records'),
+        "vehicles": vehicles,
+        "jobs": jobs,
         "timeWindowProfiles": timeWindowProfiles.to_dict(orient='records'),
-        "breaks": breaks.to_dict(orient='records'),
+        "breaks": breaks,
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
