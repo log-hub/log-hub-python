@@ -8,7 +8,7 @@ from save_to_platform import save_scenario_check
 from input_data_validation import convert_df_to_dict_excluding_nan, convert_to_float, validate_and_convert_data_types
 from sending_requests import post_method, create_headers, create_url
 
-def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Calculate the freight matrix for a list of shipments provided in a pandas DataFrame.
 
@@ -70,21 +70,28 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers, "freight matrix")
+    response_data = post_method(url, payload, headers, "freight matrix plus")
     if response_data is None:
         return None
     else:
         evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
         return evaluated_shipments
 
-def forward_freight_matrix_sample_data():
+def forward_freight_matrix_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'freightMatrixAddresses.xlsx')
     shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:U', dtype={'shipmentId': str, 'shipmentDate': str, 'fromLocationId': str, 'toLocationId': str, 'fromPostalCode': str, 'toPostalCode': str, 'distance': str, 'weight': float, 'volume': float, 'pallets': float, 'loadingMeters': float})
-    return {'shipments': shipments_df}
+
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'shipments': shipments_df, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
     """
     Calculate the reverse freight matrix for a list of shipments provided in a pandas DataFrame.
     
@@ -139,24 +146,22 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers, "reverse freight matrix")
+    response_data = post_method(url, payload, headers, "reverse freight matrix plus")
     if response_data is None:
         return None
     else:
         evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
         return evaluated_shipments
 
-def reverse_freight_matrix_sample_data():
+def reverse_freight_matrix_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'freightMatrixReverse.xlsx')
     shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:O', dtype={'shipmentId': str, 'shipmentDate': str, 'fromLocationId': str, 'toLocationId': str, 'weight': float, 'volume': float, 'pallets': float, 'loadingMeters': float})
-    return {'shipments': shipments_df}
 
-if __name__ == "__main__":
-
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-
-    sample = reverse_freight_matrix_sample_data()
-    shipments = sample['shipments']
-    shipments = shipments.drop(columns=['volume'])
-    output = reverse_freight_matrix(shipments, "4a389cc22ede08d9a499471fac7e26864d831905", api_key_dev)
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'shipments': shipments_df, 'saveScenarioParameters': save_scenario}
