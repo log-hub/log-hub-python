@@ -143,7 +143,14 @@ def forward_shipment_analyzer_sample_data():
         "consolidation": False
     }
 
-    return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters}
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+
+    return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
 def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
@@ -271,4 +278,12 @@ def reverse_shipment_analyzer_sample_data():
     parameters = {
         "consolidation": False
     }
-    return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters}
+
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
