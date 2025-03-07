@@ -62,7 +62,7 @@ def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
 
     parameters (Dict): Dictionary containing parameters durationUnit and distanceUnit.
 
-    api_key (str): Log-hub API key for accessing the milkrun optimization service.
+    api_key (str): Log-hub API key for accessing the transport optimization service.
 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
@@ -199,7 +199,7 @@ def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
 
     parameters (Dict): Dictionary containing parameters durationUnit and distanceUnit.
 
-    api_key (str): Log-hub API key for accessing the milkrun optimization service.
+    api_key (str): Log-hub API key for accessing the reverse transport optimization service.
 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
