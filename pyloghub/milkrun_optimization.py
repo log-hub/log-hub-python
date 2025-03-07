@@ -52,7 +52,7 @@ def forward_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         - street (str): Street name with house number.
         - weight (number): The weight of the order. 
         - volume (number): The volume of the order.
-        - loadingMeter (number): The niumber of pallets of the order.
+        - loadingMeter (number): The number of pallets of the order.
         - modus (str): Pickup/Delivery.
         - depot (str):  The depot name the order has to be delivered to.
         - vehicleType (str): All valid vehicle types for the order separated by semicolon.
@@ -144,6 +144,7 @@ def forward_milkrun_optimization_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'depots': depots_df, 'vehicleTypes': vehicle_types_df, 'pickupAndDelivery': pickup_and_delivery_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
 def reverse_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFrame, pickup_and_delivery: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform milkrun optimization based on depots, vehicle types, and pickup and delivery orders.
@@ -182,7 +183,7 @@ def reverse_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         - longitude (number): Longitude of the customer.
         - weight (number): The weight of the order. 
         - volume (number): The volume of the order.
-        - loadingMeter (number): The niumber of pallets of the order.
+        - loadingMeter (number): The number of pallets of the order.
         - modus (str): Pickup/Delivery.
         - depot (str):  The depot name the order has to be delivered to.
         - vehicleType (str): All valid vehicle types for the order separated by semicolon.
