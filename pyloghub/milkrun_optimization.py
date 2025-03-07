@@ -5,7 +5,7 @@ from typing import Optional, Dict, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check
-from input_data_validation import convert_timestamps, validate_and_convert_data_types, convert_df_to_dict_excluding_nan, convert_to_float
+from input_data_validation import validate_and_convert_data_types
 from sending_requests import post_method, create_headers, create_url
 
 def forward_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFrame, pickup_and_delivery: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
@@ -268,21 +268,3 @@ def reverse_milkrun_optimization_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'depots': depots_df, 'vehicleTypes': vehicle_types_df, 'pickupAndDelivery': pickup_and_delivery_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    sample = reverse_milkrun_optimization_sample_data()
-    api_key_dev = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
-    depots = sample['depots']
-    #depots = depots.drop(columns = ['postalCode', 'state'])
-    veh = sample['vehicleTypes']
-    #veh = veh.drop(columns = ['type'])
-    pickup_and_delivery = sample['pickupAndDelivery']
-    #pickup_and_delivery = pickup_and_delivery.drop(columns = ['postalCode', 'city'])
-    par = sample['parameters']
-    save_scenario = sample['saveScenarioParameters']
-    save_scenario['saveScenario'] = True
-    save_scenario['workspaceId'] = "2fdb6508020000336eda5932b32c114f9db46ccb"
-    save_scenario['scenarioName'] = 'Milkrun reverse'
-
-    out = reverse_milkrun_optimization(depots, veh, pickup_and_delivery, par, api_key_dev, save_scenario)
