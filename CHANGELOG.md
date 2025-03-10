@@ -4,6 +4,32 @@ All notable changes to the `log_hub` project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-03-15
+
+### Added
+- `forward_milkrun_optimization` service to improve efficiency in transportation and delivery processes by assign shipments to vehicles in an optimal way, based on shipments addresses and available vehicles.
+- `reverse_milkrun_optimization` service to improve efficiency in transportation and delivery processes by assign shipments to vehicles in an optimal way, based on shipments coordinates and available vehicles.
+- `forward_transport_optimization` service to find the most efficient and cost-effective ways to plan, organize, and execute the movement of goods and services, based on location addresses, available vehicles and shipments.
+- `reverse_transport_optimization` service to find the most efficient and cost-effective ways to plan, organize, and execute the movement of goods and services, based on location coordinates, available vehicles and shipments.
+- `forward_isochrone` to depict areas that can be reached within a certain time frame or distance from a specific location address. Calculating isochrones helps in visualizing accessibility and optimizing routes for travel.
+- `reverse_isochrone` to depict areas that can be reached within a certain time frame or distance from a specific location coordinates. Calculating isochrones helps in visualizing accessibility and optimizing routes for travel.
+- `forward_isochrone_plus` to depict areas that can be reached within a certain time frame or distance from a specific location address, calculating the isochrones with the additional parameters.
+- `reverse_isochrone_plus` to depict areas that can be reached within a certain time frame or distance from a specific location coordinates, calculating the isochrones with the additional parameters.
+- `get_workspace_entities` to fetch all the entities in the given workspace.
+
+### Changed
+- Input data validation is improved by separating mandatory and optional columns, as well as by adding table names in which data validation failed.
+- All the functions that have the possibility of saving the scenario on the Log-hub Platform are updated with the `show_buttons` parameter. If the parameter is triggered, the buttons linking to the output results will be created.
+
+### Fixed
+- N/A (no fixes in this release).
+
+### Deprecated
+- N/A (no deprecations in this release).
+
+### Removed
+- N/A (no removals in this release). 
+
 ## [0.1.4] - 2025-02-25
 
 ### Added
