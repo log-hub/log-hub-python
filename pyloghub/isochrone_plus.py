@@ -6,11 +6,11 @@ import warnings
 logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform forward isochrone plus calculation on a list of addresses.
 
@@ -45,11 +45,18 @@ def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: s
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: Twio pandas DataFrames containing the original address information along 
                   with the geocoded results, and information about the reachable areas, like area name, coordinates of the area center, and population.
                   Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
     mandatory_columns = {'name': 'str', 'country': 'str'}
     optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
@@ -77,6 +84,10 @@ def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: s
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodingResult'])
         reachable_areas_df = pd.DataFrame(response_data['reachableAreasTable'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return geocoded_data_df, reachable_areas_df
 
 def forward_isochrone_plus_sample_data():
@@ -103,7 +114,7 @@ def forward_isochrone_plus_sample_data():
     }
     return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_isochrone_plus(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_isochrone_plus(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse isochrone calculation on a list of latitude and longitude coordinates.
 
@@ -135,11 +146,18 @@ def reverse_isochrone_plus(geocodes: pd.DataFrame, parameters: Dict, api_key: st
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: Two pandas DataFrames containing the original geocode information along 
                   with the reverse geocoded address results, and information about the reachable areas, like area name, coordinates of the area center, and population.
                   Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
     geocodes_columns = {'name': 'str', 'latitude': 'float', 'longitude': 'float'}
 
     # Validate and convert data types
@@ -161,6 +179,10 @@ def reverse_isochrone_plus(geocodes: pd.DataFrame, parameters: Dict, api_key: st
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodingResult'])
         reachable_areas_df = pd.DataFrame(response_data['reachableAreasTable'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return geocoded_data_df, reachable_areas_df
 
 def reverse_isochrone_plus_sample_data():
