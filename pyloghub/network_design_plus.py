@@ -6,11 +6,11 @@ logging.basicConfig(level=logging.INFO)
 from typing import Optional, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import exclude_nan_depending_on_dtype, convert_to_float, validate_and_convert_data_types, convert_df_to_dict_excluding_nan
-from sending_requests import post_method, create_headers, create_url, get_method
+from sending_requests import post_method, create_headers, create_url, get_method, get_workspace_entities
 
-def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform network design plus based on factories, warehouses, customers, product segments, transport costs, transport costs rules, stepwise functions for weight and volume, and distance limits.
 
@@ -123,9 +123,16 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Four dataframes with the information about opened warehouses, factory and customer assignment, and solution kpis. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
     factories_mandatory_columns = {
        'name': 'str', 'country': 'str', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'outboundCostsHalfFtlPercent': 'float'
     }
@@ -247,6 +254,10 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
             factory_assignment = pd.DataFrame(get_method_result['factoryAssignment'])
             customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            if (show_buttons and save_scenario['saveScenario']):
+                create_buttons()
+            if not save_scenario['saveScenario']:
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, factory_assignment, customer_assignment,solution_kpis
 
 def forward_network_design_plus_sample_data():
@@ -280,7 +291,7 @@ def forward_network_design_plus_sample_data():
     }
     return {'factories': factories_df, 'warehouses': warehouses_df, 'customers': customers_df, 'productSegments': product_segments_df, 'transportCosts': transport_costs_df, 'transportCostsRules': transport_costs_rules_df, 'stepwiseCostFunctionWeight': stepwise_function_weight_df, 'stepwiseCostFunctionVolume': stepwise_function_volume_df, 'distanceLimits': distance_limits_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFrame, customers: pd.DataFrame, product_segments: pd.DataFrame, transport_costs: pd.DataFrame, transport_costs_rules: pd.DataFrame, stepwise_function_weight: pd.DataFrame, stepwise_function_volume: pd.DataFrame, distance_limits: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse network design plus based on factories, warehouses, customers, product segments, transport costs, transport costs rules, stepwise functions for weight and volume, and distance limits.
 
@@ -383,10 +394,17 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Four dataframes with the information about opened warehouses, factory and customer assignment, and solution kpis. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
     factories_mandatory_columns = {
         'name': 'str', 'latitude': 'float', 'longitude': 'float', 'outboundFtlCapacityWeight': 'float', 'outboundFtlCapacityVolume': 'float', 'outboundFtlCost1DistanceUnit': 'float', 'outboundFtlCost1000DistanceUnit': 'float', 'outboundCostsHalfFtlPercent': 'float'
     }
@@ -505,6 +523,10 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
             factory_assignment = pd.DataFrame(get_method_result['factoryAssignment'])
             customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            if (show_buttons and save_scenario['saveScenario']):
+                create_buttons()
+            if not save_scenario['saveScenario']:
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, factory_assignment, customer_assignment,solution_kpis
         
 def reverse_network_design_plus_sample_data():

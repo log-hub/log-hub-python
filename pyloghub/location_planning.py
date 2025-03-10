@@ -6,11 +6,11 @@ logging.basicConfig(level=logging.INFO)
 from typing import Optional, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import exclude_nan_depending_on_dtype, remove_nonexisting_optional_columns
-from sending_requests import post_method, create_headers, create_url, get_method
+from sending_requests import post_method, create_headers, create_url, get_method, get_workspace_entities
 
-def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform location planning based on customers, warehouses, and costs adjustment.
 
@@ -60,9 +60,16 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three dataframes with the information about opened warehouses, customer assignment, and solution kpis. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
     #removes missing optional columns from the list and merges optional and mandatory columns, then validates data types
     customers_mandatory_columns = {'name': 'str', 'country': 'str', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'}
     customers_optional_columns = {'id': 'float', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
@@ -110,6 +117,10 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
             open_warehouses = pd.DataFrame(get_method_result['openWarehouses'])
             customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            if (show_buttons and save_scenario['saveScenario']):
+                create_buttons()
+            if not save_scenario['saveScenario']:
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, customer_assignment,solution_kpis
 
 def forward_location_planning_sample_data():
@@ -136,7 +147,7 @@ def forward_location_planning_sample_data():
     }
     return {'warehouses': warehouses_df, 'customers': customers_df, 'costsAdjustments': costs_adjustments_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame, costs_adjustments: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse location planning based on customers, warehouses, and costs adjustment.
 
@@ -180,9 +191,16 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three dataframes with the information about opened warehouses, customer assignment, and solution kpis. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
     #removes missing optional columns from the list and merges optional and mandatory columns, then validates data types
     customers_mandatory_columns = {'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'numberOfShipments': 'float'}
     customers_optional_columns = {'id': 'float'}
@@ -230,6 +248,10 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
             open_warehouses = pd.DataFrame(get_method_result['openWarehouses'])
             customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
+            if (show_buttons and save_scenario['saveScenario']):
+                create_buttons()
+            if not save_scenario['saveScenario']:
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, customer_assignment, solution_kpis
 
 def reverse_location_planning_sample_data():

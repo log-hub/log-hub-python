@@ -2,14 +2,15 @@ import os
 import pandas as pd
 import warnings
 from typing import Optional, Dict, Tuple
+import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
 
-def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Calculate center of gravity plus based on a list of addresses, their weights, volumes, and revenues.
 
@@ -39,12 +40,18 @@ def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, ap
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas DataFrames. The first DataFrame contains the 
                                        assigned addresses with their respective centers, and the second 
                                        DataFrame contains the details of the centers.
                                        Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
     mandatory_columns = {'country': 'str', 'weight': 'float', 'volume': 'float', 'revenue': 'float'}
     optional_columns = {'id': 'float', 'name': 'str',  'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
@@ -69,6 +76,10 @@ def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, ap
     else:
         assigned_addresses_df = pd.DataFrame(response_data['assignedAddresses'])
         centers_df = pd.DataFrame(response_data['centers'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return assigned_addresses_df, centers_df
 
 def forward_center_of_gravity_plus_sample_data():
@@ -92,7 +103,7 @@ def forward_center_of_gravity_plus_sample_data():
     return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Calculate reverse center of gravity plus based on a list of coordinates, their weights, volumes, and revenues.
 
@@ -118,6 +129,9 @@ def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas DataFrames. The first DataFrame contains the 
@@ -125,6 +139,10 @@ def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, 
                                        DataFrame contains the details of the centers.
                                        Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
     mandatory_columns = {'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'revenue': 'float'}
     optional_columns = {'id': 'float', 'name': 'str'}
     
@@ -150,6 +168,10 @@ def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, 
     else:
         assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
         centers_df = pd.DataFrame(response_data['centers'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return assigned_geocodes_df, centers_df
 
 def reverse_center_of_gravity_plus_sample_data():

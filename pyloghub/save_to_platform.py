@@ -1,5 +1,11 @@
 import logging
+import os
 logging.basicConfig(level=logging.INFO)
+import webbrowser
+from IPython.display import display, Javascript, HTML
+import ipywidgets as widgets
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -44,3 +50,60 @@ def save_scenario_check(save_scenario_data: dict, payload: dict, application_nam
         payload['saveScenarioParameters'].update({par: save_scenario_data.get(par, save_scenario_default_values[par])})
 
     return payload
+
+def get_entities_link(data, scenario_name):
+
+    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
+    LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
+
+    entities_id = {}
+
+    for line in data:
+        if line['name'] == scenario_name and line['type'] == "MAP":
+            entities_id['map'] = f"{LOG_HUB_API_SERVER}/sca/platform/workspaces/" + line['workspaceId'] + "/maps/" + line['_id']
+        if line['name'] == scenario_name and line['type'] == "DASHBOARD":
+            entities_id['dashboard'] = f"{LOG_HUB_API_SERVER}/sca/platform/workspaces/" + line['workspaceId'] + "/dashboards/" + line['_id']
+        if line['name'] == scenario_name + " Input" and line['type'] == "DATASET":
+            entities_id['inputDataset'] = f"{LOG_HUB_API_SERVER}/sca/platform/workspaces/" + line['workspaceId'] + "/datasets/" + line['_id']
+        if line['name'] == scenario_name + " Output" and line['type'] == "DATASET":
+            entities_id['outputDataset'] = f"{LOG_HUB_API_SERVER}/sca/platform/workspaces/" + line['workspaceId'] + "/datasets/" + line['_id']
+    
+    if  entities_id == {}:
+        return None
+    else:
+        return entities_id
+
+ 
+def create_button(links, texts):
+    """
+    Creates a clean, minimal button for Jupyter Notebook output that links to the specified URL.
+ 
+    Parameters:
+      link (str): The URL to open when the button is clicked.
+      text (str): The text displayed on the button.
+    """
+    buttons_html = ""
+    for link, text in zip(links, texts):
+        button_html = f'''
+            <a href="{link}" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+            <button style="
+                font-family: 'Open Sans', sans-serif;
+                font-weight: 600;
+                background-color: #F7F8FA;
+                color: #111;
+                border: 1px solid #E5E7EB;
+                padding: 10px 20px;
+                font-size: 14px;
+                letter-spacing: 0.5px;
+                border-radius: 6px;
+                transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            "
+            onmouseover="this.style.backgroundColor='#E5E7EB'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.backgroundColor='#F7F8FA'; this.style.boxShadow='none';">
+            {text}
+            </button>
+            </a>
+            '''
+        buttons_html += button_html
+
+    display(HTML(buttons_html))

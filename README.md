@@ -83,6 +83,9 @@ pip install pyloghub
 
 Securely store your API key for use in your Python scripts or as an environment variable.
 
+```python
+api_key = "YOUR API KEY"
+```
 ## Usage
 
 ### Sample Code: Reverse Distance Calculation
@@ -131,9 +134,14 @@ from pyloghub.geocoding import forward_geocoding, forward_geocoding_sample_data
 
 sample_data = forward_geocoding_sample_data()
 addresses_df = sample_data['addresses']
+
 save_scenario = sample_data['saveScenarioParameters']
-forward_geocoding_result_df = forward_geocoding(addresses_df, api_key, save_scenario)
-forward_geocoding_result_df.head()
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+geocoded_df = forward_geocoding(addresses_df, api_key, save_scenario, show_buttons=True)
+geocoded_df.head()
 ```
 
 #### Reverse Geocoding
@@ -144,8 +152,13 @@ from pyloghub.geocoding import reverse_geocoding, reverse_geocoding_sample_data
 
 sample_data = reverse_geocoding_sample_data()
 geocodes_df = sample_data['geocodes']
+
 save_scenario = sample_data['saveScenarioParameters']
-reverse_geocoding_result_df = reverse_geocoding(geocodes_df, api_key, save_scenario)
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+reverse_geocoding_result_df = reverse_geocoding(geocodes_df, api_key, save_scenario, show_buttons=True)
 reverse_geocoding_result_df.head()
 ```
 
@@ -162,8 +175,13 @@ from pyloghub.distance_calculation import forward_distance_calculation, forward_
 sample_data = forward_distance_calculation_sample_data()
 address_data_df = sample_data['address_data']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
-forward_distance_calculation_result_df = forward_distance_calculation(address_data_df, parameters, api_key, save_scenario)
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+forward_distance_calculation_result_df = forward_distance_calculation(address_data_df, parameters, api_key, save_scenario, show_buttons=True)
 forward_distance_calculation_result_df.head()
 ```
 
@@ -176,8 +194,13 @@ from pyloghub.distance_calculation import reverse_distance_calculation, reverse_
 sample_data = reverse_distance_calculation_sample_data()
 geocode_data_df = sample_data['geocode_data']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
-reverse_distance_calculation_df = reverse_distance_calculation(geocode_data_df, parameters, api_key, save_scenario)
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+reverse_distance_calculation_df = reverse_distance_calculation(geocode_data_df, parameters, api_key, save_scenario, show_buttons=True)
 reverse_distance_calculation_df.head()
 ```
 
@@ -196,11 +219,12 @@ from pyloghub.supply_chain_map_locations import forward_supply_chain_map_locatio
 
 sample_data = forward_supply_chain_map_locations_sample_data()
 address_data_df = sample_data['addresses']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-locations_df = forward_supply_chain_map_locations(address_data_df, api_key, save_scenario)
+locations_df = forward_supply_chain_map_locations(address_data_df, api_key, save_scenario, show_buttons=True)
 locations_df.head()
 ```
 
@@ -212,11 +236,12 @@ from pyloghub.supply_chain_map_locations import reverse_supply_chain_map_locatio
 
 sample_data = reverse_supply_chain_map_locations_sample_data()
 coordinates_df = sample_data['coordinates']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-locations_df = reverse_supply_chain_map_locations(coordinates_df, api_key, save_scenario)
+locations_df = reverse_supply_chain_map_locations(coordinates_df, api_key, save_scenario, show_buttons=True)
 locations_df.head()
 ```
 
@@ -229,11 +254,12 @@ from pyloghub.supply_chain_map_relations import forward_supply_chain_map_relatio
 sample_data = forward_supply_chain_map_relations_sample_data()
 address_data_df = sample_data['addresses']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-relations_df = forward_supply_chain_map_relations(address_data_df, parameters, api_key, save_scenario)
+relations_df = forward_supply_chain_map_relations(address_data_df, parameters, api_key, save_scenario, show_buttons=True)
 relations_df.head()
 ```
 
@@ -246,11 +272,12 @@ from pyloghub.supply_chain_map_relations import reverse_supply_chain_map_relatio
 sample_data = reverse_supply_chain_map_relations_sample_data()
 coordinates_df = sample_data['coordinates']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-relations_df = reverse_supply_chain_map_relations(coordinates_df, parameters, api_key, save_scenario)
+relations_df = reverse_supply_chain_map_relations(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
 relations_df.head()
 ```
 
@@ -263,11 +290,12 @@ from pyloghub.supply_chain_map_areas import forward_supply_chain_map_areas_sampl
 sample_data = forward_supply_chain_map_areas_sample_data()
 areas_df = sample_data['areas']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-areas_output_df = forward_supply_chain_map_areas(areas_df, parameters, api_key, save_scenario)
+areas_output_df = forward_supply_chain_map_areas(areas_df, parameters, api_key, save_scenario, show_buttons=True)
 areas_output_df.head()
 ```
 
@@ -279,11 +307,12 @@ from pyloghub.supply_chain_map_polyline import reverse_supply_chain_map_polyline
 
 sample_data = reverse_supply_chain_map_polyline_sample_data()
 polyline_df = sample_data['polyline']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-polyline_output_df = reverse_supply_chain_map_polyline(polyline_df, api_key, save_scenario)
+polyline_output_df = reverse_supply_chain_map_polyline(polyline_df, api_key, save_scenario, show_buttons=True)
 polyline_output_df.head()
 ```
 
@@ -296,11 +325,12 @@ from pyloghub.supply_chain_map_routes import forward_supply_chain_map_routes_sam
 sample_data = forward_supply_chain_map_routes_sample_data()
 addresses_df = sample_data['addresses']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-routes_df = forward_supply_chain_map_routes(addresses_df, parameters, api_key, save_scenario)
+routes_df = forward_supply_chain_map_routes(addresses_df, parameters, api_key, save_scenario, show_buttons = True)
 routes_df.head()
 ```
 
@@ -313,11 +343,12 @@ from pyloghub.supply_chain_map_routes import reverse_supply_chain_map_routes_sam
 sample_data = reverse_supply_chain_map_routes_sample_data()
 coordinates_df = sample_data['coordinates']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-routes_df = reverse_supply_chain_map_routes(coordinates_df, parameters, api_key, save_scenario)
+routes_df = reverse_supply_chain_map_routes(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
 routes_df.head()
 ```
 
@@ -330,11 +361,12 @@ from pyloghub.supply_chain_map_sea_routes import forward_supply_chain_map_sea_ro
 sample_data = forward_supply_chain_map_sea_routes_sample_data()
 sea_routes_df = sample_data['addresses']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-sea_routes_output_df = forward_supply_chain_map_sea_routes(sea_routes_df, parameters, api_key, save_scenario)
+sea_routes_output_df = forward_supply_chain_map_sea_routes(sea_routes_df, parameters, api_key, save_scenario, show_buttons = True)
 sea_routes_output_df.head()
 ```
 
@@ -347,11 +379,12 @@ from pyloghub.supply_chain_map_sea_routes import reverse_supply_chain_map_sea_ro
 sample_data = reverse_supply_chain_map_sea_routes_sample_data()
 sea_routes_df = sample_data['coordinates']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-sea_routes_output_df = reverse_supply_chain_map_sea_routes(sea_routes_df, parameters, api_key, save_scenario)
+sea_routes_output_df = reverse_supply_chain_map_sea_routes(sea_routes_df, parameters, api_key, save_scenario, show_buttons=True)
 sea_routes_output_df.head()
 ```
 
@@ -363,24 +396,43 @@ sea_routes_output_df.head()
 Determine optimal facility locations based on addresses.
 
 ```python
+from IPython.display import display
 from pyloghub.center_of_gravity import forward_center_of_gravity, forward_center_of_gravity_sample_data
 
 sample_data = forward_center_of_gravity_sample_data()
 addresses_df = sample_data['addresses']
 parameters = sample_data['parameters']
-assigned_addresses_df, centers_df = forward_center_of_gravity(addresses_df, parameters, api_key)
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_addresses_df, centers_df = forward_center_of_gravity(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
+
+display(assigned_addresses_df.head())
+display(centers_df.head())
 ```
 
 #### Reverse Center of Gravity
 Determine optimal facility locations based on coordinates.
 
 ```python
+from IPython.display import display
 from pyloghub.center_of_gravity import reverse_center_of_gravity, reverse_center_of_gravity_sample_data
 
 sample_data = reverse_center_of_gravity_sample_data()
 coordinates_df = sample_data['coordinates']
 parameters = sample_data['parameters']
-assigned_geocodes_df, centers_df = reverse_center_of_gravity(coordinates_df, parameters, api_key)
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_geocodes_df, centers_df = reverse_center_of_gravity(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
+display(assigned_geocodes_df.head())
+display(centers_df.head())
 ```
 
 <p align="left">
@@ -395,13 +447,16 @@ from IPython.display import display
 from pyloghub.fixed_center_of_gravity import forward_fixed_center_of_gravity_sample_data, forward_fixed_center_of_gravity
 
 sample_data = forward_fixed_center_of_gravity_sample_data()
-
 customers_df = sample_data['customers']
 fixed_centers_df = sample_data['fixedCenters']
 parameters =sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-assigned_geocodes_df, centers_df = forward_fixed_center_of_gravity(customers_df, fixed_centers_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_geocodes_df, centers_df = forward_fixed_center_of_gravity(customers_df, fixed_centers_df, parameters, api_key, save_scenario, show_buttons=True)
 display(assigned_geocodes_df.head())
 display(centers_df.head())
 ```
@@ -414,13 +469,16 @@ from IPython.display import display
 from pyloghub.fixed_center_of_gravity import reverse_fixed_center_of_gravity_sample_data, reverse_fixed_center_of_gravity
 
 sample_data = reverse_fixed_center_of_gravity_sample_data()
-
 customers_df = sample_data['customers']
 fixed_centers_df = sample_data['fixedCenters']
 parameters =sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-assigned_geocodes_df, centers_df = reverse_fixed_center_of_gravity(customers_df, fixed_centers_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_geocodes_df, centers_df = reverse_fixed_center_of_gravity(customers_df, fixed_centers_df, parameters, api_key, save_scenario, show_buttons=True)
 display(assigned_geocodes_df.head())
 display(centers_df.head())
 ```
@@ -437,12 +495,15 @@ from IPython.display import display
 from pyloghub.center_of_gravity_plus import forward_center_of_gravity_plus_sample_data, forward_center_of_gravity_plus
 
 sample_data = forward_center_of_gravity_plus_sample_data()
-
 addresses_df = sample_data['addresses']
 parameters =sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-assigned_addresses_df, centers_df = forward_center_of_gravity_plus(addresses_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_addresses_df, centers_df = forward_center_of_gravity_plus(addresses_df, parameters, api_key, save_scenario, show_buttons = True)
 display(assigned_addresses_df.head())
 display(centers_df.head())
 ```
@@ -455,12 +516,15 @@ from IPython.display import display
 from pyloghub.center_of_gravity_plus import reverse_center_of_gravity_plus_sample_data, reverse_center_of_gravity_plus
 
 sample_data = reverse_center_of_gravity_plus_sample_data()
-
 coordinates_df = sample_data['coordinates']
 parameters =sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-assigned_geocodes_df, centers_df = reverse_center_of_gravity_plus(coordinates_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_geocodes_df, centers_df = reverse_center_of_gravity_plus(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
 display(assigned_geocodes_df.head())
 display(centers_df.head())
 ```
@@ -480,9 +544,13 @@ sample_data = forward_nearest_warehouses_sample_data()
 warehouses_df = sample_data['warehouses']
 customers_df = sample_data['customers']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-nearest_warehouses_df, unassigned_df = forward_nearest_warehouses(warehouses_df, customers_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+nearest_warehouses_df, unassigned_df = forward_nearest_warehouses(warehouses_df, customers_df, parameters, api_key, save_scenario, show_buttons=True)
 display(nearest_warehouses_df.head())
 display(unassigned_df.head())
 ```
@@ -498,9 +566,13 @@ sample_data = reverse_nearest_warehouses_sample_data()
 warehouses_df = sample_data['warehouses']
 customers_df = sample_data['customers']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-nearest_warehouses_df, unassigned_df = reverse_nearest_warehouses(warehouses_df, customers_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+nearest_warehouses_df, unassigned_df = reverse_nearest_warehouses(warehouses_df, customers_df, parameters, api_key, save_scenario, show_buttons=True)
 display(nearest_warehouses_df.head())
 display(unassigned_df.head())
 ```
@@ -527,9 +599,13 @@ stepwise_function_weight_df = sample_data['stepwiseCostFunctionWeight']
 stepwise_function_volume_df = sample_data['stepwiseCostFunctionVolume']
 distance_limits_df = sample_data['distanceLimits']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-open_warehouses, factory_assignement, customer_assignement, solution_kpis = forward_network_design_plus(factories_df, warehouses_df, customers_df, product_segments_df, transport_costs_df, transport_costs_rules_df, stepwise_function_weight_df, stepwise_function_volume_df, distance_limits_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+open_warehouses, factory_assignement, customer_assignement, solution_kpis = forward_network_design_plus(factories_df, warehouses_df, customers_df, product_segments_df, transport_costs_df, transport_costs_rules_df, stepwise_function_weight_df, stepwise_function_volume_df, distance_limits_df, parameters, api_key, save_scenario, show_buttons=Tr)
 display(open_warehouses.head())
 display(factory_assignement.head())
 display(customer_assignement.head())
@@ -554,9 +630,13 @@ stepwise_function_weight_df = sample_data['stepwiseCostFunctionWeight']
 stepwise_function_volume_df = sample_data['stepwiseCostFunctionVolume']
 distance_limits_df = sample_data['distanceLimits']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-open_warehouses, factory_assignement, customer_assignement, solution_kpis = reverse_network_design_plus(factories_df, warehouses_df, customers_df, product_segments_df, transport_costs_df, transport_costs_rules_df, stepwise_function_weight_df, stepwise_function_volume_df, distance_limits_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+open_warehouses, factory_assignement, customer_assignement, solution_kpis = reverse_network_design_plus(factories_df, warehouses_df, customers_df, product_segments_df, transport_costs_df, transport_costs_rules_df, stepwise_function_weight_df, stepwise_function_volume_df, distance_limits_df, parameters, api_key, save_scenario, show_buttons=True)
 display(open_warehouses.head())
 display(factory_assignement.head())
 display(customer_assignement.head())
@@ -579,9 +659,13 @@ warehouses_df = sample_data['warehouses']
 customers_df = sample_data['customers']
 cost_adjustments_df = sample_data['costsAdjustments']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-open_warehouses, customer_assignement, solution_kpis = forward_location_planning(customers_df, warehouses_df, cost_adjustments_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+open_warehouses, customer_assignement, solution_kpis = forward_location_planning(customers_df, warehouses_df, cost_adjustments_df, parameters, api_key, save_scenario, show_buttons=True)
 display(open_warehouses.head())
 display(customer_assignement.head())
 display(solution_kpis.head())
@@ -599,9 +683,13 @@ warehouses_df = sample_data['warehouses']
 customers_df = sample_data['customers']
 cost_adjustments_df = sample_data['costsAdjustments']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-open_warehouses, customer_assignement, solution_kpis = reverse_location_planning(customers_df, warehouses_df, cost_adjustments_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+open_warehouses, customer_assignement, solution_kpis = reverse_location_planning(customers_df, warehouses_df, cost_adjustments_df, parameters, api_key, save_scenario, show_buttons=True)
 display(open_warehouses.head())
 display(customer_assignement.head())
 display(solution_kpis.head())
@@ -625,9 +713,13 @@ jobs_df = sample_data['jobs']
 time_window_profiles_df = sample_data['timeWindowProfiles']
 breaks_df = sample_data['breaks']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-route_overview_df, route_details_df, external_orders_df = forward_milkrun_optimization_plus(depots_df, vehicles_df, jobs_df, time_window_profiles_df, breaks_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+route_overview_df, route_details_df, external_orders_df = forward_milkrun_optimization_plus(depots_df, vehicles_df, jobs_df, time_window_profiles_df, breaks_df, parameters, api_key, save_scenario, show_buttons=True)
 display(route_overview_df.head())
 display(route_details_df.head())
 display(external_orders_df.head())
@@ -647,9 +739,13 @@ jobs_df = sample_data['jobs']
 time_window_profiles_df = sample_data['timeWindowProfiles']
 breaks_df = sample_data['breaks']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-route_overview_df, route_details_df, external_orders_df = reverse_milkrun_optimization_plus(depots_df, vehicles_df, jobs_df, time_window_profiles_df, breaks_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+route_overview_df, route_details_df, external_orders_df = reverse_milkrun_optimization_plus(depots_df, vehicles_df, jobs_df, time_window_profiles_df, breaks_df, parameters, api_key, save_scenario, show_buttons=True)
 display(route_overview_df.head())
 display(route_details_df.head())
 display(external_orders_df.head())
@@ -672,10 +768,13 @@ shipments_df = sample_data['shipments']
 timeWindowProfiles_df = sample_data['timeWindowProfiles']
 breaks_df = sample_data['breaks']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-route_overview_df, route_details_df, external_orders_df = forward_transport_optimization_plus(vehicles_df, shipments_df, timeWindowProfiles_df, breaks_df, parameters, api_key, save_scenario)
-
+route_overview_df, route_details_df, external_orders_df = forward_transport_optimization_plus(vehicles_df, shipments_df, timeWindowProfiles_df, breaks_df, parameters, api_key, save_scenario, show_buttons=True)
 display(route_overview_df.head())
 display(route_details_df.head())
 display(external_orders_df.head())
@@ -694,10 +793,13 @@ shipments_df = sample_data['shipments']
 timeWindowProfiles_df = sample_data['timeWindowProfiles']
 breaks_df = sample_data['breaks']
 parameters = sample_data['parameters']
+
 save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-route_overview_df, route_details_df, external_orders_df = reverse_transport_optimization_plus(vehicles_df, shipments_df, timeWindowProfiles_df, breaks_df, parameters, api_key, save_scenario)
-
+route_overview_df, route_details_df, external_orders_df = reverse_transport_optimization_plus(vehicles_df, shipments_df, timeWindowProfiles_df, breaks_df, parameters, api_key, save_scenario, show_buttons=True)
 display(route_overview_df.head())
 display(route_details_df.head())
 display(external_orders_df.head())
@@ -803,9 +905,13 @@ from pyloghub.freight_shipment_emissions_road import forward_freight_shipment_em
 sample_data = forward_freight_shipment_emissions_road_sample_data()
 addresses_df = sample_data['addresses']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-freight_emissions_df, not_evaluated_df = forward_freight_shipment_emissions_road(addresses_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+freight_emissions_df, not_evaluated_df = forward_freight_shipment_emissions_road(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
 display(freight_emissions_df.head())
 display(not_evaluated_df.head())
 ```
@@ -820,9 +926,13 @@ from pyloghub.freight_shipment_emissions_road import reverse_freight_shipment_em
 sample_data = reverse_freight_shipment_emissions_road_sample_data()
 coordinates_df = sample_data['coordinates']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-freight_emissions_df, not_evaluated_df = reverse_freight_shipment_emissions_road(coordinates_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+freight_emissions_df, not_evaluated_df = reverse_freight_shipment_emissions_road(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
 display(freight_emissions_df.head())
 display(not_evaluated_df.head())
 ```
@@ -836,9 +946,13 @@ from pyloghub.freight_shipment_emissions_rail import forward_freight_shipment_em
 sample_data = forward_freight_shipment_emissions_rail_sample_data()
 addresses_df = sample_data['addresses']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-freight_emissions_df = forward_freight_shipment_emissions_rail(addresses_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+freight_emissions_df = forward_freight_shipment_emissions_rail(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
 freight_emissions_df.head()
 ```
 
@@ -851,9 +965,13 @@ from pyloghub.freight_shipment_emissions_rail import reverse_freight_shipment_em
 sample_data = reverse_freight_shipment_emissions_rail_sample_data()
 coordinates_df = sample_data['coordinates']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-freight_emissions_df = reverse_freight_shipment_emissions_rail(coordinates_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+freight_emissions_df = reverse_freight_shipment_emissions_rail(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
 freight_emissions_df.head()
 ```
 
@@ -866,9 +984,13 @@ from pyloghub.freight_shipment_emissions_air import forward_freight_shipment_emi
 sample_data = forward_freight_shipment_emissions_air_sample_data()
 iata_codes_df = sample_data['iataCodes']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-freight_emissions_df = forward_freight_shipment_emissions_air(iata_codes_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+freight_emissions_df = forward_freight_shipment_emissions_air(iata_codes_df, parameters, api_key, save_scenario, show_buttons=True)
 freight_emissions_df.head()
 ```
 
@@ -881,9 +1003,13 @@ from pyloghub.freight_shipment_emissions_sea import forward_freight_shipment_emi
 sample_data = forward_freight_shipment_emissions_sea_sample_data()
 un_locodes_df = sample_data['unLocodes']
 parameters = sample_data['parameters']
-save_scenario = sample_data['saveScenarioParameters']
 
-freight_emissions_df = forward_freight_shipment_emissions_sea(un_locodes_df, parameters, api_key, save_scenario)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+freight_emissions_df = forward_freight_shipment_emissions_sea(un_locodes_df, parameters, api_key, save_scenario, show_buttons=True)
 freight_emissions_df.head()
 ```
 <p align="left">

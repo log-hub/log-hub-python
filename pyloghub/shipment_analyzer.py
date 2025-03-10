@@ -5,11 +5,11 @@ import warnings
 from typing import Optional, Dict, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_dates, validate_and_convert_data_types, convert_to_float, validate_boolean, convert_df_to_dict_excluding_nan
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform shipment analysis based on shipments, cost adjustments, consolidation settings, surcharges, and parameters.
 
@@ -68,11 +68,18 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: Two pandas DataFrames containing shipment analysis and transport analysis.
                                     Returns None if the process fails.
     """
+
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     shipments_mandatory_columns = {'shipmentId': 'str', 'fromId': 'str', 'toId': 'str', 'shippingDate': 'str', 'weight': 'float'}
     shipments_optional_columns = {'shipmentLeg': 'str', 'fromCountry': 'str', 'toCountry': 'str', 'fromState': 'str', 'toState': 'str',
@@ -129,6 +136,10 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     else:
         shipments_df = pd.DataFrame(response_data['shipments'])
         transports_df = pd.DataFrame(response_data['transports'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return shipments_df, transports_df
            
 def forward_shipment_analyzer_sample_data():
@@ -153,7 +164,7 @@ def forward_shipment_analyzer_sample_data():
     return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
+def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse shipment analysis based on shipments, cost adjustments, consolidation settings, surcharges, and parameters.
 
@@ -201,13 +212,19 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
-
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame]: Two pandas DataFrames containing reverse shipment analysis and transport analysis.
                                       The first DataFrame ('shipments') includes details such as shipment IDs, locations, dates, shipment metrics, and calculated emissions and costs.
                                       The second DataFrame ('transports') includes aggregated transport metrics such as total weights, volumes, costs, and emissions for each transport ID.
                                       Returns None if the process fails.
     """
+
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     shipments_mandatory_columns = {'shipmentId': 'str', 'fromId': 'str', 'toId': 'str', 'shippingDate': 'str', 'weight': 'float', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLatitude': 'float', 'toLongitude': 'float'}
     shipments_optional_columns = {'shipmentLeg': 'str', 'fromCountry': 'str', 'toCountry': 'str', 'fromState': 'str', 'toState': 'str',
@@ -265,6 +282,10 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     else:
         shipments_df = pd.DataFrame(response_data['shipments'])
         transports_df = pd.DataFrame(response_data['transports'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return shipments_df, transports_df
             
 def reverse_shipment_analyzer_sample_data():
