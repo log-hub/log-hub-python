@@ -203,6 +203,85 @@ save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 reverse_distance_calculation_df = reverse_distance_calculation(geocode_data_df, parameters, api_key, save_scenario, show_buttons=True)
 reverse_distance_calculation_df.head()
 ```
+#### Forward Isochrone
+Determine the areas that can be rached within a certain amount of time or distance from the starting location with the given address.
+
+```python
+from pyloghub.isochrone import forward_isochrone, forward_isochrone_sample_data
+
+sample_data = forward_isochrone_sample_data()
+addresses_df = sample_data['addresses']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+reachable_areas_df = forward_isochrone(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
+reachable_areas_df.head()
+```
+
+#### Reverse Isochrone
+Determine the areas that can be rached within a certain amount of time or distance from the starting location with the given coordinates.
+
+```python
+from pyloghub.isochrone import reverse_isochrone, reverse_isochrone_sample_data
+
+sample_data = reverse_isochrone_sample_data()
+coordinates_df = sample_data['coordinates']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+reachable_areas_df = reverse_isochrone(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
+reachable_areas_df.head()
+```
+
+#### Forward Isochrone Plus
+Determine the areas that can be rached within a certain amount of time or distance from the starting location with the given address, using the additional parameters for calculating the isochrones.
+
+```python
+from pyloghub.isochrone_plus import forward_isochrone_plus, forward_isochrone_plus_sample_data
+from IPython.display import display
+
+sample_data = forward_isochrone_plus_sample_data()
+addresses_df = sample_data['addresses']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+geocoded_data_df, reachable_areas_df = forward_isochrone_plus(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
+display(geocoded_data_df.head())
+display(reachable_areas_df.head())
+```
+
+#### Reverse Isochrone Plus
+Determine the areas that can be rached within a certain amount of time or distance from the starting location with the given coordinates, using the additional parameters for calculating the isochrones.
+
+```python
+from pyloghub.isochrone_plus import reverse_isochrone_plus, reverse_isochrone_plus_sample_data
+from IPython.display import display
+
+sample_data = reverse_isochrone_plus_sample_data()
+coordinates_df = sample_data['coordinates']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "IP rev button" 
+save_scenario['workspaceId'] = "2fdb6508020000336eda5932b32c114f9db46ccb"
+
+geocoded_data_df, reachable_areas_df = reverse_isochrone_plus(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
+display(geocoded_data_df.head())
+display(reachable_areas_df.head())
+```
 
 <p align="left">
   <img src="examples\assets\supply_chain_maps.png" alt="Header Image"  width="980"/>
@@ -605,7 +684,7 @@ save_scenario['saveScenario'] = True
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 
-open_warehouses, factory_assignement, customer_assignement, solution_kpis = forward_network_design_plus(factories_df, warehouses_df, customers_df, product_segments_df, transport_costs_df, transport_costs_rules_df, stepwise_function_weight_df, stepwise_function_volume_df, distance_limits_df, parameters, api_key, save_scenario, show_buttons=Tr)
+open_warehouses, factory_assignement, customer_assignement, solution_kpis = forward_network_design_plus(factories_df, warehouses_df, customers_df, product_segments_df, transport_costs_df, transport_costs_rules_df, stepwise_function_weight_df, stepwise_function_volume_df, distance_limits_df, parameters, api_key, save_scenario, show_buttons=True)
 display(open_warehouses.head())
 display(factory_assignement.head())
 display(customer_assignement.head())
@@ -695,8 +774,61 @@ display(customer_assignement.head())
 display(solution_kpis.head())
 ```
 
+#### Forward Milkrun Optimization
+Calculate cost-optimal routes for inbound and outbound orders described with their addresses.
+
+```python
+from pyloghub.milkrun_optimization import forward_milkrun_optimization_sample_data, forward_milkrun_optimization
+from IPython.display import display
+
+sample_data = forward_milkrun_optimization_sample_data()
+depots_df = sample_data['depots']
+vehicle_types_df = sample_data['vehicleTypes']
+pickup_and_delivery_df = sample_data['pickupAndDelivery']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+route_overview_df, route_details_df, external_orders_df, input_map_routes_df, input_map_routes_geocodes_df = forward_milkrun_optimization(depots_df, vehicle_types_df, pickup_and_delivery_df, parameters, api_key, save_scenario, show_buttons=True)
+
+display(route_overview_df.head())
+display(route_details_df.head())
+display(external_orders_df.head())
+display(input_map_routes_df.head())
+display(input_map_routes_geocodes_df.head())
+```
+
+#### Reverse Milkrun Optimization
+Calculate cost-optimal routes for inbound and outbound orders described with their coordinates.
+
+```python
+from pyloghub.milkrun_optimization import reverse_milkrun_optimization_sample_data, reverse_milkrun_optimization
+from IPython.display import display
+
+sample_data = reverse_milkrun_optimization_sample_data()
+depots_df = sample_data['depots']
+vehicle_types_df = sample_data['vehicleTypes']
+pickup_and_delivery_df = sample_data['pickupAndDelivery']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+route_overview_df, route_details_df, external_orders_df, input_map_routes_geocodes_df = reverse_milkrun_optimization(depots_df, vehicle_types_df, pickup_and_delivery_df, parameters, api_key, save_scenario, show_buttons=True)
+
+display(route_overview_df.head())
+display(route_details_df.head())
+display(external_orders_df.head())
+display(input_map_routes_geocodes_df.head())
+```
+
 <p align="left">
-  <img src="examples\assets\milkrun_optimization.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\milkrun_optimization_plus.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward Milkrun Optimization Plus
@@ -751,8 +883,58 @@ display(route_details_df.head())
 display(external_orders_df.head())
 ```
 
+#### Forward Transport Optimization
+Assign shipments with corresponding addresses to available vehicles in an optimal way.
+
+```python
+from IPython.display import display
+from pyloghub.transport_optimization import forward_transport_optimization, forward_transport_optimization_sample_data
+
+sample_data = forward_transport_optimization_sample_data()
+locations_df = sample_data['locations']
+vehicle_types_df = sample_data['vehicleTypes']
+shipments_df = sample_data['shipments']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+route_overview_df, route_details_df, external_orders_df, input_map_routes_df, input_map_routes_geocodes_df = forward_transport_optimization(locations_df, vehicle_types_df, shipments_df, parameters, api_key, save_scenario, show_buttons=True)
+display(route_overview_df.head())
+display(route_details_df.head())
+display(external_orders_df.head())
+display(input_map_routes_df.head())
+display(input_map_routes_geocodes_df.head())
+```
+
+#### Reverse Transport Optimization
+Assign shipments with corresponding coordinates to available vehicles in an optimal way.
+
+```python
+from IPython.display import display
+from pyloghub.transport_optimization import reverse_transport_optimization, reverse_transport_optimization_sample_data
+
+sample_data = reverse_transport_optimization_sample_data()
+locations_df = sample_data['locations']
+vehicle_types_df = sample_data['vehicleTypes']
+shipments_df = sample_data['shipments']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+route_overview_df, route_details_df, external_orders_df, input_map_routes_geocodes_df = reverse_transport_optimization(locations_df, vehicle_types_df, shipments_df, parameters, api_key, save_scenario, show_buttons=True)
+display(route_overview_df.head())
+display(route_details_df.head())
+display(external_orders_df.head())
+display(input_map_routes_geocodes_df.head())
+```
 <p align="left">
-  <img src="examples\assets\transport_optimization.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\transport_optimization_plus.png" alt="Header Image"  width="980"/>
 </p>
 
 #### Forward Transport Optimization Plus
@@ -823,7 +1005,12 @@ consolidation_df = sample_data['consolidation']
 surcharges_df = sample_data['surcharges']
 parameters = sample_data['parameters']
 
-shipments_analysis_df, transports_analysis_df = forward_shipment_analyzer(shipments_df, transport_costs_adjustments_df, consolidation_df, surcharges_df, parameters, api_key)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+shipments_analysis_df, transports_analysis_df = forward_shipment_analyzer(shipments_df, transport_costs_adjustments_df, consolidation_df, surcharges_df, parameters, api_key, save_scenario, show_buttons=True)
 
 display(shipments_analysis_df.head())
 display(transports_analysis_df.head())
@@ -843,17 +1030,22 @@ consolidation_df = sample_data['consolidation']
 surcharges_df = sample_data['surcharges']
 parameters = sample_data['parameters']
 
-shipments_analysis_df, transports_analysis_df = reverse_shipment_analyzer(shipments_df, transport_costs_adjustments_df, consolidation_df, surcharges_df, parameters, api_key)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+shipments_analysis_df, transports_analysis_df = reverse_shipment_analyzer(shipments_df, transport_costs_adjustments_df, consolidation_df, surcharges_df, parameters, api_key, save_scenario, show_buttons=True)
 
 display(shipments_analysis_df.head())
 display(transports_analysis_df.head())
 ```
 
 <p align="left">
-  <img src="examples\assets\freight_matrix.png" alt="Header Image"  width="980"/>
+  <img src="examples\assets\freight_matrix_plus.png" alt="Header Image"  width="980"/>
 </p>
 
-#### Forward Freight Matrix
+#### Forward Freight Matrix Plus
 Evaluate shipments with costs based on your own freight cost matrices. The following matrix types are supported:
 
 * Absolute weight distance matrix
@@ -865,27 +1057,36 @@ Evaluate shipments with costs based on your own freight cost matrices. The follo
 * Relative weight zone distance matrix
 
 ```python
-from pyloghub.freight_matrix import forward_freight_matrix, forward_freight_matrix_sample_data
+from pyloghub.freight_matrix_plus import forward_freight_matrix_plus, forward_freight_matrix_plus_sample_data
 
-sample_data = forward_freight_matrix_sample_data()
+sample_data = forward_freight_matrix_plus_sample_data()
 shipments_df = sample_data['shipments']
-matrix_id = "Your freight matrix id"
+matrix_id = "YOUR FREIGHT MATRIX ID"
 
-evaluated_shipments_df = forward_freight_matrix(shipments_df, matrix_id, api_key)
-evaluated_shipments_df
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+evaluated_shipments_df = forward_freight_matrix_plus(shipments_df, matrix_id, api_key, save_scenario, show_buttons=True)
+evaluated_shipments_df.head()
 ```
 
 #### Reverse Freight Matrix
 Evaluating shipments with costs based on your own freight cost matrices. Supported matrix types are the same as in the forward version.
 
-```python
-from pyloghub.freight_matrix import reverse_freight_matrix, reverse_freight_matrix_sample_data
+```from pyloghub.freight_matrix_plus import reverse_freight_matrix_plus, reverse_freight_matrix_plus_sample_data
 
-sample_data = reverse_freight_matrix_sample_data()
+sample_data = reverse_freight_matrix_plus_sample_data()
 shipments_df = sample_data['shipments']
-matrix_id = "Your freight matrix id"
+matrix_id = "YOUR FREIGHT MATRIX ID"
 
-evaluated_shipments_df = reverse_freight_matrix(shipments_df, matrix_id, api_key)
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+evaluated_shipments_df = reverse_freight_matrix_plus(shipments_df, matrix_id, api_key, save_scenario, show_buttons=True)
 evaluated_shipments_df.head()
 ```
 You can create a freight matrix on the Log-hub Platform. Therefore, please create a workspace and click within the workspace on "Create Freight Matrix". There you can provide the matrix a name, select the matrix type and define all other parameters. 
