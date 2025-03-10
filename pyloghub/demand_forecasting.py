@@ -62,13 +62,13 @@ def demand_forecasting(past_demand_data: pd.DataFrame, future_impact_factors: pd
     sku_parameters_optional_columns = {'demandFrequency': 'str', 'lowerTrendLimit':'str', 'upperTrendLimit': 'str', 'seasonality': 'str', 'seasonalityType': 'str', 'confidenceInterval': 'str', 'futureImpactFactor1': 'str', 'futureImpactFactor2': 'str', 'futureImpactFactor3': 'str'}
 
     # Perform validation and conversion for each DataFrame
-    past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_mandatory_columns, 'mandatory')
+    past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_mandatory_columns, 'mandatory', 'past demand data')
     if not past_demand_data is None:
-        past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_optional_columns, 'optional')
-    future_impact_factors = validate_and_convert_data_types(future_impact_factors, future_impact_factors_optional_columns, 'optional')
-    sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_mandatory_columns, 'mandatory')
+        past_demand_data = validate_and_convert_data_types(past_demand_data, past_demand_data_optional_columns, 'optional', 'past demand data')
+    future_impact_factors = validate_and_convert_data_types(future_impact_factors, future_impact_factors_optional_columns, 'optional', 'future impact factors')
+    sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_mandatory_columns, 'mandatory''future impact factors')
     if not sku_parameters is None:
-        sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_optional_columns, 'optional')
+        sku_parameters = validate_and_convert_data_types(sku_parameters, sku_parameters_optional_columns, 'optional', 'sku parameters')
     if not any(df is None for df in [past_demand_data, future_impact_factors]):
         past_demand_data = convert_dates(past_demand_data, ['date'])
         if 'date' in future_impact_factors.columns:

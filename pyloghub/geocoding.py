@@ -48,9 +48,9 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {},
     optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'searchString': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
-        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
 
     if addresses is None:
         return None
@@ -119,7 +119,7 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}, 
     geocodes_columns = {'latitude': 'float', 'longitude': 'float'}
 
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns, 'mandatory')
+    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns, 'mandatory', 'geocodes')
     if geocodes is None:
         return None
     

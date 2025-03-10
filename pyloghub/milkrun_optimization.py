@@ -99,13 +99,13 @@ def forward_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
     }
 
     # Perform validation and conversion for each DataFrame
-    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory')
+    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory', 'depots')
     if not depots is None:
-        depots = validate_and_convert_data_types(depots, depot_optional_columns, 'optional')
-    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory')
-    pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_mandatory_columns, 'mandatory')
+        depots = validate_and_convert_data_types(depots, depot_optional_columns, 'optional', 'depots')
+    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory', 'vehicle types')
+    pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_mandatory_columns, 'mandatory', 'pickup and delivery')
     if not pickup_and_delivery is None:
-        pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_optional_columns, 'optional')
+        pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_optional_columns, 'optional', 'pickup and delivery')
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [depots, vehicle_types, pickup_and_delivery]):
@@ -237,11 +237,11 @@ def reverse_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
     }
 
     # Perform validation and conversion for each DataFrame
-    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory')
-    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory')
-    pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_mandatory_columns, 'mandatory')
+    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory', 'depots')
+    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory', 'vehicle types')
+    pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_mandatory_columns, 'mandatory', 'pickup and delivery')
     if not pickup_and_delivery is None:
-        pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_optional_columns, 'optional')
+        pickup_and_delivery = validate_and_convert_data_types(pickup_and_delivery, pickup_and_delivery_optional_columns, 'optional', 'pickup and delivery')
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [depots, vehicle_types, pickup_and_delivery]):

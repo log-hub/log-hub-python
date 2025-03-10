@@ -53,7 +53,7 @@ def forward_freight_shipment_emissions_rail(addresses: pd.DataFrame, parameters:
     }
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, addresses_columns, 'mandatory')
+    addresses = validate_and_convert_data_types(addresses, addresses_columns, 'mandatory', 'addresses')
     if not addresses is None:
         addresses = convert_dates(addresses, ['shipmentDate'])
     else:
@@ -141,7 +141,7 @@ def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameter
     }
 
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, coordinates_columns, 'mandatory')
+    coordinates = validate_and_convert_data_types(coordinates, coordinates_columns, 'mandatory', 'coordinates')
     if not coordinates is None:
         coordinates = convert_dates(coordinates, ['shipmentDate'])
     if coordinates is None:

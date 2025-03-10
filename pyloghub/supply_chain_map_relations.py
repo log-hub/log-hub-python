@@ -61,9 +61,9 @@ def forward_supply_chain_map_relations(addresses: pd.DataFrame, parameters: dict
     optional_columns = {'id': 'float', 'senderName': 'str', 'senderState': 'str', 'senderPostalCode': 'str', 'senderCity': 'str', 'senderStreet': 'str', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientState': 'str', 'recipientPostalCode': 'str', 'recipientCity': 'str', 'recipientStreet': 'str', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'string'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
-        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
     if addresses is None:
         return None
 
@@ -148,9 +148,9 @@ def reverse_supply_chain_map_relations(coordinates: pd.DataFrame, parameters: di
         }
     optional_columns = {'id': 'float', 'senderName': 'str', 'senderLocationLayer': 'str', 'recipientName': 'str', 'recipientLocationLayer': 'str', 'relationLayer': 'str', 'quantity': 'str'}
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory')
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory', 'coordinates')
     if not coordinates is None:
-        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional')
+        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional', 'coordinates')
     if coordinates is None:
         return None
 

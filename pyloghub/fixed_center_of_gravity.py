@@ -66,13 +66,13 @@ def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     fixed_center_optional_columns = {'id': 'float', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
     # Validate and convert data types for customers and fixed centers
-    customers = validate_and_convert_data_types(customers, customer_mandatory_columns, 'mandatory')
+    customers = validate_and_convert_data_types(customers, customer_mandatory_columns, 'mandatory', 'customers')
     if not customers is None:
-        customers = validate_and_convert_data_types(customers, customer_optional_columns, 'optional')
+        customers = validate_and_convert_data_types(customers, customer_optional_columns, 'optional', 'customers')
 
-    fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_mandatory_columns, 'mandatory') if not fixed_centers.empty else fixed_centers
+    fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_mandatory_columns, 'mandatory', 'fixed centers') if not fixed_centers.empty else fixed_centers
     if not fixed_centers is None:
-        fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_optional_columns, 'optional') if not fixed_centers.empty else fixed_centers
+        fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_optional_columns, 'optional', 'fixed centers') if not fixed_centers.empty else fixed_centers
     if customers is None or (not fixed_centers.empty and fixed_centers is None):
         return None
     
@@ -171,13 +171,13 @@ def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     fixed_center_optional_columns = {'id': 'float'}
 
     # Validate and convert data types for customers and fixed centers
-    customers = validate_and_convert_data_types(customers, customer_mandatory_columns, 'mandatory')
+    customers = validate_and_convert_data_types(customers, customer_mandatory_columns, 'mandatory', 'customers')
     if not customers is None:
-        customers = validate_and_convert_data_types(customers, customer_optional_columns, 'optional')
+        customers = validate_and_convert_data_types(customers, customer_optional_columns, 'optional', 'customers')
 
-    fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_mandatory_columns, 'mandatory') if not fixed_centers.empty else fixed_centers
+    fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_mandatory_columns, 'mandatory', 'fixed centers') if not fixed_centers.empty else fixed_centers
     if not fixed_centers is None:
-        fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_optional_columns, 'optional') if not fixed_centers.empty else fixed_centers
+        fixed_centers = validate_and_convert_data_types(fixed_centers, fixed_center_optional_columns, 'optional', 'fixed centers') if not fixed_centers.empty else fixed_centers
     if customers is None or (not fixed_centers.empty and fixed_centers is None):
         return None
 

@@ -88,25 +88,25 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
                     'truckShipPlaneType': 'str', 'speedProfile': 'str', 'benchmarkTariff': 'str', 'surcharges': 'str', 'expectedDeliveryDate': 'str', 'actualDeliveryDate': 'str'}
     shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts']
 
-    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory')
+    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
-        shipments = validate_and_convert_data_types(shipments, shipments_optional_columns, 'optional')
+        shipments = validate_and_convert_data_types(shipments, shipments_optional_columns, 'optional', 'shipments')
         if not shipments is None:
             shipments = convert_dates(shipments, ['shippingDate', 'expectedDeliveryDate', 'actualDeliveryDate'])
             shipments = convert_to_float(shipments, shipments_optional_floats, 'optional')
             shipments = convert_df_to_dict_excluding_nan(shipments, shipments_optional_floats)
     cost_adjustment_optional_columns = {'fromIso2Country': 'str', 'toIso2Country': 'str', 'truckShipPlaneType': 'str', 'carrier':'str', 'benchmarkTariff': 'str'}
-    cost_adjustment = validate_and_convert_data_types(cost_adjustment, cost_adjustment_optional_columns, 'optional')
+    cost_adjustment = validate_and_convert_data_types(cost_adjustment, cost_adjustment_optional_columns, 'optional', 'cots adjustment')
     if not cost_adjustment is None:
         cost_adjustment = convert_to_float(cost_adjustment, ['factor', 'flatOnTop'], 'optional')
         cost_adjustment = convert_df_to_dict_excluding_nan(cost_adjustment, ['factor', 'flatOnTop'])
     consolidation_optional_columns = {'fromIso2Country': 'str', 'toIso2Country': 'str', 'truckShipPlaneType': 'str', 'carrier':'str', 'consolidationFrequency': 'str'}
-    consolidation = validate_and_convert_data_types(consolidation, consolidation_optional_columns, 'optional')
+    consolidation = validate_and_convert_data_types(consolidation, consolidation_optional_columns, 'optional', 'consolidation')
     if not consolidation is None:
         consolidation = convert_to_float(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'], 'optional')
         consolidation = convert_df_to_dict_excluding_nan(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'])
     surcharges_optional_columns = {'surcharge': 'str'}
-    surcharges = validate_and_convert_data_types(surcharges, surcharges_optional_columns, 'optional')
+    surcharges = validate_and_convert_data_types(surcharges, surcharges_optional_columns, 'optional', 'surcharges')
     if not surcharges is None:
         surcharges = convert_to_float(surcharges, ['flatOnTop'], 'optional')
         surcharges = convert_df_to_dict_excluding_nan(surcharges, ['flatOnTop'])
@@ -233,25 +233,25 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
                     'truckShipPlaneType': 'str', 'speedProfile': 'str', 'benchmarkTariff': 'str', 'surcharges': 'str', 'expectedDeliveryDate': 'str', 'actualDeliveryDate': 'str'}
     shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts']
 
-    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory')
+    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
-        shipments = validate_and_convert_data_types(shipments, shipments_optional_columns, 'optional')
+        shipments = validate_and_convert_data_types(shipments, shipments_optional_columns, 'optional', 'shipments')
         if not shipments is None:
             shipments = convert_dates(shipments, ['shippingDate', 'expectedDeliveryDate', 'actualDeliveryDate'])
             shipments = convert_to_float(shipments, shipments_optional_floats, 'optional')
             shipments = convert_df_to_dict_excluding_nan(shipments, shipments_optional_floats)
     cost_adjustment_optional_columns = {'fromIso2Country': 'str', 'toIso2Country': 'str', 'truckShipPlaneType': 'str', 'carrier':'str', 'benchmarkTariff': 'str'}
-    cost_adjustment = validate_and_convert_data_types(cost_adjustment, cost_adjustment_optional_columns, 'optional')
+    cost_adjustment = validate_and_convert_data_types(cost_adjustment, cost_adjustment_optional_columns, 'optional', 'cots adjustment')
     if not cost_adjustment is None:
         cost_adjustment = convert_to_float(cost_adjustment, ['factor', 'flatOnTop'], 'optional')
         cost_adjustment = convert_df_to_dict_excluding_nan(cost_adjustment, ['factor', 'flatOnTop'])
     consolidation_optional_columns = {'fromIso2Country': 'str', 'toIso2Country': 'str', 'truckShipPlaneType': 'str', 'carrier':'str', 'consolidationFrequency': 'str'}
-    consolidation = validate_and_convert_data_types(consolidation, consolidation_optional_columns, 'optional')
+    consolidation = validate_and_convert_data_types(consolidation, consolidation_optional_columns, 'optional', 'consolidation')
     if not consolidation is None:
         consolidation = convert_to_float(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'], 'optional')
         consolidation = convert_df_to_dict_excluding_nan(consolidation, ['capacityWeight', 'capacityVolume', 'capacityPallets'])
     surcharges_optional_columns = {'surcharge': 'str'}
-    surcharges = validate_and_convert_data_types(surcharges, surcharges_optional_columns, 'optional')
+    surcharges = validate_and_convert_data_types(surcharges, surcharges_optional_columns, 'optional', 'surcharges')
     if not surcharges is None:
         surcharges = convert_to_float(surcharges, ['flatOnTop'], 'optional')
         surcharges = convert_df_to_dict_excluding_nan(surcharges, ['flatOnTop'])

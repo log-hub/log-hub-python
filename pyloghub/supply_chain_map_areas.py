@@ -55,9 +55,9 @@ def forward_supply_chain_map_areas(areas: pd.DataFrame, parameters: dict, api_ke
     optional_floats = ['id', 'quantity', 'centerLat', 'centerLong', 'population', 'areaKm2']
 
     # Validate and convert data types
-    areas = validate_and_convert_data_types(areas, mandatory_columns, 'mandatory')
+    areas = validate_and_convert_data_types(areas, mandatory_columns, 'mandatory', 'areas')
     if not areas is None:
-        areas = validate_and_convert_data_types(areas, optional_columns, 'optional')
+        areas = validate_and_convert_data_types(areas, optional_columns, 'optional', 'areas')
         if not areas is None:
             areas = convert_to_float(areas, optional_floats, 'optional')
             areas = convert_df_to_dict_excluding_nan(areas, optional_floats)

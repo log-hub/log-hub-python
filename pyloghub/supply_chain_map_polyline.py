@@ -46,9 +46,9 @@ def reverse_supply_chain_map_polyline(polyline: pd.DataFrame, api_key: str, save
     optional_columns = {'id': 'float', 'layer': 'str'}
 
     # Validate and convert data types
-    polyline = validate_and_convert_data_types(polyline, mandatory_columns, 'mandatory')
+    polyline = validate_and_convert_data_types(polyline, mandatory_columns, 'mandatory', 'polyline')
     if not polyline is None:
-        polyline = validate_and_convert_data_types(polyline, optional_columns, 'optional')
+        polyline = validate_and_convert_data_types(polyline, optional_columns, 'optional', 'polyline')
     if polyline is None:
         return None
 

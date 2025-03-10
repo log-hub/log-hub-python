@@ -98,13 +98,13 @@ def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
     shipments_optional_floats = ['volume', 'loadingMeter']
 
     # Perform validation and conversion for each DataFrame
-    locations = validate_and_convert_data_types(locations, locations_mandatory_columns, 'mandatory')
+    locations = validate_and_convert_data_types(locations, locations_mandatory_columns, 'mandatory', 'locations')
     if not locations is None:
-        locations = validate_and_convert_data_types(locations, locations_optional_columns, 'optional')
-    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory')
-    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory')
+        locations = validate_and_convert_data_types(locations, locations_optional_columns, 'optional', 'locations')
+    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory', 'vehicle types')
+    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
-        shipments = validate_and_convert_data_types(shipments, shipemnts_optional_columns, 'optional')
+        shipments = validate_and_convert_data_types(shipments, shipemnts_optional_columns, 'optional', 'shipments')
         if not shipments is None:
             shipments = convert_to_float(shipments, shipments_optional_floats, 'optional')
             shipments = convert_timestamps(shipments)
@@ -242,11 +242,11 @@ def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
     shipments_optional_floats = ['volume', 'loadingMeter']
 
     # Perform validation and conversion for each DataFrame
-    locations = validate_and_convert_data_types(locations, locations_mandatory_columns, 'mandatory')
-    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory')
-    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory')
+    locations = validate_and_convert_data_types(locations, locations_mandatory_columns, 'mandatory', 'locations')
+    vehicle_types = validate_and_convert_data_types(vehicle_types, vehicle_types_mandatory_columns, 'mandatory', 'vehicle types')
+    shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
-        shipments = validate_and_convert_data_types(shipments, shipemnts_optional_columns, 'optional')
+        shipments = validate_and_convert_data_types(shipments, shipemnts_optional_columns, 'optional', 'shipments')
         if not shipments is None:
             shipments = convert_to_float(shipments, shipments_optional_floats, 'optional')
             shipments = convert_timestamps(shipments)

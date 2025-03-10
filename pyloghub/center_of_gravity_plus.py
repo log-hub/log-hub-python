@@ -56,9 +56,9 @@ def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, ap
     optional_columns = {'id': 'float', 'name': 'str',  'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
-        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
 
     if addresses is None:
         return None
@@ -147,9 +147,9 @@ def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, 
     optional_columns = {'id': 'float', 'name': 'str'}
     
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory')
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory', 'coordinates')
     if not coordinates is None:
-        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional')
+        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional', 'coordinates')
 
     if coordinates is None:
         return None

@@ -173,52 +173,52 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
         }
 
     # Validate and convert data types
-    factories = validate_and_convert_data_types(factories, factories_mandatory_columns, 'mandatory')
+    factories = validate_and_convert_data_types(factories, factories_mandatory_columns, 'mandatory', 'factories')
     if not factories is None:
-        factories = validate_and_convert_data_types(factories, factories_optional_columns, 'optional')
+        factories = validate_and_convert_data_types(factories, factories_optional_columns, 'optional', 'factories')
         if not factories is None:
             factories = convert_to_float(factories, factories_optional_float, 'optional')
             factories = convert_df_to_dict_excluding_nan(factories, factories_optional_float)
 
-    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory')
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory', 'warehouses')
     if not warehouses is None:
-        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional')
+        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional', 'warehouses')
         if not warehouses is None:
             warehouses = convert_to_float(warehouses, warehouses_optional_float, 'optional')
             warehouses = convert_df_to_dict_excluding_nan(warehouses,warehouses_optional_float)
 
-    customers = validate_and_convert_data_types(customers, customers_mandatory_columns, 'mandatory')
+    customers = validate_and_convert_data_types(customers, customers_mandatory_columns, 'mandatory', 'customers')
     if not customers is None:
-        customers = validate_and_convert_data_types(customers, customers_optional_columns, 'optional')
+        customers = validate_and_convert_data_types(customers, customers_optional_columns, 'optional', 'customers')
         if not customers is None:
             customers = convert_to_float(customers, customers_optional_float, 'optional')
             customers = convert_df_to_dict_excluding_nan(customers, customers_optional_float)
 
-    product_segments = validate_and_convert_data_types(product_segments, product_segments_optional_columns, 'optional')
+    product_segments = validate_and_convert_data_types(product_segments, product_segments_optional_columns, 'optional', 'roduct segments')
     
-    transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_mandatory_columns, 'mandatory')
+    transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_mandatory_columns, 'mandatory', 'transport costs')
     if not transport_costs is None:
-        transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_optional_columns, 'optional')
+        transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_optional_columns, 'optional', 'transport costs')
         if not transport_costs is None:
             transport_costs = convert_to_float(transport_costs, transport_costs_optional_float, 'optional')
             transport_costs = convert_df_to_dict_excluding_nan(transport_costs, transport_costs_optional_float)
 
-    transport_costs_rules = validate_and_convert_data_types(transport_costs_rules, transport_costs_rules_optional_columns, 'optional')
+    transport_costs_rules = validate_and_convert_data_types(transport_costs_rules, transport_costs_rules_optional_columns, 'optional', 'transport costs rules')
     if not transport_costs_rules is None:
         transport_costs_rules = convert_to_float(transport_costs_rules, transport_costs_rules_optional_float, 'optional')
         transport_costs_rules = convert_df_to_dict_excluding_nan(transport_costs_rules, transport_costs_rules_optional_float)
 
-    stepwise_function_weight = validate_and_convert_data_types(stepwise_function_weight, stepwise_function_weight_optional_columns, 'optional')
+    stepwise_function_weight = validate_and_convert_data_types(stepwise_function_weight, stepwise_function_weight_optional_columns, 'optional', 'stepwise function weight')
     if not stepwise_function_weight is None:
         stepwise_function_weight = convert_to_float(stepwise_function_weight, stepwise_function_weight_optional_float, 'optional')
         stepwise_function_weight = convert_df_to_dict_excluding_nan(stepwise_function_weight, stepwise_function_weight_optional_float)
 
-    stepwise_function_volume = validate_and_convert_data_types(stepwise_function_volume, stepwise_function_volume_optional_columns, 'optional')
+    stepwise_function_volume = validate_and_convert_data_types(stepwise_function_volume, stepwise_function_volume_optional_columns, 'optional', 'stepwise function volume')
     if not stepwise_function_volume is None:
         stepwise_function_volume = convert_to_float(stepwise_function_volume, stepwise_function_volume_optional_float, 'optional')
         stepwise_function_volume = convert_df_to_dict_excluding_nan(stepwise_function_volume, stepwise_function_volume_optional_float)
 
-    distance_limits = validate_and_convert_data_types(distance_limits, distance_limits_columns, 'optional')
+    distance_limits = validate_and_convert_data_types(distance_limits, distance_limits_columns, 'optional', 'distance limits')
 
     if any(df is None for df in [factories, warehouses, customers, product_segments, transport_costs, transport_costs_rules, stepwise_function_weight, stepwise_function_volume, distance_limits]):
         return None
@@ -444,50 +444,50 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
         }
 
     # Validate and convert data types
-    factories = validate_and_convert_data_types(factories, factories_mandatory_columns, 'mandatory')
+    factories = validate_and_convert_data_types(factories, factories_mandatory_columns, 'mandatory', 'factories')
     if not factories is None:
         factories = convert_to_float(factories, factories_optional_float, 'optional')
         factories = convert_df_to_dict_excluding_nan(factories, factories_optional_float)
 
-    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory')
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory', 'warehouses')
     if not warehouses is None:
-        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional')
+        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional', 'warehouses')
         if not warehouses is None:
             warehouses = convert_to_float(warehouses, warehouses_optional_float, 'optional')
             warehouses = convert_df_to_dict_excluding_nan(warehouses,warehouses_optional_float)
 
-    customers = validate_and_convert_data_types(customers, customers_mandatory_columns, 'mandatory')
+    customers = validate_and_convert_data_types(customers, customers_mandatory_columns, 'mandatory', 'customers')
     if not customers is None:
-        customers = validate_and_convert_data_types(customers, customers_optional_columns, 'optional')
+        customers = validate_and_convert_data_types(customers, customers_optional_columns, 'optional', 'customers')
         if not customers is None:
             customers = convert_to_float(customers, customers_optional_float, 'optional')
             customers = convert_df_to_dict_excluding_nan(customers, customers_optional_float)
 
-    product_segments = validate_and_convert_data_types(product_segments, product_segments_optional_columns, 'optional')
+    product_segments = validate_and_convert_data_types(product_segments, product_segments_optional_columns, 'optional', 'product segments')
     
-    transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_mandatory_columns, 'mandatory')
+    transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_mandatory_columns, 'mandatory', 'transport costs')
     if not transport_costs is None:
-        transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_optional_columns, 'optional')
+        transport_costs = validate_and_convert_data_types(transport_costs, transport_costs_optional_columns, 'optional', 'transport costs')
         if not transport_costs is None:
             transport_costs = convert_to_float(transport_costs, transport_costs_optional_float, 'optional')
             transport_costs = convert_df_to_dict_excluding_nan(transport_costs, transport_costs_optional_float)
 
-    transport_costs_rules = validate_and_convert_data_types(transport_costs_rules, transport_costs_rules_optional_columns, 'optional')
+    transport_costs_rules = validate_and_convert_data_types(transport_costs_rules, transport_costs_rules_optional_columns, 'optional', 'transport costs rules')
     if not transport_costs_rules is None:
         transport_costs_rules = convert_to_float(transport_costs_rules, transport_costs_rules_optional_float, 'optional')
         transport_costs_rules = convert_df_to_dict_excluding_nan(transport_costs_rules, transport_costs_rules_optional_float)
     
-    stepwise_function_weight = validate_and_convert_data_types(stepwise_function_weight, stepwise_function_weight_optional_columns, 'optional')
+    stepwise_function_weight = validate_and_convert_data_types(stepwise_function_weight, stepwise_function_weight_optional_columns, 'optional', 'stepwise function weight')
     if not stepwise_function_weight is None:
         stepwise_function_weight = convert_to_float(stepwise_function_weight, stepwise_function_weight_optional_float, 'optional')
         stepwise_function_weight = convert_df_to_dict_excluding_nan(stepwise_function_weight, stepwise_function_weight_optional_float)
 
-    stepwise_function_volume = validate_and_convert_data_types(stepwise_function_volume, stepwise_function_volume_optional_columns, 'optional')
+    stepwise_function_volume = validate_and_convert_data_types(stepwise_function_volume, stepwise_function_volume_optional_columns, 'optional', 'stepwise function volume')
     if not stepwise_function_volume is None:
         stepwise_function_volume = convert_to_float(stepwise_function_volume, stepwise_function_volume_optional_float, 'optional')
         stepwise_function_volume = convert_df_to_dict_excluding_nan(stepwise_function_volume, stepwise_function_volume_optional_float)
 
-    distance_limits = validate_and_convert_data_types(distance_limits, distance_limits_columns, 'optional')
+    distance_limits = validate_and_convert_data_types(distance_limits, distance_limits_columns, 'optional', 'distance limits')
 
     if any(df is None for df in [factories, warehouses, customers, product_segments, transport_costs, transport_costs_rules, stepwise_function_weight, stepwise_function_volume, distance_limits]):
         return None

@@ -62,9 +62,9 @@ def forward_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_
     shipments_df = convert_to_float(shipments_df, float_columns, 'optional')
     mandatory_columns = {'shipmentId': 'str', 'fromLocationId': 'str', 'fromCountry': 'str', 'toLocationId': 'str', 'toCountry': 'str'}
     optional_columns = {'fromState': 'str', 'fromCity': 'str', 'fromPostalCode': 'str', 'fromStreet': 'str', 'fromZone': 'str', 'toState': 'str', 'toCity': 'str', 'toPostalCode': 'str', 'toStreet': 'str', 'toZone': 'str'}
-    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory')
+    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory', 'shipments')
     if not shipments_df is None:
-        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional')
+        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional', 'shipments')
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
     
@@ -147,9 +147,9 @@ def reverse_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_
     shipments_df = convert_to_float(shipments_df, float_columns, 'optional')
     mandatory_columns = {'shipmentId': 'str', 'fromLocationId': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLocationId': 'str', 'toLatitude': 'float', 'toLongitude': 'float'}
     optional_columns = {'fromState': 'str', 'fromZone': 'str', 'toZone': 'str'}
-    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory')
+    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory', 'shipments')
     if not shipments_df is None:
-        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional')
+        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional', 'shipments')
 
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)

@@ -112,24 +112,24 @@ def forward_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
     break_optional_floats = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory')
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory', 'vehicles')
     if not vehicles is None:
-        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional')
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional', 'vehicles')
         if not vehicles is None:
             vehicles = convert_timestamps(vehicles)
             vehicles = convert_to_float(vehicles, vehicle_optional_floats, 'optional')
             vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_floats)
-    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory')
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory', 'jobs')
     if not jobs is None:
-        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional')
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional', 'jobs')
         if not jobs is None:
             jobs = convert_timestamps(jobs)
             jobs = convert_to_float(jobs, job_optional_floats, 'optional')
             jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_floats)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional')
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional', 'time window profiles')
     if not timeWindowProfiles is None:
         timeWindowProfiles = convert_timestamps(timeWindowProfiles)
-    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional')
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional', 'breaks')
     if not breaks is None:
         breaks = convert_timestamps(breaks)
         breaks = convert_to_float(breaks, break_optional_floats, 'optional')
@@ -280,24 +280,24 @@ def reverse_transport_optimization_plus(vehicles: pd.DataFrame, jobs: pd.DataFra
     break_optional_floats = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory')
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory', 'vehicles')
     if not vehicles is None:
-        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional')
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional', 'vehicles')
         if not vehicles is None:
             vehicles = convert_timestamps(vehicles)
             vehicles = convert_to_float(vehicles, vehicle_optional_floats, 'optional')
             vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_floats)
-    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory')
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory', 'jobs')
     if not jobs is None:
-        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional')
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional', 'jobs')
         if not jobs is None:
             jobs = convert_timestamps(jobs)
             jobs = convert_to_float(jobs, job_optional_floats, 'optional')
             jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_floats)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional')
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional', 'time window profiles')
     if not timeWindowProfiles is None:
         timeWindowProfiles = convert_timestamps(timeWindowProfiles)
-    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional')
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional', 'breaks')
     if not breaks is None:
         breaks = convert_timestamps(breaks)
         breaks = convert_to_float(breaks, break_optional_floats, 'optional')

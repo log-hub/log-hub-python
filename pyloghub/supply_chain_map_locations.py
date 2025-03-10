@@ -52,9 +52,9 @@ def forward_supply_chain_map_locations(addresses: pd.DataFrame, api_key: str, sa
     optional_floats = ['id', 'quantity']
 
     # Validate and convert data types
-    addresses= validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    addresses= validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
-        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
         if not addresses is None:
             addresses = convert_to_float(addresses, optional_floats, 'optional')
             addresses = convert_df_to_dict_excluding_nan(addresses, optional_floats)
@@ -133,9 +133,9 @@ def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, 
     optional_floats = ['id', 'quantity']
 
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory')
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory', 'coordinates')
     if not coordinates is None:
-        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional')
+        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional', 'coordinates')
         if not coordinates is None:
             coordinates = convert_to_float(coordinates, optional_floats, 'optional')
             coordinates = convert_df_to_dict_excluding_nan(coordinates, optional_floats)

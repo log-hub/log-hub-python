@@ -62,12 +62,12 @@ def forward_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
     customer_optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
     # Validate and convert data types
-    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory')
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_mandatory_columns, 'mandatory', 'warehouses')
     if not warehouses is None:
-        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional')
-    customers = validate_and_convert_data_types(customers, customer_mandatory_columns, 'mandatory')
+        warehouses = validate_and_convert_data_types(warehouses, warehouses_optional_columns, 'optional', 'warehouses')
+    customers = validate_and_convert_data_types(customers, customer_mandatory_columns, 'mandatory', 'customers')
     if not customers is None:
-        customers = validate_and_convert_data_types(customers, customer_optional_columns, 'optional')
+        customers = validate_and_convert_data_types(customers, customer_optional_columns, 'optional', 'customers')
 
     if any(df is None for df in [warehouses, customers]):
         return None
@@ -161,8 +161,8 @@ def reverse_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
     }
 
     # Validate and convert data types
-    warehouses = validate_and_convert_data_types(warehouses, warehouses_columns, 'mandatory')
-    customers = validate_and_convert_data_types(customers, customer_columns, 'mandatory')
+    warehouses = validate_and_convert_data_types(warehouses, warehouses_columns, 'mandatory', 'warehouses')
+    customers = validate_and_convert_data_types(customers, customer_columns, 'mandatory', 'customers')
 
     if any(df is None for df in [warehouses, customers]):
         return None

@@ -143,26 +143,26 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     break_optional_float = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory')
+    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory', 'depots')
     if not depots is None:
         depots = convert_to_float(depots, depot_optional_float, 'optional')
-        depots = validate_and_convert_data_types(depots, depot_optional_columns, 'optional')
+        depots = validate_and_convert_data_types(depots, depot_optional_columns, 'optional', 'depots')
         if not depots is None:
             depots = convert_df_to_dict_excluding_nan(depots, depot_optional_float)
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory')
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory', 'vehicles')
     if not vehicles is None:
         vehicles = convert_to_float(vehicles, vehicle_optional_float, 'optional')
-        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional')
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional', 'vehicles')
         if not vehicles is None:
             vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_float)
-    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory')
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory', 'jobs')
     if not jobs is None:
         jobs = convert_to_float(jobs, job_optional_float, 'optional')
-        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional')
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional', 'jobs')
         if not jobs is None:
             jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_float)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional')
-    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional')
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional', 'time window profiles')
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional', 'breaks')
     if not breaks is None:
         breaks = convert_to_float(breaks, break_optional_float, 'optional')
         breaks = convert_df_to_dict_excluding_nan(breaks, break_optional_float)
@@ -336,25 +336,25 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     break_optional_float = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory')
+    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory', 'depots')
     if not depots is None:
         depots = convert_to_float(depots, depot_optional_float, 'optional')
         if not depots is None:
             depots = convert_df_to_dict_excluding_nan(depots, depot_optional_float)
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory')
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory', 'vehicles')
     if not vehicles is None:
         vehicles = convert_to_float(vehicles, vehicle_optional_float, 'optional')
-        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional')
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional', 'vehicles')
         if not vehicles is None:
             vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_float)
-    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory')
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory', 'jobs')
     if not jobs is None:
         jobs = convert_to_float(jobs, job_optional_float, 'optional')
-        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional')
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional', 'jobs')
         if not jobs is None:
             jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_float)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional')
-    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional')
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional', 'time window profiles')
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional', 'breaks')
     if not breaks is None:
         breaks = convert_to_float(breaks, break_optional_float, 'optional')
         breaks = convert_df_to_dict_excluding_nan(breaks, break_optional_float)

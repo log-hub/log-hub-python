@@ -58,9 +58,9 @@ def forward_isochrone(addresses: pd.DataFrame, parameters: Dict, api_key: str, s
     optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory')
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
-        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional')
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
 
     if addresses is None:
         return None
@@ -150,7 +150,7 @@ def reverse_isochrone(geocodes: pd.DataFrame, parameters: Dict, api_key: str, sa
     geocodes_columns = {'name': 'str', 'latitude': 'float', 'longitude': 'float'}
 
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns, 'mandatory')
+    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns, 'mandatory', 'coordinates')
     if geocodes is None:
         return None
     

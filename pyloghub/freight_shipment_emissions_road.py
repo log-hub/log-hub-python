@@ -62,9 +62,9 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
     addresses_optional_columns = {'fromState': 'str', 'fromPostalCode': 'str', 'fromCity': 'str', 'fromStreet': 'str', 'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 'toStreet': 'str', 'isRefrigirated': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, addresses_mandatory_columns, 'mandatory')
+    addresses = validate_and_convert_data_types(addresses, addresses_mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
-        addresses = validate_and_convert_data_types(addresses, addresses_optional_columns, 'optional')
+        addresses = validate_and_convert_data_types(addresses, addresses_optional_columns, 'optional', 'addresses')
     if not addresses is None:
         addresses = convert_dates(addresses, ['shipmentDate'])
     if addresses is None:
@@ -157,9 +157,9 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     coordinates_optional_columns = {'isRefrigirated': 'str'}
 
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, coordinates_mandatory_columns, 'mandatory')
+    coordinates = validate_and_convert_data_types(coordinates, coordinates_mandatory_columns, 'mandatory', 'coordinates')
     if not coordinates is None:
-        coordinates = validate_and_convert_data_types(coordinates, coordinates_optional_columns, 'optional')
+        coordinates = validate_and_convert_data_types(coordinates, coordinates_optional_columns, 'optional', 'coordinates')
     if not coordinates is None:
         coordinates = convert_dates(coordinates, ['shipmentDate'])
     if coordinates is None:

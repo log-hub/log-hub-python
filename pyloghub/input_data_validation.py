@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 
-def validate_and_convert_data_types(df, required_columns, column_type):
+def validate_and_convert_data_types(df, required_columns, column_type, df_name):
     """
     Validate and convert the data types of the DataFrame columns.
     Log an error message if a mandatory column is missing or if conversion fails.
@@ -9,19 +9,19 @@ def validate_and_convert_data_types(df, required_columns, column_type):
     for col, dtype in required_columns.items():
         if column_type == 'mandatory':
             if col not in df.columns:
-                logging.error(f"Missing a mandatory column: {col}")
+                logging.error(f"In the table {df_name} missing a mandatory column: {col}")
                 return None
             try:
                 df[col] = df[col].astype(dtype)
             except Exception as e:
-                logging.error(f"Data type conversion failed for column '{col}': {e}")
+                logging.error(f"Data type conversion failed in the table {df_name} for column '{col}': {e}")
                 return None
         elif column_type == 'optional':
             if col in df.columns:
                 try:
                     df[col] = df[col].astype(dtype)
                 except Exception as e:
-                    logging.error(f"Data type conversion failed for column '{col}': {e}")
+                    logging.error(f"Data type conversion failed in the table {df_name} for column '{col}': {e}")
                     return None
     return df
 

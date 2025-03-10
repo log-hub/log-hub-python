@@ -57,9 +57,9 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     optional_columns = {'senderState': 'str', 'senderPostalCode': 'str', 'senderCity': 'str', 'senderStreet': 'str', 'recipientState': 'str',
                         'recipientPostalCode': 'str', 'recipientCity': 'str', 'recipientStreet': 'str'}
 
-    address_pairs = validate_and_convert_data_types(address_pairs, mandatory_columns, 'mandatory')
+    address_pairs = validate_and_convert_data_types(address_pairs, mandatory_columns, 'mandatory', 'addresses')
     if not address_pairs is None:
-        address_pairs = validate_and_convert_data_types(address_pairs, optional_columns, 'optional')
+        address_pairs = validate_and_convert_data_types(address_pairs, optional_columns, 'optional', 'addresses')
     if address_pairs is None:
         return None
 
@@ -151,7 +151,7 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         }
     
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes, mandatory_columns, 'mandatory')
+    geocodes = validate_and_convert_data_types(geocodes, mandatory_columns, 'mandatory', 'coordinates')
     if geocodes is None:
         return None
 
