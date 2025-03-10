@@ -1,15 +1,15 @@
 import os
-
+import logging
 import pandas as pd
 import warnings
 from typing import Optional, Dict, Tuple
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_timestamps, validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.DataFrame, shipments: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.DataFrame, shipments: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform transport optimization based on locations, vehicle types, and shipments.
 
@@ -68,9 +68,15 @@ def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Five pandas DataFrames containing transport overview, transport details, dropped shipments, input map routes with addresses information and input map routes with coordinates information. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     # Define expected columns and data types for each DataFrame
     locations_mandatory_columns = {
@@ -128,6 +134,10 @@ def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
         dropped_shipments_df = pd.DataFrame(response_data['droppedShipments'])
         input_map_routes_df = pd.DataFrame(response_data['inputMapRoutes'])
         input_map_routes_geocodes_df = pd.DataFrame(response_data['inputMapRoutesGeocodes'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return transport_overview_df, transport_details_df, dropped_shipments_df, input_map_routes_df, input_map_routes_geocodes_df
 
 def forward_transport_optimization_sample_data():
@@ -149,7 +159,7 @@ def forward_transport_optimization_sample_data():
     }
     return {'locations': locations_df, 'vehicleTypes': vehicle_types_df, 'shipments': shipments_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.DataFrame, shipments: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.DataFrame, shipments: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform transport optimization based on locations, vehicle types, and shipments.
 
@@ -205,9 +215,15 @@ def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]: Four pandas DataFrames containing transport overview, trasnport details, dropped shipments and input map routes with coordinates information. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     # Define expected columns and data types for each DataFrame
     locations_mandatory_columns = {
@@ -260,6 +276,10 @@ def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
         transport_details_df = pd.DataFrame(response_data['transportDetails'])
         dropped_shipments_df = pd.DataFrame(response_data['droppedShipments'])
         input_map_routes_geocodes_df = pd.DataFrame(response_data['inputMapRoutesGeocodes'])
+        if (show_buttons and save_scenario['saveScenario']):
+            create_buttons()
+        if not save_scenario['saveScenario']:
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return transport_overview_df, transport_details_df, dropped_shipments_df, input_map_routes_geocodes_df
 
 def reverse_transport_optimization_sample_data():
