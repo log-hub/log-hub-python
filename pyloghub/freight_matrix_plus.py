@@ -84,7 +84,7 @@ def forward_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_
         evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return evaluated_shipments
 
@@ -170,7 +170,7 @@ def reverse_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_
         evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return evaluated_shipments
 

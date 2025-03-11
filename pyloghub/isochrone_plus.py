@@ -86,7 +86,7 @@ def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: s
         reachable_areas_df = pd.DataFrame(response_data['reachableAreasTable'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return geocoded_data_df, reachable_areas_df
 
@@ -181,7 +181,7 @@ def reverse_isochrone_plus(geocodes: pd.DataFrame, parameters: Dict, api_key: st
         reachable_areas_df = pd.DataFrame(response_data['reachableAreasTable'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return geocoded_data_df, reachable_areas_df
 

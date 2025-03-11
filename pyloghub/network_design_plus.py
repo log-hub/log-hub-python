@@ -256,7 +256,7 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
             if (show_buttons and save_scenario['saveScenario']):
                 create_buttons()
-            if not save_scenario['saveScenario']:
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
                 logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, factory_assignment, customer_assignment,solution_kpis
 
@@ -525,7 +525,7 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
             if (show_buttons and save_scenario['saveScenario']):
                 create_buttons()
-            if not save_scenario['saveScenario']:
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
                 logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, factory_assignment, customer_assignment,solution_kpis
         

@@ -81,7 +81,7 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
         distances_df = pd.DataFrame(response_data)
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return distances_df
     
@@ -171,7 +171,7 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
         distances_df = pd.DataFrame(response_data)
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return distances_df
 
@@ -200,6 +200,5 @@ if __name__ == "__main__":
     sample = forward_distance_calculation_sample_data()
 
     address = sample['address_data']
-    address = address.drop(columns = ['senderState', 'senderPostalCode', 'senderStreet', 'recipientState',
-                        'recipientPostalCode', 'recipientStreet'])
+    #address = address.drop(columns = ['senderState', 'senderPostalCode', 'senderStreet', 'recipientState', 'recipientPostalCode', 'recipientStreet'])
     out = forward_distance_calculation(address, sample['parameters'], api_key_dev)

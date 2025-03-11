@@ -91,7 +91,7 @@ def forward_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
         unassigned_df = pd.DataFrame(response_data['unassignedCustomers'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return nearest_warehouses_df, unassigned_df
             
@@ -186,7 +186,7 @@ def reverse_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
         unassigned_df = pd.DataFrame(response_data['unassignedCustomers'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return nearest_warehouses_df, unassigned_df
 

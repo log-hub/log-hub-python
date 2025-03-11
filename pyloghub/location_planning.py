@@ -119,7 +119,7 @@ def forward_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
             if (show_buttons and save_scenario['saveScenario']):
                 create_buttons()
-            if not save_scenario['saveScenario']:
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
                 logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, customer_assignment,solution_kpis
 
@@ -250,7 +250,7 @@ def reverse_location_planning(customers: pd.DataFrame, warehouses: pd.DataFrame,
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
             if (show_buttons and save_scenario['saveScenario']):
                 create_buttons()
-            if not save_scenario['saveScenario']:
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
                 logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
             return open_warehouses, customer_assignment, solution_kpis
 

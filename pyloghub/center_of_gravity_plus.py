@@ -78,7 +78,7 @@ def forward_center_of_gravity_plus(addresses: pd.DataFrame, parameters: Dict, ap
         centers_df = pd.DataFrame(response_data['centers'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return assigned_addresses_df, centers_df
 
@@ -170,7 +170,7 @@ def reverse_center_of_gravity_plus(coordinates: pd.DataFrame, parameters: Dict, 
         centers_df = pd.DataFrame(response_data['centers'])
         if (show_buttons and save_scenario['saveScenario']):
             create_buttons()
-        if not save_scenario['saveScenario']:
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return assigned_geocodes_df, centers_df
 
