@@ -9,7 +9,7 @@ def validate_and_convert_data_types(df, required_columns, column_type, df_name):
     for col, dtype in required_columns.items():
         if column_type == 'mandatory':
             if col not in df.columns:
-                logging.error(f"In the table {df_name} missing a mandatory column: {col}")
+                logging.error(f"In the table '{df_name}' is missing a mandatory column '{col}'")
                 return None
             try:
                 df[col] = df[col].astype(dtype)

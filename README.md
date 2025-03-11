@@ -203,6 +203,11 @@ save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 reverse_distance_calculation_df = reverse_distance_calculation(geocode_data_df, parameters, api_key, save_scenario, show_buttons=True)
 reverse_distance_calculation_df.head()
 ```
+
+<p align="left">
+  <img src="examples\assets\isochrone.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Forward Isochrone
 Determine the areas that can be rached within a certain amount of time or distance from the starting location with the given address.
 
@@ -240,6 +245,10 @@ save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 reachable_areas_df = reverse_isochrone(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
 reachable_areas_df.head()
 ```
+
+<p align="left">
+  <img src="examples\assets\isochrone_plus.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Forward Isochrone Plus
 Determine the areas that can be rached within a certain amount of time or distance from the starting location with the given address, using the additional parameters for calculating the isochrones.
@@ -774,6 +783,10 @@ display(customer_assignement.head())
 display(solution_kpis.head())
 ```
 
+<p align="left">
+  <img src="examples\assets\milkrun_optimization.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Forward Milkrun Optimization
 Calculate cost-optimal routes for inbound and outbound orders described with their addresses.
 
@@ -882,6 +895,10 @@ display(route_overview_df.head())
 display(route_details_df.head())
 display(external_orders_df.head())
 ```
+
+<p align="left">
+  <img src="examples\assets\transport_optimization.png" alt="Header Image"  width="980"/>
+</p>
 
 #### Forward Transport Optimization
 Assign shipments with corresponding addresses to available vehicles in an optimal way.
