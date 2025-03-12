@@ -53,7 +53,7 @@ def save_scenario_check(save_scenario_data: dict, payload: dict, application_nam
 
 def get_entities_link(data, scenario_name):
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
 
     entities_id = {}

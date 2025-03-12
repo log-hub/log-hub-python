@@ -8,7 +8,7 @@ def create_url(app_name):
     """
     Creates an url for the given application.
     """
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
     url = f"{LOG_HUB_API_SERVER}/api/applications/v1/"+app_name
 
@@ -51,7 +51,7 @@ def post_method(url, payload, headers, app_name):
 
 def get_method(api_server, url, headers, app_name):
 
-    api_server = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
+    api_server = "https://production.supply-chain-apps.log-hub.com"
     
     retry_delay = 15  # seconds
     timeout = 3600
@@ -76,7 +76,7 @@ def get_method(api_server, url, headers, app_name):
     
 def get_workspace_entities(save_scenario, api_key):
 
-    DEFAULT_LOG_HUB_API_SERVER = "https://supply-chain-app-eu-supply-chain-eu-development.azurewebsites.net/"
+    DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
     url = f"{LOG_HUB_API_SERVER}api/v1/workspace/"+ save_scenario['workspaceId'] + "/entitiesWithTables"
 
