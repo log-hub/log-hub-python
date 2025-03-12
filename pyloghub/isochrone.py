@@ -80,7 +80,7 @@ def forward_isochrone(addresses: pd.DataFrame, parameters: Dict, api_key: str, s
         return None
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodingResult'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -93,7 +93,7 @@ def forward_isochrone_sample_data():
     parameters = {
         'isochroneType': 'road',
         'distanceUnit': 'km',
-        'profile': 'driving-car',
+        'profile': 'car',
         'duration': 40,
         'layers': 5,
         'distance': 3000,
@@ -167,7 +167,7 @@ def reverse_isochrone(geocodes: pd.DataFrame, parameters: Dict, api_key: str, sa
         return None
     else:
         result_df = pd.DataFrame(response_data['geocodingResult'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -181,7 +181,7 @@ def reverse_isochrone_sample_data():
     parameters = {
         'isochroneType': 'road',
         'distanceUnit': 'km',
-        'profile': 'driving-car',
+        'profile': 'car',
         'duration': 40,
         'layers': 5,
         'distance': 3000,

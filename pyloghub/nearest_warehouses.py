@@ -37,7 +37,7 @@ def forward_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
         - city (str): City name.
         - street (str): Street name with house number.
 
-    parametrs (dict): A dictionary containing parameters nearestWarehouses (an integer number), distanceUnit (enum 'km' or 'mi'), maxDistance (an integer number) and streetLevel (boolean)
+    parametrs (dict): A dictionary containing parameters 'nearestWarehouses' (an integer number), 'distanceUnit' (enum 'km' or 'mi'), 'durationUnit' (enum 'min', 'sec' or 'h'), 'vehicleType' (enum 'car' or 'truc'), 'routePreference' (enum 'recommended', 'shortest', 'fastest'), 'maxDistance' (an integer number), and 'streetLevel' (boolean).
 
     api_key (str): The Log-hub API key for accessing the nearest warehouses service.
 
@@ -89,7 +89,7 @@ def forward_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
     else: 
         nearest_warehouses_df = pd.DataFrame(response_data['nearestWarehouses'])
         unassigned_df = pd.DataFrame(response_data['unassignedCustomers'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -103,6 +103,9 @@ def forward_nearest_warehouses_sample_data():
     parameters = {
         "nearestWarehouses": 3,
         "distanceUnit": "km",
+        "durationUnit": "min",
+        "vehicleType": "car",
+        "routePreference": "recommended",
         "maxDistance": 2000,
         "streetLevel": False
     }
@@ -134,7 +137,7 @@ def reverse_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
         - latitude (number): Customer latitude.
         - longitude (number): Customer longitude.
 
-    parametrs (dict): A dictionary containing parameters nearestWarehouses (an integer number), distanceUnit (enum 'km' or 'mi'), maxDistance (an integer number) and streetLevel (boolean)
+    parametrs (dict): A dictionary containing parameters 'nearestWarehouses' (an integer number), 'distanceUnit' (enum 'km' or 'mi'), 'durationUnit' (enum 'min', 'sec' or 'h'), 'vehicleType' (enum 'car' or 'truc'), 'routePreference' (enum 'recommended', 'shortest', 'fastest'), 'maxDistance' (an integer number), and 'streetLevel' (boolean).
 
     api_key (str): The Log-hub API key for accessing the nearest warehouses service.
 
@@ -184,7 +187,7 @@ def reverse_nearest_warehouses(warehouses: pd.DataFrame, customers: pd.DataFrame
     else:
         nearest_warehouses_df = pd.DataFrame(response_data['nearestWarehouses'])
         unassigned_df = pd.DataFrame(response_data['unassignedCustomers'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -198,6 +201,9 @@ def reverse_nearest_warehouses_sample_data():
     parameters = {
         "nearestWarehouses": 3,
         "distanceUnit": "km",
+        "durationUnit": "min",
+        "vehicleType": "car",
+        "routePreference": "recommended",
         "maxDistance": 2000,
         "streetLevel": False
     }
@@ -208,4 +214,3 @@ def reverse_nearest_warehouses_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'warehouses': warehouses_df, 'customers': customers_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-

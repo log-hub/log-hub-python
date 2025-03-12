@@ -131,7 +131,7 @@ def forward_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         external_orders_df = pd.DataFrame(response_data['droppedCustomers'])
         input_map_routes_df = pd.DataFrame(response_data['inputMapRoutes'])
         input_map_routes_geocodes_df = pd.DataFrame(response_data['inputMapRoutesGeocodes'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -266,7 +266,7 @@ def reverse_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         route_details_df = pd.DataFrame(response_data['routeDetails'])
         external_orders_df = pd.DataFrame(response_data['droppedCustomers'])
         input_map_routes_geocodes_df = pd.DataFrame(response_data['inputMapRoutesGeocodes'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

@@ -69,7 +69,7 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {},
         return None
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodes'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -135,7 +135,7 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}, 
         return None
     else:
         addresses_df = pd.DataFrame(response_data['addresses'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

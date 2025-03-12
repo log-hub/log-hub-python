@@ -92,7 +92,7 @@ def forward_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     else:
         assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
         centers_df = pd.DataFrame(response_data['centers'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -197,7 +197,7 @@ def reverse_fixed_center_of_gravity(customers: pd.DataFrame, fixed_centers: pd.D
     else:
         assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
         centers_df = pd.DataFrame(response_data['centers'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

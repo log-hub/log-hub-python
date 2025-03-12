@@ -77,7 +77,7 @@ def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters:
         return None
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputSea'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

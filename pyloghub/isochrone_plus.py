@@ -61,7 +61,7 @@ def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: s
     optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory' 'addresses')
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
         addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
 
@@ -84,7 +84,7 @@ def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: s
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodingResult'])
         reachable_areas_df = pd.DataFrame(response_data['reachableAreasTable'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -179,7 +179,7 @@ def reverse_isochrone_plus(geocodes: pd.DataFrame, parameters: Dict, api_key: st
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodingResult'])
         reachable_areas_df = pd.DataFrame(response_data['reachableAreasTable'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

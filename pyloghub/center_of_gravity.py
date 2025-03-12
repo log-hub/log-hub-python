@@ -75,7 +75,7 @@ def forward_center_of_gravity(addresses: pd.DataFrame, parameters: Dict, api_key
     else:
         assigned_addresses_df = pd.DataFrame(response_data['assignedAddresses'])
         centers_df = pd.DataFrame(response_data['centers'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -160,7 +160,7 @@ def reverse_center_of_gravity(coordinates: pd.DataFrame, parameters: Dict, api_k
     else:
         assigned_geocodes_df = pd.DataFrame(response_data['assignedGeocodes'])
         centers_df = pd.DataFrame(response_data['centers'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -182,12 +182,3 @@ def reverse_center_of_gravity_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'coordinates': coordinates_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    api_key_dev = "e75d5db6ca8e6840e185bc1c63f20f39e65fbe0b"
-    sample = forward_center_of_gravity_sample_data()
-
-    address = sample['addresses']
-    #address = address.drop(columns = ['senderState', 'senderPostalCode', 'senderStreet', 'recipientState', 'recipientPostalCode', 'recipientStreet'])
-    out = forward_center_of_gravity(address, sample['parameters'], api_key_dev)

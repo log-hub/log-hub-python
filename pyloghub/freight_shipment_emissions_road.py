@@ -86,7 +86,7 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputStandardRoad'])
         not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsStandardRoad'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -180,7 +180,7 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputReverseRoad'])
         not_evaluated_df  = pd.DataFrame(response_data['notEvaluatedShipmentsReverseRoad'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
