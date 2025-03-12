@@ -76,7 +76,7 @@ def forward_supply_chain_map_routes(addresses: pd.DataFrame, parameters: dict, a
         return None
     else: 
         route_result_df = pd.DataFrame(response_data['inputDataStructure'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -161,7 +161,7 @@ def reverse_supply_chain_map_routes(coordinates: pd.DataFrame, parameters: dict,
         return None
     else:
         route_result_df = pd.DataFrame(response_data['inputDataStructure'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

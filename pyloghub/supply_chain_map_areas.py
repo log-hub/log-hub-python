@@ -79,7 +79,7 @@ def forward_supply_chain_map_areas(areas: pd.DataFrame, parameters: dict, api_ke
         return None
     else:
         areas_df = pd.DataFrame(response_data['areaResult'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

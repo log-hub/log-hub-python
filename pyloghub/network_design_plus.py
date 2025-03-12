@@ -254,7 +254,7 @@ def forward_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
             factory_assignment = pd.DataFrame(get_method_result['factoryAssignment'])
             customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
-            if (show_buttons and save_scenario['saveScenario']):
+            if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
                 create_buttons()
             if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
                 logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -523,7 +523,7 @@ def reverse_network_design_plus(factories: pd.DataFrame, warehouses: pd.DataFram
             factory_assignment = pd.DataFrame(get_method_result['factoryAssignment'])
             customer_assignment = pd.DataFrame(get_method_result['customerAssignment'])
             solution_kpis = pd.DataFrame(get_method_result['solutionKpis'])
-            if (show_buttons and save_scenario['saveScenario']):
+            if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
                 create_buttons()
             if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
                 logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -559,5 +559,3 @@ def reverse_network_design_plus_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'factories': factories_df, 'warehouses': warehouses_df, 'customers': customers_df, 'productSegments': product_segments_df, 'transportCosts': transport_costs_df, 'transportCostsRules': transport_costs_rules_df, 'stepwiseCostFunctionWeight': stepwise_function_weight_df, 'stepwiseCostFunctionVolume': stepwise_function_volume_df, 'distanceLimits': distance_limits_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-

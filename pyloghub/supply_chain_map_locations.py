@@ -76,7 +76,7 @@ def forward_supply_chain_map_locations(addresses: pd.DataFrame, api_key: str, sa
         return None
     else:
         geocoding_result_df = pd.DataFrame(response_data['geocodingResult'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -155,7 +155,7 @@ def reverse_supply_chain_map_locations(coordinates: pd.DataFrame, api_key: str, 
         return None
     else:
         geocoding_data_df = pd.DataFrame(response_data['geocodingData'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")

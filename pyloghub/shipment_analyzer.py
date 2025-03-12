@@ -136,7 +136,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     else:
         shipments_df = pd.DataFrame(response_data['shipments'])
         transports_df = pd.DataFrame(response_data['transports'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -282,7 +282,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     else:
         shipments_df = pd.DataFrame(response_data['shipments'])
         transports_df = pd.DataFrame(response_data['transports'])
-        if (show_buttons and save_scenario['saveScenario']):
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
@@ -307,4 +307,3 @@ def reverse_shipment_analyzer_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
