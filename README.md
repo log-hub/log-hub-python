@@ -203,7 +203,45 @@ save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 reverse_distance_calculation_df = reverse_distance_calculation(geocode_data_df, parameters, api_key, save_scenario, show_buttons=True)
 reverse_distance_calculation_df.head()
 ```
+#### Forward Distance Calculation With Extra Details
+Calculate distances based on addresses and getting additional details about the road between start and end point.
+```python
+from pyloghub.distance_calculation_with_extra_details import forward_distance_calculation_with_extra_details, forward_distance_calculation_with_extra_details_sample_data
+from IPython.display import display
 
+sample_data = forward_distance_calculation_with_extra_details_sample_data()
+address_data_df = sample_data['address_data']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+forward_distance_calculation_result_df, additional_details_df = forward_distance_calculation_with_extra_details(address_data_df, parameters, api_key, save_scenario, show_buttons=True)
+display(forward_distance_calculation_result_df.head())
+display(additional_details_df.head())
+```
+
+#### Reverse Distance Calculation With Extra Details
+Calculate distances based on coordinates and getting additional details about the road between start and end point.
+```python
+from pyloghub.distance_calculation_with_extra_details import reverse_distance_calculation_with_extra_details, reverse_distance_calculation_with_extra_details_sample_data
+from IPython.display import display
+
+sample_data = reverse_distance_calculation_with_extra_details_sample_data()
+address_data_df = sample_data['geocode_data']
+parameters = sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+
+reverse_distance_calculation_result_df, additional_details_df = reverse_distance_calculation_with_extra_details(address_data_df, parameters, api_key, save_scenario, show_buttons=True)
+display(reverse_distance_calculation_result_df.head())
+display(additional_details_df.head())
+```
 <p align="left">
   <img src="examples\assets\isochrone.png" alt="Header Image"  width="980"/>
 </p>
@@ -617,6 +655,54 @@ display(assigned_geocodes_df.head())
 display(centers_df.head())
 ```
 
+#### Forward Advanced Center of Gravity
+Calculating the optimal location for new warehouses given the address location of customers, their respective weights and product groups they require, as well as sources of the product groups.
+```python
+from IPython.display import display
+from pyloghub.advanced_center_of_gravity import forward_advanced_center_of_gravity_sample_data, forward_advanced_center_of_gravity
+
+sample_data = forward_advanced_center_of_gravity_sample_data()
+customers_df = sample_data['customers']
+sources_df = sample_data['sources']
+fixed_centers_df = sample_data['fixedCenters']
+product_groups_df = sample_data['productGroups']
+parameters =sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_centers_df, inbound_df, outbound_df = forward_advanced_center_of_gravity(customers_df, sources_df, fixed_centers_df, product_groups_df, parameters, api_key, save_scenario, show_buttons=True)
+display(assigned_centers_df.head())
+display(inbound_df.head())
+display(outbound_df.head())
+```
+
+#### Reverse Advanced Center of Gravity
+Calculating the optimal location for new warehouses given the coordinates of customers, their respective weights and product groups they require, as well as sources of the product groups.
+
+```python
+from IPython.display import display
+from pyloghub.advanced_center_of_gravity import reverse_advanced_center_of_gravity_sample_data, reverse_advanced_center_of_gravity
+
+sample_data = reverse_advanced_center_of_gravity_sample_data()
+customers_df = sample_data['customers']
+sources_df = sample_data['sources']
+fixed_centers_df = sample_data['fixedCenters']
+product_groups_df = sample_data['productGroups']
+parameters =sample_data['parameters']
+
+save_scenario = sample_data['saveScenarioParameters']
+save_scenario['saveScenario'] = True
+save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
+save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
+
+assigned_centers_df, inbound_df, outbound_df = reverse_advanced_center_of_gravity(customers_df, sources_df, fixed_centers_df, product_groups_df, parameters, api_key, save_scenario, show_buttons=True)
+display(assigned_centers_df.head())
+display(inbound_df.head())
+display(outbound_df.head())
+```
 <p align="left">
   <img src="examples\assets\nearest_warehouses.png" alt="Header Image"  width="980"/>
 </p>
