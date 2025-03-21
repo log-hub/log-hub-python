@@ -38,10 +38,10 @@ def forward_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         - maxRouteDuration (number): The maximum route duration.
         - maxCapacityWeight (number): The maximum weight that can be loaded by a vehicle of the corresponding vehicle type. 
         - maxCapacityVolume (number): The maximum volume that can be loaded by a vehicle of the corresponding vehicle type. 
-        - maxCapacityLoadingMeter (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
+        - maxCapacityPallets (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
         - fixedCosts (number): The fixed costs per vehicle in case of usage. 
         - costsPerStop (number): The costs per vehicle stop.
-        - costsPerKm (number): The costs per distance unit. 
+        - costsPerDistanceUnit (number): The costs per distance unit. 
 
      pickup_and_delivery (pd.DataFrame): DataFrame containing pickup and delivery information.
         Columns:
@@ -53,14 +53,14 @@ def forward_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         - street (str): Street name with house number.
         - weight (number): The weight of the order. 
         - volume (number): The volume of the order.
-        - loadingMeter (number): The number of pallets of the order.
-        - modus (str): Pickup/Delivery.
+        - pallets (number): The number of pallets of the order.
+        - pickupDelivery (str): Pickup/Delivery.
         - depot (str):  The depot name the order has to be delivered to.
         - vehicleType (str): All valid vehicle types for the order separated by semicolon.
         - serviceTime (number): Stop duration per order in minutes.
         - startTimeWindow (str): Start of the delivery/pickup time window per order.
         - endTimeWindow (str): End of the delivery/pickup time window per order.
-        - opportunityCosts (number): External costs for order. 
+        - externalCosts (number): External costs for order. 
 
     parameters (Dict): Dictionary containing parameters durationUnit and distanceUnit.
 
@@ -89,13 +89,13 @@ def forward_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
     }
 
     vehicle_types_mandatory_columns = {
-        'type': 'str', 'availableVehicles': 'float',  'startDepot': 'str', 'endDepot': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityLoadingMeter': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerKm': 'float'
+        'type': 'str', 'availableVehicles': 'float',  'startDepot': 'str', 'endDepot': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityPallets': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerDistanceUnit': 'float'
     }   
     pickup_and_delivery_mandatory_columns = {
-        'name': 'str', 'country': 'str', 'weight': 'float', 'volume': 'float', 'loadingMeter': 'float', 'depot': 'str', 'serviceTime': 'float', 'startTimeWindow': 'str', 'endTimeWindow': 'str', 'opportunityCosts': 'float'
+        'name': 'str', 'country': 'str', 'weight': 'float', 'volume': 'float', 'pallets': 'float', 'depot': 'str', 'serviceTime': 'float', 'startTimeWindow': 'str', 'endTimeWindow': 'str', 'externalCosts': 'float'
     }
     pickup_and_delivery_optional_columns = {
-        'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'vehicleType': 'str', 'modus': 'str'
+        'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'vehicleType': 'str', 'pickupDelivery': 'str'
     }
 
     # Perform validation and conversion for each DataFrame
@@ -182,10 +182,10 @@ def reverse_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         - maxRouteDuration (number): The maximum route duration.
         - maxCapacityWeight (number): The maximum weight that can be loaded by a vehicle of the corresponding vehicle type. 
         - maxCapacityVolume (number): The maximum volume that can be loaded by a vehicle of the corresponding vehicle type. 
-        - maxCapacityLoadingMeter (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
+        - maxCapacityPallets (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
         - fixedCosts (number): The fixed costs per vehicle in case of usage. 
         - costsPerStop (number): The costs per vehicle stop.
-        - costsPerKm (number): The costs per distance unit. 
+        - costsPerDistanceUnit (number): The costs per distance unit. 
 
      pickup_and_delivery (pd.DataFrame): DataFrame containing pickup and delivery information.
         Columns:
@@ -194,14 +194,14 @@ def reverse_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
         - longitude (number): Longitude of the customer.
         - weight (number): The weight of the order. 
         - volume (number): The volume of the order.
-        - loadingMeter (number): The number of pallets of the order.
-        - modus (str): Pickup/Delivery.
+        - pallets (number): The number of pallets of the order.
+        - pickupDelivery (str): Pickup/Delivery.
         - depot (str):  The depot name the order has to be delivered to.
         - vehicleType (str): All valid vehicle types for the order separated by semicolon.
         - serviceTime (number): Stop duration per order in minutes.
         - startTimeWindow (str): Start of the delivery/pickup time window per order.
         - endTimeWindow (str): End of the delivery/pickup time window per order.
-        - opportunityCosts (number): External costs for order. 
+        - externalCosts (number): External costs for order. 
 
     parameters (Dict): Dictionary containing parameters durationUnit and distanceUnit.
 
@@ -227,13 +227,13 @@ def reverse_milkrun_optimization(depots: pd.DataFrame, vehicle_types: pd.DataFra
     }
 
     vehicle_types_mandatory_columns = {
-        'type': 'str', 'availableVehicles': 'float',  'startDepot': 'str', 'endDepot': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityLoadingMeter': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerKm': 'float'
+        'type': 'str', 'availableVehicles': 'float',  'startDepot': 'str', 'endDepot': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityPallets': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerDistanceUnit': 'float'
     }   
     pickup_and_delivery_mandatory_columns = {
-        'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'loadingMeter': 'float', 'depot': 'str', 'serviceTime': 'float', 'startTimeWindow': 'str', 'endTimeWindow': 'str', 'opportunityCosts': 'float'
+        'name': 'str', 'latitude': 'float', 'longitude': 'float', 'weight': 'float', 'volume': 'float', 'pallets': 'float', 'depot': 'str', 'serviceTime': 'float', 'startTimeWindow': 'str', 'endTimeWindow': 'str', 'externalCosts': 'float'
     }
     pickup_and_delivery_optional_columns = {
-        'vehicleType': 'str', 'modus': 'str'
+        'vehicleType': 'str', 'pickupDelivery': 'str'
     }
 
     # Perform validation and conversion for each DataFrame

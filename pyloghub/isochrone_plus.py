@@ -29,11 +29,11 @@ def forward_isochrone_plus(addresses: pd.DataFrame, parameters: Dict, api_key: s
     
     parameters (dict): A dictionary containing parameters for isochrone calculation. 
         - level (str): A number between 1 and 5, sent as a string, and representing administration level.
-        - duration1 (number): A number between 1 and 1000. The maximum duration for Administration Level 1.
-        - duration2 (number): A number between 1 and 600. The maximum duration for Administration Level 2.
-        - duration3 (number): A number between 1 and 600. The maximum duration for Administration Level 3.
-        - duration4 (number): A number between 1 and 500. The maximum duration for Administration Level 4.
-        - duration5 (number): A number between 1 and 200. The maximum duration for Administration Level 5.
+        - maxTravelTime1 (number): A number between 1 and 1000. The maximum duration for Administration Level 1.
+        - maxTravelTime2 (number): A number between 1 and 600. The maximum duration for Administration Level 2.
+        - maxTravelTime3 (number): A number between 1 and 600. The maximum duration for Administration Level 3.
+        - maxTravelTime4 (number): A number between 1 and 500. The maximum duration for Administration Level 4.
+        - maxTravelTime5 (number): A number between 1 and 200. The maximum duration for Administration Level 5.
         - averageSpeed (number): Average speed.
         - distanceUnit (str): Distance unit "km" or "mi".
         - detourFactor (number): A decimal number between 1 and 3.
@@ -96,11 +96,11 @@ def forward_isochrone_plus_sample_data():
     addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:G').fillna("")
     parameters = {
         'level': '3',
-        'duration1': 300,
-        'duration2': 300,
-        'duration3': 100,
-        'duration4': 100,
-        'duration5': 50,
+        'maxTravelTime1': 300,
+        'maxTravelTime2': 300,
+        'maxTravelTime3': 100,
+        'maxTravelTime4': 100,
+        'maxTravelTime5': 50,
         'averageSpeed': 60,
         'distanceUnit': 'km',
         'detourFactor': 1.2, 
@@ -130,11 +130,11 @@ def reverse_isochrone_plus(geocodes: pd.DataFrame, parameters: Dict, api_key: st
 
     parameters (dict): A dictionary containing parameters for isochrone calculation. 
         - level (str): A number between 1 and 5, sent as a string, and representing administration level.
-        - duration1 (number): A number between 1 and 1000. The maximum duration for Administration Level 1.
-        - duration2 (number): A number between 1 and 600. The maximum duration for Administration Level 2.
-        - duration3 (number): A number between 1 and 600. The maximum duration for Administration Level 3.
-        - duration4 (number): A number between 1 and 500. The maximum duration for Administration Level 4.
-        - duration5 (number): A number between 1 and 200. The maximum duration for Administration Level 5.
+        - maxTravelTime1 (number): A number between 1 and 1000. The maximum duration for Administration Level 1.
+        - maxTravelTime2 (number): A number between 1 and 600. The maximum duration for Administration Level 2.
+        - maxTravelTime3 (number): A number between 1 and 600. The maximum duration for Administration Level 3.
+        - maxTravelTime4 (number): A number between 1 and 500. The maximum duration for Administration Level 4.
+        - maxTravelTime5 (number): A number between 1 and 200. The maximum duration for Administration Level 5.
         - averageSpeed (number): Average speed.
         - distanceUnit (str): Distance unit "km" or "mi".
         - detourFactor (number): A decimal number between 1 and 3.
@@ -192,11 +192,11 @@ def reverse_isochrone_plus_sample_data():
 
     parameters = {
         'level': '3',
-        'duration1': 300,
-        'duration2': 300,
-        'duration3': 100,
-        'duration4': 100,
-        'duration5': 50,
+        'maxTravelTime1': 300,
+        'maxTravelTime2': 300,
+        'maxTravelTime3': 100,
+        'maxTravelTime4': 100,
+        'maxTravelTime5': 50,
         'averageSpeed': 60,
         'distanceUnit': 'km',
         'detourFactor': 1.2, 
