@@ -84,6 +84,26 @@ def forward_distance_calculation_with_extra_details(address_pairs: pd.DataFrame,
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return distances_df, extra_details_df
+    
+def forward_distance_calculation_with_extra_details_sample_data():
+    warnings.simplefilter("ignore", category=UserWarning)
+    data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'DistanceCalcSampleDataAddresses.xlsx')
+    addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:J')
+
+    parameters = {
+        "distanceUnit": "km",
+        "durationUnit": "min",
+        "vehicleType": "car",
+        "routePreference": "recommended"
+    }
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'address_data': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
 
 def reverse_distance_calculation_with_extra_details(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
@@ -152,16 +172,22 @@ def reverse_distance_calculation_with_extra_details(geocodes: pd.DataFrame, para
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return distances_df, extra_details_df
     
-if __name__ == "__main__":
+def reverse_distance_calculation_with_extra_details_sample_data():
+    warnings.simplefilter("ignore", category=UserWarning)
+    data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'DistanceCalcSampleDataReverse.xlsx')
+    geocode_data_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:F')
 
-    sample = reverse_distance_calculation_sample_data()
-    api_key_dev = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
-    addresses = sample['geocode_data']
-    par = sample['parameters']
-    save_scenario = sample['saveScenarioParameters']
-    save_scenario['saveScenario'] = True
-    save_scenario['scenarioName'] = 'Extra reverse distance calculation'
-    save_scenario['workspaceId'] = '2fdb6508020000336eda5932b32c114f9db46ccb'
-
-    out = reverse_distance_calculation_with_extra_details(addresses, par, api_key_dev, save_scenario, show_buttons=True)
+    parameters = {
+        "distanceUnit": "km",
+        "durationUnit": "min",
+        "vehicleType": "car",
+        "routePreference": "recommended"
+    }
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'geocode_data': geocode_data_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
