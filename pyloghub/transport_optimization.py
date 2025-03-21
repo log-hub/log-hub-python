@@ -38,26 +38,26 @@ def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
         - maxRouteDuration (number): The maximum route duration.
         - maxCapacityWeight (number): The maximum weight that can be loaded by a vehicle of the corresponding vehicle type. 
         - maxCapacityVolume (number): The maximum volume that can be loaded by a vehicle of the corresponding vehicle type. 
-        - maxCapacityLoadingMeter (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
+        - maxCapacityPallets (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
         - fixedCosts (number): The fixed costs per vehicle in case of usage. 
         - costsPerStop (number): The costs per vehicle stop.
-        - costsPerKm (number): The costs per distance unit. 
+        - costsPerDistanceUnit (number): The costs per distance unit. 
 
      shipments (pd.DataFrame): DataFrame containing shipments information.
         Columns:
         - name (str): The name of the shipment. 
-        - sender (str): Sender id of the shipment.
-        - senderServiceTime (float): Service time needed on the pickup location of the shipment.
+        - senderId (str): Sender id of the shipment.
+        - senderStopDuration (float): Service time needed on the pickup location of the shipment.
         - earliestPickupTime (str): Start of the pickup time window per shipment.
         - latestPickupTime (str): End of the pickup time window per shipment.
-        - recipient (str): Recipient id of the shipment.
-        - recipientServiceTime (float): Service time needed on the delivery location of the shipment.
+        - recipientId (str): Recipient id of the shipment.
+        - recipientStopDuration (float): Service time needed on the delivery location of the shipment.
         - earliestDeliveryTime (str): Start of the delivery time window per shipment.
         - latestDeliveryTime (str): End of the delivery time window per shipment.
         - weight (number): The weight of the shipment. 
         - volume (number): The volume of the shipment.
-        - loadingMeter (number): The number of pallets of the shipment.
-        - opportunityCosts (number): External costs for shipment.
+        - pallets (number): The number of pallets of the shipment.
+        - externalCosts (number): External costs for shipment.
         - vehicleType (str): All valid vehicle types for the order separated by semicolon.   
 
     parameters (Dict): Dictionary containing parameters durationUnit and distanceUnit.
@@ -87,15 +87,15 @@ def forward_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
     }
 
     vehicle_types_mandatory_columns = {
-        'type': 'str', 'availableVehicles': 'float',  'startLocation': 'str', 'endLocation': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityLoadingMeter': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerKm': 'float'
+        'type': 'str', 'availableVehicles': 'float',  'startLocation': 'str', 'endLocation': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityPallets': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerDistanceUnit': 'float'
     }   
     shipments_mandatory_columns = {
-        'name': 'str', 'sender': 'str', 'senderServiceTime': 'float', 'earliestPickupTime': 'str', 'latestPickupTime': 'str', 'recipient': 'str', 'recipientServiceTime': 'float', 'earliestDeliveryTime': 'str',  'latestDeliveryTime': 'str', 'weight': 'float', 'opportunityCosts': 'float'
+        'name': 'str', 'senderId': 'str', 'senderStopDuration': 'float', 'earliestPickupTime': 'str', 'latestPickupTime': 'str', 'recipientId': 'str', 'recipientStopDuration': 'float', 'earliestDeliveryTime': 'str',  'latestDeliveryTime': 'str', 'weight': 'float', 'externalCosts': 'float'
     }
     shipemnts_optional_columns = {
         'vehicleType': 'str'
     }
-    shipments_optional_floats = ['volume', 'loadingMeter']
+    shipments_optional_floats = ['volume', 'pallets']
 
     # Perform validation and conversion for each DataFrame
     locations = validate_and_convert_data_types(locations, locations_mandatory_columns, 'mandatory', 'locations')
@@ -185,26 +185,26 @@ def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
         - maxRouteDuration (number): The maximum route duration.
         - maxCapacityWeight (number): The maximum weight that can be loaded by a vehicle of the corresponding vehicle type. 
         - maxCapacityVolume (number): The maximum volume that can be loaded by a vehicle of the corresponding vehicle type. 
-        - maxCapacityLoadingMeter (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
+        - maxCapacityPallets (number):  The maximum number of pallets that can be loaded by a vehicle of the corresponding vehicle type.
         - fixedCosts (number): The fixed costs per vehicle in case of usage. 
         - costsPerStop (number): The costs per vehicle stop.
-        - costsPerKm (number): The costs per distance unit. 
+        - costsPerDistanceUnit (number): The costs per distance unit. 
 
      shipments (pd.DataFrame): DataFrame containing shipments information.
         Columns:
         - name (str): The name of the order. 
-        - sender (str): Sender id of the shipment.
-        - senderServiceTime (float): Service time needed on the pickup location of the shipment.
+        - senderId (str): Sender id of the shipment.
+        - senderStopDuration (float): Service time needed on the pickup location of the shipment.
         - earliestPickupTime (str): Start of the pickup time window per shipment.
         - latestPickupTime (str): End of the pickup time window per shipment.
-        - recipient (str): Recipient id of the shipment.
-        - recipientServiceTime (float): Service time needed on the delivery location of the shipment.
+        - recipientId (str): Recipient id of the shipment.
+        - recipientStopDuration (float): Service time needed on the delivery location of the shipment.
         - earliestDeliveryTime (str): Start of the delivery time window per shipment.
         - latestDeliveryTime (str): End of the delivery time window per shipment.
         - weight (number): The weight of the shipment. 
         - volume (number): The volume of the shipment.
-        - loadingMeter (number): The number of pallets of the shipment.
-        - opportunityCosts (number): External costs for shipment.
+        - pallets (number): The number of pallets of the shipment.
+        - externalCosts (number): External costs for shipment.
         - vehicleType (str): All valid vehicle types for the order separated by semicolon.   
 
     parameters (Dict): Dictionary containing parameters durationUnit and distanceUnit.
@@ -231,15 +231,15 @@ def reverse_transport_optimization(locations: pd.DataFrame, vehicle_types: pd.Da
     }
 
     vehicle_types_mandatory_columns = {
-        'type': 'str', 'availableVehicles': 'float',  'startLocation': 'str', 'endLocation': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityLoadingMeter': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerKm': 'float'
+        'type': 'str', 'availableVehicles': 'float',  'startLocation': 'str', 'endLocation': 'str', 'averageSpeed': 'float', 'maxRouteStops': 'float', 'maxRouteLength': 'float', 'maxRouteDuration': 'float', 'maxCapacityWeight': 'float', 'maxCapacityVolume': 'float', 'maxCapacityPallets': 'float', 'fixedCosts': 'float', 'costsPerStop': 'float', 'costsPerDistanceUnit': 'float'
     }   
     shipments_mandatory_columns = {
-        'name': 'str', 'sender': 'str', 'senderServiceTime': 'float', 'earliestPickupTime': 'str', 'latestPickupTime': 'str', 'recipient': 'str', 'recipientServiceTime': 'float', 'earliestDeliveryTime': 'str',  'latestDeliveryTime': 'str', 'weight': 'float', 'opportunityCosts': 'float'
+        'name': 'str', 'senderId': 'str', 'senderStopDuration': 'float', 'earliestPickupTime': 'str', 'latestPickupTime': 'str', 'recipientId': 'str', 'recipientStopDuration': 'float', 'earliestDeliveryTime': 'str',  'latestDeliveryTime': 'str', 'weight': 'float', 'externalCosts': 'float'
     }
     shipemnts_optional_columns = {
         'vehicleType': 'str'
     }
-    shipments_optional_floats = ['volume', 'loadingMeter']
+    shipments_optional_floats = ['volume', 'pallets']
 
     # Perform validation and conversion for each DataFrame
     locations = validate_and_convert_data_types(locations, locations_mandatory_columns, 'mandatory', 'locations')
