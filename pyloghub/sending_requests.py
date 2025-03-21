@@ -78,7 +78,7 @@ def get_workspace_entities(save_scenario, api_key):
 
     DEFAULT_LOG_HUB_API_SERVER = "https://production.supply-chain-apps.log-hub.com"
     LOG_HUB_API_SERVER = os.getenv('LOG_HUB_API_SERVER', DEFAULT_LOG_HUB_API_SERVER)
-    url = f"{LOG_HUB_API_SERVER}api/v1/workspace/"+ save_scenario['workspaceId'] + "/entitiesWithTables"
+    url = f"{LOG_HUB_API_SERVER}/api/v1/workspace/"+ save_scenario['workspaceId'] + "/entitiesWithTables"
 
     max_retries = 3
     retry_delay = 15  # seconds
