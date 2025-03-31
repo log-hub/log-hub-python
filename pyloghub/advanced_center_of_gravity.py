@@ -72,8 +72,7 @@ def forward_advanced_center_of_gravity(customers: pd.DataFrame, sources: pd.Data
                            will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
-    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: A tuple of three pandas DataFrames. 
-                                       Returns None if the process fails.
+    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Returns three pandas DataFrames. First one contains assigned centers and their coordinates, second one describes the inbound flows from sources to centers and the third one shows flows from centers to customers. Returns None if the process fails.
     """
     def create_buttons():
         links = get_workspace_entities(save_scenario, api_key)
@@ -197,8 +196,7 @@ def reverse_advanced_center_of_gravity(customers: pd.DataFrame, sources: pd.Data
                            will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
-    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: A tuple of three pandas DataFrames. 
-                                       Returns None if the process fails.
+    Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Returns three pandas DataFrames. First one contains assigned centers and their coordinates, second one describes the inbound flows from sources to centers and the third one shows flows from centers to customers. Returns None if the process fails.
     """
     def create_buttons():
         links = get_workspace_entities(save_scenario, api_key)
