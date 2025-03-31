@@ -30,10 +30,10 @@ def forward_isochrone(addresses: pd.DataFrame, parameters: Dict, api_key: str, s
     parameters (dict): A dictionary containing parameters for isochrone calculation. 
         - isochroneType: "road" or "beeline"
         - distanceUnit: "km" or "mi"
-        - profile: "driving-car" or "driving-hgv", used if isochroneType is "road"
-        - duration: a number between 1 and 300, used if isochroneType is "road"
+        - travelMode: "driving-car" or "driving-hgv", used if isochroneType is "road"
+        - maxTravelTime: a number between 1 and 300, used if isochroneType is "road"
         - layer: a number between 1 and 10, used if isochroneType is "road"
-        - distance: a number between 1 and 3000, used if isochroneType is "beeline"
+        - maxDistance: a number between 1 and 3000, used if isochroneType is "beeline"
         - layerBeeline: a number between 1 and 25, used if isochroneType is "beeline"
 
     api_key (str): The Log-hub API key for accessing the isochrone service.
@@ -93,10 +93,10 @@ def forward_isochrone_sample_data():
     parameters = {
         'isochroneType': 'road',
         'distanceUnit': 'km',
-        'profile': 'car',
-        'duration': 40,
+        'travelMode': 'car',
+        'maxTravelTime': 40,
         'layers': 5,
-        'distance': 3000,
+        'maxDistance': 3000,
         'layersBeeline': 5
     }
     save_scenario = {
@@ -124,10 +124,10 @@ def reverse_isochrone(geocodes: pd.DataFrame, parameters: Dict, api_key: str, sa
     parameters (dict): A dictionary containing parameters for isochrone calculation. 
         - isochroneType: "road" or "beeline"
         - distanceUnit: "km" or "mi"
-        - profile: "driving-car" or "driving-hgv", used if isochroneType is "road"
-        - duration: A number between 1 and 300, used if isochroneType is "road"
+        - travelMode: "driving-car" or "driving-hgv", used if isochroneType is "road"
+        - maxTravelTime: A number between 1 and 300, used if isochroneType is "road"
         - layer: A number between 1 and 10, used if isochroneType is "road"
-        - distance: A number between 1 and 3000, used if isochroneType is "beeline"
+        - maxDistance: A number between 1 and 3000, used if isochroneType is "beeline"
         - layerBeeline: A number between 1 and 25, used if isochroneType is "beeline"
 
     api_key (str): The Log-hub API key for accessing the reverse isochrone service.
@@ -181,10 +181,10 @@ def reverse_isochrone_sample_data():
     parameters = {
         'isochroneType': 'road',
         'distanceUnit': 'km',
-        'profile': 'car',
-        'duration': 40,
+        'travelMode': 'car',
+        'maxTravelTime': 40,
         'layers': 5,
-        'distance': 3000,
+        'maxDistance': 3000,
         'layersBeeline': 5
     }
     save_scenario = {
