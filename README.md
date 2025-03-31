@@ -655,6 +655,10 @@ display(assigned_geocodes_df.head())
 display(centers_df.head())
 ```
 
+<p align="left">
+  <img src="examples\assets\advanced_center_of_gravity.png" alt="Header Image"  width="980"/>
+</p>
+
 #### Forward Advanced Center of Gravity
 Calculating the optimal location for new warehouses given the address location of customers, their respective weights and product groups they require, as well as sources of the product groups.
 ```python
