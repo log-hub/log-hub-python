@@ -130,7 +130,7 @@ def forward_advanced_center_of_gravity_sample_data():
     parameters = {
         "distanceUnit": "km",
         'minmaximumCenters': 1,
-        'minmaximumCenters': 50,
+        'maxmaximumCenters': 50,
         'inboundOutboundFactor': 8
     }
     save_scenario = {
@@ -255,7 +255,7 @@ def reverse_advanced_center_of_gravity_sample_data():
     parameters = {
         "distanceUnit": "km",
         'minmaximumCenters': 1,
-        'minmaximumCenters': 50,
+        'maxmaximumCenters': 50,
         'inboundOutboundFactor': 8
     }
     save_scenario = {
@@ -265,3 +265,19 @@ def reverse_advanced_center_of_gravity_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'customers': customers_df, 'sources': sources_df, 'fixedCenters': fixedCenters_df, 'productGroups': product_groups_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    sample_data = forward_advanced_center_of_gravity_sample_data()
+    customers_df = sample_data['customers']
+    sources_df = sample_data['sources']
+    fixed_centers_df = sample_data['fixedCenters']
+    product_groups_df = sample_data['productGroups']
+    parameters =sample_data['parameters']
+    api_key = "14d872084c972dd5087bee9b6fa1593a5061a2e7"
+    save_scenario = sample_data['saveScenarioParameters']
+    save_scenario['saveScenario'] = True
+    save_scenario['workspaceId'] = "dde088e344d7f19a669623c862cb144c4f9370dc"
+    save_scenario['scenarioName'] = "Forward advanced cog"
+
+    assigned_centers_df, inbound_df, outbound_df = forward_advanced_center_of_gravity(customers_df, sources_df, fixed_centers_df, product_groups_df, parameters, api_key, save_scenario, show_buttons=True)
