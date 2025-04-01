@@ -2,13 +2,14 @@ import os
 import pandas as pd
 from typing import Optional
 import warnings
+import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
-from input_data_validation import convert_df_to_dict_excluding_nan, convert_to_float
-from sending_requests import post_method, create_headers, create_url
+from save_to_platform import save_scenario_check,  create_button
+from input_data_validation import convert_df_to_dict_excluding_nan, convert_to_float, validate_and_convert_data_types
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Calculate the freight matrix for a list of shipments provided in a pandas DataFrame.
 
@@ -44,16 +45,26 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing evaluated shipments with additional
                   details such as fromLatitude, fromLongitude, toLatitude, toLongitude, costs, etc.
                   Returns None if the process fails.
     """
-    
-    float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
-    shipments_df = convert_to_float(shipments_df, float_columns)
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
+    float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
+    shipments_df = convert_to_float(shipments_df, float_columns, 'optional')
+    mandatory_columns = {'shipmentId': 'str', 'fromLocationId': 'str', 'fromCountry': 'str', 'toLocationId': 'str', 'toCountry': 'str'}
+    optional_columns = {'fromState': 'str', 'fromCity': 'str', 'fromPostalCode': 'str', 'fromStreet': 'str', 'fromZone': 'str', 'toState': 'str', 'toCity': 'str', 'toPostalCode': 'str', 'toStreet': 'str', 'toZone': 'str'}
+    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory', 'shipments')
+    if not shipments_df is None:
+        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional', 'shipments')
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
     
@@ -66,21 +77,32 @@ def forward_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers, "freight matrix")
+    response_data = post_method(url, payload, headers, "freight matrix plus")
     if response_data is None:
         return None
     else:
         evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return evaluated_shipments
 
-def forward_freight_matrix_sample_data():
+def forward_freight_matrix_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'freightMatrixAddresses.xlsx')
     shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:U', dtype={'shipmentId': str, 'shipmentDate': str, 'fromLocationId': str, 'toLocationId': str, 'fromPostalCode': str, 'toPostalCode': str, 'distance': str, 'weight': float, 'volume': float, 'pallets': float, 'loadingMeters': float})
-    return {'shipments': shipments_df}
+
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'shipments': shipments_df, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_freight_matrix_plus(shipments_df: pd.DataFrame, matrix_id: str, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Calculate the reverse freight matrix for a list of shipments provided in a pandas DataFrame.
     
@@ -110,13 +132,24 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containing evaluated shipments with additional
                   details such as costs, weight class, distance class, and price per unit. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map" , "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     float_columns = ['distance', 'weight', 'volume', 'pallets', 'loadingMeters']
-    shipments_df = convert_to_float(shipments_df, float_columns)
+    shipments_df = convert_to_float(shipments_df, float_columns, 'optional')
+    mandatory_columns = {'shipmentId': 'str', 'fromLocationId': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLocationId': 'str', 'toLatitude': 'float', 'toLongitude': 'float'}
+    optional_columns = {'fromState': 'str', 'fromZone': 'str', 'toZone': 'str'}
+    shipments_df = validate_and_convert_data_types(shipments_df, mandatory_columns, 'mandatory', 'shipments')
+    if not shipments_df is None:
+        shipments_df = validate_and_convert_data_types(shipments_df, optional_columns, 'optional', 'shipments')
 
     # Convert DataFrame to list of dicts for the payload, excluding NaN values in specified columns
     shipments_list = convert_df_to_dict_excluding_nan(shipments_df, float_columns)
@@ -130,15 +163,26 @@ def reverse_freight_matrix(shipments_df: pd.DataFrame, matrix_id: str, api_key: 
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers, "reverse freight matrix")
+    response_data = post_method(url, payload, headers, "reverse freight matrix plus")
     if response_data is None:
         return None
     else:
         evaluated_shipments = pd.DataFrame(response_data['evaluatedShipments'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return evaluated_shipments
 
-def reverse_freight_matrix_sample_data():
+def reverse_freight_matrix_plus_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'freightMatrixReverse.xlsx')
     shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:O', dtype={'shipmentId': str, 'shipmentDate': str, 'fromLocationId': str, 'toLocationId': str, 'weight': float, 'volume': float, 'pallets': float, 'loadingMeters': float})
-    return {'shipments': shipments_df}
+
+    save_scenario = {
+        'saveScenario': False,
+        'overwriteScenario': False,
+        'workspaceId': 'Your workspace id',
+        'scenarioName': 'Your scenario name'
+    }
+    return {'shipments': shipments_df, 'saveScenarioParameters': save_scenario}

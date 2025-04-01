@@ -1,14 +1,15 @@
 import os
 import pandas as pd
+import logging
 import warnings
 from typing import Optional
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
-from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from save_to_platform import save_scenario_check, create_button
+from input_data_validation import validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Creates a map of sea routes based on the given route UN/LOCODES.
 
@@ -38,19 +39,28 @@ def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dic
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 
                         'workspaceId' (str) and 'scenarioName' (str).
-
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
     Returns:
     pd.DataFrame: A pandas DataFrame containg the sea route UN/LOCODES with their quantity and route restriction options, 
                   along with the parsed latitude and longitude, parsed country name and distance.
 
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
-    required_columns = {
-            'id': 'float', 'fromName': 'str', 'fromUnLocode': 'str', 'toName': 'str', 'toUnLocode': 'str', 'quantity': 'float',
-            'routingOptions': 'str'
-        }
+    mandatory_columns = {'fromName': 'str', 'fromUnLocode': 'str', 'toName': 'str', 'toUnLocode': 'str'}
+    optional_columns = {'routingOptions': 'str'}
+    optional_floats = ['id', 'quantity']
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, required_columns)
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
+    if not addresses is None:
+         addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
+         if not addresses is None:
+              addresses = convert_to_float(addresses, optional_floats, 'optional')
+              addresses = convert_df_to_dict_excluding_nan(addresses, optional_floats)
     if addresses is None:
         return None
 
@@ -58,7 +68,7 @@ def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dic
     
     headers = create_headers(api_key)
     payload = {
-        "seaRoutesAddressesData": addresses.to_dict(orient='records'),
+        "seaRoutesAddressesData": addresses,
         "parameters": parameters
     }
     
@@ -68,6 +78,10 @@ def forward_supply_chain_map_sea_routes(addresses: pd.DataFrame, parameters: dic
         return response_data
     else:
         route_result_df = pd.DataFrame(response_data['seaRoutes'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_result_df
             
 
@@ -88,7 +102,7 @@ def forward_supply_chain_map_sea_routes_sample_data():
     }
     return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_supply_chain_map_sea_routes(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_supply_chain_map_sea_routes(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Creates a map of sea routes based on the given route latitude and longitude.
 
@@ -121,18 +135,28 @@ def reverse_supply_chain_map_sea_routes(coordinates: pd.DataFrame, parameters: d
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 
                         'workspaceId' (str) and 'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containg the sea route coordinates pairs with their quantity and route restriction options, 
                   along with the parsed country name, parsed UN/LOCODES and distance.
 
     """
-
-    required_columns = {
-            'id': 'float', 'fromName': 'str', 'fromLatitude':'float', 'fromLongitude': 'float', 'toName': 'str', 'toLatitude': 'float', 'toLongitude': 'float', 'quantity': 'float', 'routingOptions': 'str'
-        }
-    
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+        
+    mandatory_columns = {'fromName': 'str', 'fromLatitude':'float', 'fromLongitude': 'float', 'toName': 'str', 'toLatitude': 'float', 'toLongitude': 'float'}
+    optional_columns = {'routingOptions': 'str'}
+    optional_floats = ['id', 'quantity']
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, required_columns)
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory', 'coordinates')
+    if not coordinates is None:
+         coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional', 'coordinates')
+         if not coordinates is None:
+              coordinates = convert_to_float(coordinates, optional_floats, 'optional')
+              coordinates = convert_df_to_dict_excluding_nan(coordinates, optional_floats)
     if coordinates is None:
         return None
 
@@ -140,7 +164,7 @@ def reverse_supply_chain_map_sea_routes(coordinates: pd.DataFrame, parameters: d
     
     headers = create_headers(api_key)
     payload = {
-        "seaRoutesCoordinatesData": coordinates.to_dict(orient='records'),
+        "seaRoutesCoordinatesData": coordinates,
         "parameters": parameters
     }
     
@@ -150,6 +174,10 @@ def reverse_supply_chain_map_sea_routes(coordinates: pd.DataFrame, parameters: d
                 return None
     else:
         route_result_df = pd.DataFrame(response_data['seaRoutes'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_result_df
             
 

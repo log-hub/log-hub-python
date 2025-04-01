@@ -2,13 +2,14 @@ import os
 import pandas as pd
 import warnings
 from typing import Optional
+import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
-from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from save_to_platform import save_scenario_check, create_button
+from input_data_validation import validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_supply_chain_map_routes(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_supply_chain_map_routes(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Creates a map of routes based on the given route nodes addresses.
 
@@ -37,18 +38,27 @@ def forward_supply_chain_map_routes(addresses: pd.DataFrame, parameters: dict, a
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 'workspaceId' (str) and 'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containg the nodes addresses with their layer and pickup and delivery quantity.
 
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
-    required_columns = {
-            'id': 'float', 'routeId': 'str', 'name': 'str', 'country': 'str', 'state': 'str', 'postalCode': 'str',
-            'city': 'str', 'street': 'str', 'layer': 'str', 'pickupQuantity': 'float', 'deliveryQuantity': 'float'
-        }
-    
+    mandatory_columns = {'routeId': 'str', 'name': 'str', 'country': 'str'}
+    optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'layer': 'str'}
+    optional_floats = ['id', 'pickupQuantity', 'deliveryQuantity']
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, required_columns)
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
+    if not addresses is None:
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
+        if not addresses is None:
+            addresses = convert_to_float(addresses, optional_floats, 'optional')
+            addresses = convert_df_to_dict_excluding_nan(addresses, optional_floats)
     if addresses is None:
         return None
 
@@ -56,7 +66,7 @@ def forward_supply_chain_map_routes(addresses: pd.DataFrame, parameters: dict, a
     
     headers = create_headers(api_key)
     payload = {
-        "geocodingData": addresses.to_dict(orient='records'),
+        "geocodingData": addresses,
         "parameters": parameters
     }
    
@@ -66,6 +76,10 @@ def forward_supply_chain_map_routes(addresses: pd.DataFrame, parameters: dict, a
         return None
     else: 
         route_result_df = pd.DataFrame(response_data['inputDataStructure'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_result_df
             
 def forward_supply_chain_map_routes_sample_data():
@@ -85,7 +99,7 @@ def forward_supply_chain_map_routes_sample_data():
     }
     return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
-def reverse_supply_chain_map_routes(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_supply_chain_map_routes(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Creates a map of routes based on the given route nodes coordinates.
 
@@ -111,23 +125,33 @@ def reverse_supply_chain_map_routes(coordinates: pd.DataFrame, parameters: dict,
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'mergeWithExistingScenario (boolean), 'workspaceId' (str) and 'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containg the route nodes coordinates. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
-    required_columns = {
-            'id': 'float', 'routeId': 'str', 'name': 'str', 'latitude':'float', 'longitude': 'float', 'layer': 'str', 'pickupQuantity': 'float', 'deliveryQuantity': 'float'
-        }
-
+    mandatory_columns = {'routeId': 'str', 'name': 'str', 'latitude':'float', 'longitude': 'float'}
+    optional_columns = {'layer': 'str'}
+    optional_floats = ['id', 'pickupQuantity', 'deliveryQuantity']
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, required_columns)
+    coordinates = validate_and_convert_data_types(coordinates, mandatory_columns, 'mandatory', 'coordinates')
+    if not coordinates is None:
+        coordinates = validate_and_convert_data_types(coordinates, optional_columns, 'optional', 'coordinates')
+        if not coordinates is None:
+            coordinates = convert_to_float(coordinates, optional_floats, 'optional')
+            coordinates = convert_df_to_dict_excluding_nan(coordinates, optional_floats)
     if coordinates is None:
         return None
     url = create_url("reversesupplychainmaproutes")
     
     headers = create_headers(api_key)
     payload = {
-        "routeLatLon": coordinates.to_dict(orient='records'),
+        "routeLatLon": coordinates,
         "parameters": parameters
     }
     
@@ -137,6 +161,10 @@ def reverse_supply_chain_map_routes(coordinates: pd.DataFrame, parameters: dict,
         return None
     else:
         route_result_df = pd.DataFrame(response_data['inputDataStructure'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_result_df
            
 def reverse_supply_chain_map_routes_sample_data():
@@ -155,4 +183,3 @@ def reverse_supply_chain_map_routes_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'coordinates': coordinates_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-

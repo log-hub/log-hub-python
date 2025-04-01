@@ -2,13 +2,14 @@ import os
 import pandas as pd
 import warnings
 from typing import Optional, Dict, Tuple
+import logging
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
-from input_data_validation import convert_timestamps, validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from save_to_platform import save_scenario_check, create_button
+from input_data_validation import convert_timestamps, validate_and_convert_data_types, convert_df_to_dict_excluding_nan, convert_to_float
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform milkrun optimization based on depots, vehicles, jobs, time window profiles, and breaks.
 
@@ -91,10 +92,16 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three pandas DataFrames containing route overview, route details, 
                                                      and external orders. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     depots = convert_timestamps(depots)
@@ -104,37 +111,61 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     breaks = convert_timestamps(breaks)
 
     # Define expected columns and data types for each DataFrame
-    depot_columns = {
-        'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
-        'street': 'str', 'depotId': 'str', 'processingTimeAtTheDepo': 'float'
+    depot_mandatory_columns = {
+        'country': 'str', 'depotId': 'str'
     }
-    vehicle_columns = {
-        'vehicleTypeId': 'str', 'availableVehicles': 'int', 'startDepot': 'str', 
-        'endDepot': 'str', 'maxWeight': 'float', 'maxVolume': 'float', 
-        'maxPallets': 'int', 'maxStops': 'int', 'timeWindowStart': 'str', 
-        'timeWindowEnd': 'str', 'profile': 'str', 'speedFactor': 'float', 
-        'fixed': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime':'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
+    depot_optional_columns = {
+        'state': 'str', 'postalCode': 'str', 'city': 'str', 
+        'street': 'str'
+    }
+    depot_optional_float = ['processingTimeAtTheDepo']
+
+    vehicle_mandatory_columns = {
+        'vehicleTypeId': 'str', 'availableVehicles': 'int'
     }   
-    job_columns = {
-        'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 
-        'street': 'str', 'orderId': 'str', 'weight': 'float', 'volume': 'float', 
-        'pallets': 'int', 'pickupDelivery': 'str', 'depotId': 'str', 'vehicleTypeId': 'str', 
-        'stopDuration': 'float', 'timeWindowProfile': 'str', 'stopDurationAtDepo': 'float', 'external_costs':'float'
+    vehicle_optional_columns = {
+        'startDepot': 'str', 'endDepot': 'str', 'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 'breakId': 'str'
     }
-    timeWindowProfile_columns = {
-        'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 
-        'timeWindowProfileEnd': 'str'
+    vehicle_optional_float = ['maxWeight', 'maxVolume', 'maxPallets', 'maxStops', 'speedFactor', 'fixed', 'perHour', 'perKilometer', 'costPerStop', 'minimumTravelTime', 'maxTravelTime', 'max_distance', 'maximumDistanceBetweenStops']
+    job_mandatory_columns = {
+        'country': 'str', 'orderId': 'str', 'pickupDelivery': 'str', 'depotId': 'str'
+    }
+    job_optional_columns = {
+        'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'vehicleTypeId': 'str', 'timeWindowProfile': 'str'
+    }
+    job_optional_float = ['weight', 'volume', 'pallets', 'stopDuration', 'external_costs']
+    timeWindowProfile_optional_columns = {
+        'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 'timeWindowProfileEnd': 'str'
     } 
-    break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart':'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
+    break_optional_columns = {
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart':'str', 'latestRelativeBreakStart': 'str'
     }
+    break_optional_float = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    depots = validate_and_convert_data_types(depots, depot_columns)
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_columns)
-    jobs = validate_and_convert_data_types(jobs, job_columns)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_columns)
-    breaks = validate_and_convert_data_types(breaks, break_columns)
+    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory', 'depots')
+    if not depots is None:
+        depots = convert_to_float(depots, depot_optional_float, 'optional')
+        depots = validate_and_convert_data_types(depots, depot_optional_columns, 'optional', 'depots')
+        if not depots is None:
+            depots = convert_df_to_dict_excluding_nan(depots, depot_optional_float)
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory', 'vehicles')
+    if not vehicles is None:
+        vehicles = convert_to_float(vehicles, vehicle_optional_float, 'optional')
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional', 'vehicles')
+        if not vehicles is None:
+            vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_float)
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory', 'jobs')
+    if not jobs is None:
+        jobs = convert_to_float(jobs, job_optional_float, 'optional')
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional', 'jobs')
+        if not jobs is None:
+            jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_float)
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional', 'time window profiles')
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional', 'breaks')
+    if not breaks is None:
+        breaks = convert_to_float(breaks, break_optional_float, 'optional')
+        breaks = convert_df_to_dict_excluding_nan(breaks, break_optional_float)
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [depots, vehicles, jobs, timeWindowProfiles, breaks]):
@@ -145,11 +176,11 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     headers = create_headers(api_key)
 
     payload = {
-        "depots": depots.to_dict(orient='records'),
-        "vehicles": vehicles.to_dict(orient='records'),
-        "jobs": jobs.to_dict(orient='records'),
+        "depots": depots,
+        "vehicles": vehicles,
+        "jobs": jobs,
         "timeWindowProfiles": timeWindowProfiles.to_dict(orient='records'),
-        "breaks": breaks.to_dict(orient='records'),
+        "breaks": breaks,
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -160,6 +191,10 @@ def forward_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         route_overview_df = pd.DataFrame(response_data['routeOverview'])
         route_details_df = pd.DataFrame(response_data['routeDetails'])
         external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_overview_df, route_details_df, external_orders_df
 
 def forward_milkrun_optimization_plus_sample_data():
@@ -183,7 +218,7 @@ def forward_milkrun_optimization_plus_sample_data():
     return {'depots': depots_df, 'vehicles': vehicles_df, 'jobs': jobs_df, 'timeWindowProfiles': time_window_profiles_df, 'breaks': breaks_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFrame, jobs: pd.DataFrame, timeWindowProfiles: pd.DataFrame, breaks: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
     """
     Perform reverse milkrun optimization based on depots, vehicles, jobs, time window profiles, and breaks.
 
@@ -257,10 +292,16 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Three pandas DataFrames containing route overview, route details, 
                                                      and external orders. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     # Convert datetime columns in each DataFrame to string format (ISO 8601)
     depots = convert_timestamps(depots)
@@ -270,34 +311,53 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     breaks = convert_timestamps(breaks)
 
     # Define expected columns and data types for each DataFrame
-    depot_columns = {
-        'latitude': 'float', 'longitude': 'float', 'depotId': 'str', 'processingTimeAtTheDepo': 'float'
+    depot_mandatory_columns = {
+        'latitude': 'float', 'longitude': 'float', 'depotId': 'str'
     }
-    vehicle_columns = {
-        'vehicleTypeId': 'str', 'availableVehicles': 'int', 'startDepot': 'str', 'endDepot': 'str',
-        'maxWeight': 'float', 'maxVolume': 'float', 'maxPallets': 'int', 'maxStops': 'int',
-        'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 'speedFactor': 'float',
-        'fixed': 'float', 'perHour': 'float', 'perKilometer': 'float', 'costPerStop': 'float', 'minimumTravelTime': 'float', 'maxTravelTime': 'float', 'max_distance': 'float', 'maximumDistanceBetweenStops': 'float', 'breakId': 'str'
+    depot_optional_float = ['processingTimeAtTheDepo']
+    vehicle_mandatory_columns = {
+        'vehicleTypeId': 'str', 'availableVehicles': 'int'
     }
-    job_columns = {
-        'latitude': 'float', 'longitude': 'float', 'depotId': 'str', 'orderId': 'str',
-        'weight': 'float', 'volume': 'float', 'pallets': 'int', 'pickupDelivery': 'str',
-        'vehicleTypeId': 'str', 'stopDuration': 'float', 'timeWindowProfile': 'str', 
-        'stopDurationAtDepo': 'float', 'external_costs': 'float'
+    vehicle_optional_columns = {'startDepot': 'str', 'endDepot': 'str', 'timeWindowStart': 'str', 'timeWindowEnd': 'str', 'profile': 'str', 'breakId': 'str'}
+    vehicle_optional_float = ['maxWeight', 'maxVolume', 'maxPallets', 'maxStops', 'speedFactor', 'fixed', 'perHour', 'perKilometer', 'costPerStop', 'minimumTravelTime', 'maxTravelTime', 'max_distance', 'maximumDistanceBetweenStops']
+    job_mandatory_columns = {
+        'latitude': 'float', 'longitude': 'float', 'depotId': 'str', 'orderId': 'str', 'pickupDelivery': 'str'
     }
-    timeWindowProfile_columns = {
+    job_optional_columns = {
+        'vehicleTypeId': 'str', 'timeWindowProfile': 'str', 
+        }
+    job_optional_float = ['weight', 'volume', 'pallets', 'stopDuration', 'stopDurationAtDepo', 'external_costs']
+    timeWindowProfile_optional_columns = {
         'timeWindowProfileId': 'str', 'timeWindowProfileStart': 'str', 'timeWindowProfileEnd': 'str'
     }
-    break_columns = {
-        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str', 'breakDuration': 'float'
+    break_optional_columns = {
+        'breakId': 'str', 'earliestBreakStart': 'str', 'latestBreakStart': 'str', 'earliestRelativeBreakStart': 'str', 'latestRelativeBreakStart': 'str'
     }
+    break_optional_float = ['breakDuration']
 
     # Perform validation and conversion for each DataFrame
-    depots = validate_and_convert_data_types(depots, depot_columns)
-    vehicles = validate_and_convert_data_types(vehicles, vehicle_columns)
-    jobs = validate_and_convert_data_types(jobs, job_columns)
-    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_columns)
-    breaks = validate_and_convert_data_types(breaks, break_columns)
+    depots = validate_and_convert_data_types(depots, depot_mandatory_columns, 'mandatory', 'depots')
+    if not depots is None:
+        depots = convert_to_float(depots, depot_optional_float, 'optional')
+        if not depots is None:
+            depots = convert_df_to_dict_excluding_nan(depots, depot_optional_float)
+    vehicles = validate_and_convert_data_types(vehicles, vehicle_mandatory_columns, 'mandatory', 'vehicles')
+    if not vehicles is None:
+        vehicles = convert_to_float(vehicles, vehicle_optional_float, 'optional')
+        vehicles = validate_and_convert_data_types(vehicles, vehicle_optional_columns, 'optional', 'vehicles')
+        if not vehicles is None:
+            vehicles = convert_df_to_dict_excluding_nan(vehicles, vehicle_optional_float)
+    jobs = validate_and_convert_data_types(jobs, job_mandatory_columns, 'mandatory', 'jobs')
+    if not jobs is None:
+        jobs = convert_to_float(jobs, job_optional_float, 'optional')
+        jobs = validate_and_convert_data_types(jobs, job_optional_columns, 'optional', 'jobs')
+        if not jobs is None:
+            jobs = convert_df_to_dict_excluding_nan(jobs, job_optional_float)
+    timeWindowProfiles = validate_and_convert_data_types(timeWindowProfiles, timeWindowProfile_optional_columns, 'optional', 'time window profiles')
+    breaks = validate_and_convert_data_types(breaks, break_optional_columns, 'optional', 'breaks')
+    if not breaks is None:
+        breaks = convert_to_float(breaks, break_optional_float, 'optional')
+        breaks = convert_df_to_dict_excluding_nan(breaks, break_optional_float)
 
     # Exit if any DataFrame validation failed
     if any(df is None for df in [depots, vehicles, jobs, timeWindowProfiles, breaks]):
@@ -308,11 +368,11 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
     headers = create_headers(api_key)
 
     payload = {
-        "depots": depots.to_dict(orient='records'),
-        "vehicles": vehicles.to_dict(orient='records'),
-        "jobs": jobs.to_dict(orient='records'),
+        "depots": depots,
+        "vehicles": vehicles,
+        "jobs": jobs,
         "timeWindowProfiles": timeWindowProfiles.to_dict(orient='records'),
-        "breaks": breaks.to_dict(orient='records'),
+        "breaks": breaks,
         "parameters": parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -323,6 +383,10 @@ def reverse_milkrun_optimization_plus(depots: pd.DataFrame, vehicles: pd.DataFra
         route_overview_df = pd.DataFrame(response_data['routeOverview'])
         route_details_df = pd.DataFrame(response_data['routeDetails'])
         external_orders_df = pd.DataFrame(response_data['externalOrders'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return route_overview_df, route_details_df, external_orders_df
 
 def reverse_milkrun_optimization_plus_sample_data():

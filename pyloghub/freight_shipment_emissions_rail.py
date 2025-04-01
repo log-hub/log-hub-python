@@ -6,11 +6,11 @@ import warnings
 logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_dates, validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_freight_shipment_emissions_rail(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_freight_shipment_emissions_rail(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Perform forward freight emissions by rail on a list of UN/LOCODEs.
 
@@ -36,18 +36,24 @@ def forward_freight_shipment_emissions_rail(addresses: pd.DataFrame, parameters:
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Optional[pd.DataFrame]: A pandas DataFrame contains the original shipment information along 
                   with the calculated CO2 emissions. Returns None if the process fails.
     """
-        
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])       
+
     addresses_columns = {
         'shipmentId': 'str', 'shipmentDate': 'str', 'fromUICCode': 'str', 'toUICCode': 'str', 'weight': 'float'
     }
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, addresses_columns)
+    addresses = validate_and_convert_data_types(addresses, addresses_columns, 'mandatory', 'addresses')
     if not addresses is None:
         addresses = convert_dates(addresses, ['shipmentDate'])
     else:
@@ -68,6 +74,10 @@ def forward_freight_shipment_emissions_rail(addresses: pd.DataFrame, parameters:
         return None
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputTrain'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return freight_emissions_df
 
 def forward_freight_shipment_emissions_rail_sample_data():
@@ -87,7 +97,7 @@ def forward_freight_shipment_emissions_rail_sample_data():
     return {'addresses': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
-def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Perform reverse freight emissions by rail on a list of coordinates.
 
@@ -114,18 +124,24 @@ def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameter
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Optional[pd.DataFrame]: A pandas DataFrame containing the original coordinates information along 
                   with the calculated CO2 emissions. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
     
     coordinates_columns = {
         'shipmentId': 'str', 'shipmentDate': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLatitude': 'float', 'toLongitude': 'float', 'weight': 'float'
     }
 
     # Validate and convert data types
-    coordinates = validate_and_convert_data_types(coordinates, coordinates_columns)
+    coordinates = validate_and_convert_data_types(coordinates, coordinates_columns, 'mandatory', 'coordinates')
     if not coordinates is None:
         coordinates = convert_dates(coordinates, ['shipmentDate'])
     if coordinates is None:
@@ -146,6 +162,10 @@ def reverse_freight_shipment_emissions_rail(coordinates: pd.DataFrame, parameter
         return None
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputTrain'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return freight_emissions_df
 
 def reverse_freight_shipment_emissions_rail_sample_data():

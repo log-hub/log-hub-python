@@ -6,11 +6,11 @@ import warnings
 logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_dates, validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Perform forward freight emissions by air on a list of IATA Codes.
 
@@ -36,18 +36,25 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
     save_scenario (dict): A dictionary containg information about saving scenario, empty by default. Allowed key vales are
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
+    
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
+                           will be created. If the scenario is not saved, a proper message will be shown.
 
     Returns:
     Optional[pd.DataFrame]: A pandas DataFrame contains the original shipment information along 
                   with the calculated CO2 emissions. Returns None if the process fails.
     """
-        
-    iata_codes_columns = {
-        'shipmentId': 'str', 'shipmentDate': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'flightNumber': 'str', 'isRefrigirated': 'str', 'weight': 'float'
-    }
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
+    iata_codes_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'weight': 'float'}
+    iata_codes_optional_columns = {'flightNumber': 'str', 'isRefrigirated': 'str'}
 
     # Validate and convert data types
-    iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_columns)
+    iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_mandatory_columns, 'mandatory', 'iata codes')
+    if not iata_codes is None:
+        iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_optional_columns, 'optional', 'iata codes')
     if not iata_codes is None:
         iata_codes = convert_dates(iata_codes, ['shipmentDate'])
     if iata_codes is None:
@@ -68,6 +75,10 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
         return None
     else:
         freight_emissions_df = pd.DataFrame(response_data['freightShipmentEmissionOutputAir'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return freight_emissions_df
 
 def forward_freight_shipment_emissions_air_sample_data():

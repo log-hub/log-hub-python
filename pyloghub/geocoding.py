@@ -6,11 +6,11 @@ import warnings
 logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
-from save_to_platform import save_scenario_check
+from save_to_platform import save_scenario_check, create_button
 from input_data_validation import validate_and_convert_data_types
-from sending_requests import post_method, create_headers, create_url
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
-def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Perform forward geocoding on a list of addresses.
 
@@ -33,15 +33,25 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containing the original address information along 
                   with the geocoded results. Includes latitude and longitude for each address.
                   Returns None if the process fails.
     """
-    geocoding_columns = {'country': 'str', 'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'searchString': 'str'}
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
+
+    mandatory_columns = {'country': 'str'}
+    optional_columns = {'state': 'str', 'postalCode': 'str', 'city': 'str', 'street': 'str', 'searchString': 'str'}
 
     # Validate and convert data types
-    addresses = validate_and_convert_data_types(addresses, geocoding_columns)
+    addresses = validate_and_convert_data_types(addresses, mandatory_columns, 'mandatory', 'addresses')
+    if not addresses is None:
+        addresses = validate_and_convert_data_types(addresses, optional_columns, 'optional', 'addresses')
+
     if addresses is None:
         return None
     
@@ -59,6 +69,10 @@ def forward_geocoding(addresses: pd.DataFrame, api_key: str, save_scenario = {})
         return None
     else:
         geocoded_data_df = pd.DataFrame(response_data['geocodes'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return geocoded_data_df
 
 def forward_geocoding_sample_data():
@@ -73,7 +87,7 @@ def forward_geocoding_sample_data():
     }
     return {'addresses': addresses_df, 'saveScenarioParameters': save_scenario}
 
-def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) -> Optional[pd.DataFrame]:
+def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
     """
     Perform reverse geocoding on a list of latitude and longitude coordinates.
 
@@ -92,15 +106,20 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) 
                             'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                             'scenarioName' (str).
 
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table will be created. If the scenario is not saved, a proper message will be shown.
+
     Returns:
     pd.DataFrame: A pandas DataFrame containing the original geocode information along 
                   with the reverse geocoded address results. Includes fields like country, 
                   state, city, and street. Returns None if the process fails.
     """
+    def create_buttons():
+        links = get_workspace_entities(save_scenario, api_key)
+        create_button(links = [links['map'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📋 Show Input Dataset", "📋 Show Output Dataset"])
     geocodes_columns = {'latitude': 'float', 'longitude': 'float'}
 
     # Validate and convert data types
-    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns)
+    geocodes = validate_and_convert_data_types(geocodes, geocodes_columns, 'mandatory', 'geocodes')
     if geocodes is None:
         return None
     
@@ -116,6 +135,10 @@ def reverse_geocoding(geocodes: pd.DataFrame, api_key: str, save_scenario = {}) 
         return None
     else:
         addresses_df = pd.DataFrame(response_data['addresses'])
+        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+            create_buttons()
+        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
         return addresses_df
 
 def reverse_geocoding_sample_data():

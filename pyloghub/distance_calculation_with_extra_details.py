@@ -1,22 +1,23 @@
 import os
 import pandas as pd
 import logging
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 import warnings
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check, create_button
 from input_data_validation import validate_and_convert_data_types
 from sending_requests import post_method, create_headers, create_url, get_workspace_entities
+from distance_calculation import forward_distance_calculation_sample_data, reverse_distance_calculation_sample_data
 
 logging.basicConfig(level=logging.INFO)
 
-def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
+def forward_distance_calculation_with_extra_details(address_pairs: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
-    Calculate distances and durations between pairs of addresses.
+    Along the distances and durations between a pair of addresses, it as well gives additional information such as the distance covered within each country the road goes through and the distance travelled on the road type (highway, uncategorized, tollway).
 
     This function takes a DataFrame of address pairs (sender and recipient) and a set of parameters,
-    along with an API key, and performs distance calculation using the Log-hub distance calculation service. 
+    along with an API key, and performs distance calculation with sending additional details about the road using the Log-hub distance calculation service. 
 
     Parameters:
     address_pairs (pd.DataFrame): A pandas DataFrame containing pairs of addresses.
@@ -46,8 +47,7 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     api_key (str): The Log-hub API key for accessing the distance calculation service.
 
     Returns:
-    pd.DataFrame: A pandas DataFrame containing the results of the distance calculations. 
-                  Returns None if the process fails.
+    Tuple[pd.DataFrame, pd.DataFrame]: The first pandas DataFrame contains the results of the distance calculations, and the second one contains additional details about the road between start and end points. Returns None if the process fails.
     """
     def create_buttons():
         links = get_workspace_entities(save_scenario, api_key)
@@ -62,7 +62,7 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     if address_pairs is None:
         return None
 
-    url = create_url("distancecalculation")
+    url = create_url("distancecalculationwithextradetails")
     
     headers = create_headers(api_key)
 
@@ -73,18 +73,19 @@ def forward_distance_calculation(address_pairs: pd.DataFrame, parameters: Dict, 
     
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers, "distance calculation")
+    response_data = post_method(url, payload, headers, "distance calculation with extra details")
     if response_data is None:
         return None
     else:
-        distances_df = pd.DataFrame(response_data)
+        distances_df = pd.DataFrame(response_data['distanceCalculationResult'])
+        extra_details_df = pd.DataFrame(response_data['extraDetailsResult'])
         if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
-        return distances_df
+        return distances_df, extra_details_df
     
-def forward_distance_calculation_sample_data():
+def forward_distance_calculation_with_extra_details_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'DistanceCalcSampleDataAddresses.xlsx')
     addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:J')
@@ -104,14 +105,12 @@ def forward_distance_calculation_sample_data():
     return {'address_data': addresses_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
 
 
-
-def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
+def reverse_distance_calculation_with_extra_details(geocodes: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
-    Calculate distances and durations between pairs of locations based on coordinates.
+    Along the distances and durations between a pair of coordinates, it as well gives additional information such as the distance covered within each country the road goes through and the distance travelled on the road type (highway, uncategorized, tollway).
 
-    This function takes a DataFrame of geocode pairs (sender and recipient) with their locations and coordinates,
-    a set of parameters, along with an API key, and performs reverse distance calculation using the 
-    Log-hub reverse distance calculation service.
+    This function takes a DataFrame of pairs of coordinates and a set of parameters,
+    along with an API key, and performs reverse distance calculation with sending additional details about the road using the Log-hub reverse distance calculation service. 
 
     Parameters:
     geocodes (pd.DataFrame): A pandas DataFrame containing pairs of geocodes with sender and recipient information.
@@ -131,14 +130,12 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
                         'saveScenario' (boolean), 'overwriteScenario' (boolean), 'workspaceId' (str) and
                         'scenarioName' (str).
 
-    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table 
-                           will be created. If the scenario is not saved, a proper message will be shown.
+    show_buttons (boolean): If this parameter is set to True and the scenario is saved on the platform, the buttons linking to the output results, map, dashboard and the input table will be created. If the scenario is not saved, a proper message will be shown.
 
     api_key (str): The Log-hub API key for accessing the reverse distance calculation service.
 
     Returns:
-    pd.DataFrame: A pandas DataFrame containing the results of the reverse distance calculations.
-                  Returns None if the process fails.
+    Tuple[pd.DataFrame, pd.DataFrame]: The first pandas DataFrame contains the results of the distance calculations, and the second one contains additional details about the road between start and end points. Returns None if the process fails.
     """
     def create_buttons():
         links = get_workspace_entities(save_scenario, api_key)
@@ -154,7 +151,7 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
     if geocodes is None:
         return None
 
-    url = create_url("reversedistancecalculation")
+    url = create_url("reversedistancecalculationwithextradetails")
     
     headers = create_headers(api_key)
     payload = {
@@ -163,18 +160,19 @@ def reverse_distance_calculation(geocodes: pd.DataFrame, parameters: Dict, api_k
     }
     payload = save_scenario_check(save_scenario, payload)
 
-    response_data = post_method(url, payload, headers, "reverse distance calculation")
+    response_data = post_method(url, payload, headers, "reverse distance calculation with extra details")
     if response_data is None:
         return None
     else:
-        distances_df = pd.DataFrame(response_data)
+        distances_df = pd.DataFrame(response_data['distanceCalculationResult'])
+        extra_details_df = pd.DataFrame(response_data['extraDetailsResult'])
         if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
             create_buttons()
         if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
             logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
-        return distances_df
-
-def reverse_distance_calculation_sample_data():
+        return distances_df, extra_details_df
+    
+def reverse_distance_calculation_with_extra_details_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'DistanceCalcSampleDataReverse.xlsx')
     geocode_data_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:F')
@@ -192,3 +190,4 @@ def reverse_distance_calculation_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'geocode_data': geocode_data_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
