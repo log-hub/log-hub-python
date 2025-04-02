@@ -361,19 +361,19 @@ reverse_geocoding_result_df.head()
       <td>55.479205</td>
       <td>37.327330</td>
       <td>RU</td>
-      <td>Москва</td>
+      <td>Moskva</td>
       <td>142793</td>
       <td></td>
-      <td>проспект Славского</td>
+      <td>prospekt Slavskogo</td>
     </tr>
     <tr>
       <td>41.076602</td>
       <td>29.052495</td>
       <td>TR</td>
-      <td>İstanbul</td>
+      <td>Istanbul</td>
       <td>34342</td>
-      <td>Beşiktaş</td>
-      <td>Cevdetpaşa Caddesi</td>
+      <td>Besiktas</td>
+      <td>Cevdetpasa Caddesi</td>
     </tr>
     <tr>
       <td>51.507322</td>
@@ -388,7 +388,7 @@ reverse_geocoding_result_df.head()
       <td>59.960674</td>
       <td>30.158655</td>
       <td>RU</td>
-      <td>Санкт-Петербург</td>
+      <td>Sankt-Peterburg</td>
       <td></td>
       <td></td>
       <td></td>
@@ -400,7 +400,7 @@ reverse_geocoding_result_df.head()
       <td></td>
       <td>10249</td>
       <td>Berlin</td>
-      <td>Friedenstraße</td>
+      <td>Friedenstrasse</td>
     </tr>
   </tbody>
 </table>
