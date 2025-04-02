@@ -97,6 +97,7 @@ def create_button(links, texts):
                 letter-spacing: 0.5px;
                 border-radius: 6px;
                 transition: background-color 0.2s ease, box-shadow 0.2s ease;
+                margin-bottom: 10px;
             "
             onmouseover="this.style.backgroundColor='#E5E7EB'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
             onmouseout="this.style.backgroundColor='#F7F8FA'; this.style.boxShadow='none';">
