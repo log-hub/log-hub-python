@@ -164,17 +164,17 @@ geocoded_df.head()
 </style>
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 <style>
 .table-container {
@@ -333,14 +333,14 @@ reverse_geocoding_result_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -430,17 +430,17 @@ forward_distance_calculation_result_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -604,17 +604,17 @@ reverse_distance_calculation_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -725,17 +725,17 @@ display(additional_details_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -980,17 +980,17 @@ display(additional_details_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -1184,14 +1184,14 @@ reachable_areas_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -1343,14 +1343,14 @@ reachable_areas_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -1442,14 +1442,14 @@ display(reachable_areas_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -1689,14 +1689,14 @@ display(reachable_areas_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -1857,14 +1857,14 @@ locations_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -1978,14 +1978,14 @@ locations_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2070,14 +2070,14 @@ relations_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2240,14 +2240,14 @@ relations_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2350,14 +2350,14 @@ areas_output_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2489,14 +2489,14 @@ polyline_output_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2563,14 +2563,14 @@ routes_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2649,14 +2649,14 @@ routes_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2735,14 +2735,14 @@ sea_routes_output_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2863,14 +2863,14 @@ sea_routes_output_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -2999,17 +2999,17 @@ display(centers_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -3177,17 +3177,17 @@ display(centers_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -3330,17 +3330,17 @@ display(centers_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -3491,17 +3491,17 @@ display(centers_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -3655,17 +3655,17 @@ display(centers_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -3841,17 +3841,17 @@ display(centers_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -4004,17 +4004,17 @@ display(outbound_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -4266,17 +4266,17 @@ display(outbound_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -4529,14 +4529,14 @@ display(unassigned_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -4703,14 +4703,14 @@ display(unassigned_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -4824,17 +4824,17 @@ display(solution_kpis.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -5265,17 +5265,17 @@ display(solution_kpis.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -5562,17 +5562,17 @@ display(solution_kpis.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -5871,17 +5871,17 @@ display(solution_kpis.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -6127,17 +6127,17 @@ display(input_map_routes_geocodes_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -6646,17 +6646,17 @@ display(input_map_routes_geocodes_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -7055,17 +7055,17 @@ display(external_orders_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -7364,17 +7364,17 @@ display(external_orders_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -7677,17 +7677,17 @@ display(input_map_routes_geocodes_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -8143,17 +8143,17 @@ display(input_map_routes_geocodes_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -8587,17 +8587,17 @@ display(external_orders_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -8895,17 +8895,17 @@ display(external_orders_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -9207,17 +9207,17 @@ display(transports_analysis_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -9527,17 +9527,17 @@ display(transports_analysis_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -9853,17 +9853,17 @@ evaluated_shipments_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -10026,17 +10026,17 @@ evaluated_shipments_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -10209,17 +10209,17 @@ display(not_evaluated_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -10385,17 +10385,17 @@ display(not_evaluated_df.head())
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -10559,17 +10559,17 @@ freight_emissions_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -10715,17 +10715,17 @@ freight_emissions_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -10871,17 +10871,17 @@ freight_emissions_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
@@ -11045,17 +11045,17 @@ freight_emissions_df.head()
 ```
 
 #### Output
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">🌍 Open Map</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_map_button.png" alt="Open Map" width="170" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📊 Open Dashboard</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\open_dashboard_button.png" alt="Open Dashboard" width="200" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Input Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_input_dataset_button.png" alt="Show Input Dataset" width="210" height="50"/>
 </a>
-<a href="https://production.supply-chain-apps.log-hub.com/sca/login" target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
-    <button class="button-style">📋 Show Output Dataset</button>
+<a target="_blank" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+    <img src="examples\assets\show_output_dataset_button.png" alt="Show Output Dataset" width="220" height="50"/>
 </a>
 
 <div class="table-container">
