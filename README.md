@@ -198,12 +198,6 @@ th {
     text-align: right;
     border: none;
 }
-thead tr {
-    background-color: #2b2b2b;
-}
-tr:nth-child(even) {
-    background-color: #2b2b2b;
-}
 tr {
   style="text-align: right;"
 }
