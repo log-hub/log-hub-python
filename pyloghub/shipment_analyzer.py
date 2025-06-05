@@ -31,6 +31,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - carrier (str): Carrier information.
         - truckShipPlaneType (str): Type of transportation vehicle.
         - speedProfile (str): Speed profile used.
+        - distance: Distance betwwen sender and recipient. It will be calculated if not provided
         - weight (float), volume (float), pallets (float): Shipment metrics.
         - shipmentValue (float): Value of the shipment.
         - freightCosts (float): Cost of freight.
@@ -86,7 +87,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
                     'fromCity': 'str', 'toCity': 'str', 'fromPostalCode': 'str', 'toPostalCode': 'str', 'fromStreet': 'str', 'toStreet': 'str',
                     'fromUnLocode': 'str', 'toUnLocode': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'shippingMode': 'str', 'carrier': 'str',
                     'truckShipPlaneType': 'str', 'speedProfile': 'str', 'benchmarkTariff': 'str', 'surcharges': 'str', 'expectedDeliveryDate': 'str', 'actualDeliveryDate': 'str'}
-    shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts']
+    shipments_optional_floats = ['distance', 'volume', 'pallets', 'shipmentValue', 'freightCosts']
 
     shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
@@ -150,7 +151,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
 def forward_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'shipmentAnalyzerAddresses.xlsx')
-    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:AG').fillna("")
+    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:AH').fillna("")
     transport_costs_adjustments_df = pd.read_excel(data_path, sheet_name='transportCostAdjustments', usecols='A:H').fillna("")
     consolidation_df = pd.read_excel(data_path, sheet_name='consolidation', usecols='A:I').fillna("")
     surcharges_df = pd.read_excel(data_path, sheet_name='surcharges', usecols='A:C').fillna("")
@@ -191,6 +192,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - carrier (str): Carrier information.
         - truckShipPlaneType (str): Type of transportation vehicle.
         - speedProfile (str): Speed profile used.
+        - distance: Distance between sender and recipient. It will be calculated if not provided.
         - weight (float): Weight of the shipment.
         - volume (float): Volume of the shipment.
         - pallets (float): Number of pallets.
@@ -236,7 +238,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
                     'fromCity': 'str', 'toCity': 'str', 'fromPostalCode': 'str', 'toPostalCode': 'str', 'fromStreet': 'str', 'toStreet': 'str',
                     'fromUnLocode': 'str', 'toUnLocode': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'shippingMode': 'str', 'carrier': 'str',
                     'truckShipPlaneType': 'str', 'speedProfile': 'str', 'benchmarkTariff': 'str', 'surcharges': 'str', 'expectedDeliveryDate': 'str', 'actualDeliveryDate': 'str'}
-    shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts']
+    shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts', 'distance']
 
     shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
@@ -301,7 +303,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
 def reverse_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'shipmentAnalyzerReverse.xlsx')
-    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:W').fillna("")
+    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:X').fillna("")
     transport_costs_adjustments_df = pd.read_excel(data_path, sheet_name='transportCostAdjustments', usecols='A:H').fillna("")
     consolidation_df = pd.read_excel(data_path, sheet_name='consolidation', usecols='A:I').fillna("")
     surcharges_df = pd.read_excel(data_path, sheet_name='surcharges', usecols='A:C').fillna("")
