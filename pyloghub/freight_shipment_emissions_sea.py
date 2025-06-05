@@ -103,15 +103,3 @@ def forward_freight_shipment_emissions_sea_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'unLocodes': un_locodes_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-
-if __name__ == "__main__":
-
-    sample_data = forward_freight_shipment_emissions_sea_sample_data()
-    locodes_df = sample_data['unLocodes']
-    parameters = sample_data['parameters']
-    save_scenario  =sample_data['saveScenarioParameters']
-
-    api_key_dev = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
-
-    df = forward_freight_shipment_emissions_sea(locodes_df, parameters, api_key_dev, save_scenario)

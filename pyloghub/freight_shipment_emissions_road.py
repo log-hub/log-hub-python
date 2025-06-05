@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check, create_button
-from input_data_validation import convert_dates, validate_and_convert_data_types
+from input_data_validation import convert_dates, validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
 from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
 def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
@@ -33,11 +33,12 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
         - toCity (str): City name of the address to which a shipment should arrive at.
         - toStreet (str): Street name with house number of the address to which a shipment should arrive at.
         - isRefrigirated (str): A YES/NO option that specifies whether the content being transferred through the shipments is refrigirated or not. If not specified will be taken as NO.
+        -distance: Distance between sender and recipient. It will be calculated if not provided.
         - weight (number): The weight of the shipment.
 
     parameters (dict): A dictionary containing parameters:
         - vehicleType: "van(0-3.5)", "truck", "truckUrbanTruck", "truckMGV", "truckHGV", "truckRigid(3.5-7.5)", "truckRigid(7.5-12)", "truckRigid(12-20)" , "truckRigid(20-26)", "truckRigid(26-32)", "truckArticulated(3.5-34)", "truckArticulated(34-40)", "truckArticulated(40-44)", "truckArticulated(44-60)", "truckArticulated(60-72)", "truckGeneral", "truckAutoCarrier", "truckDray", "truckExpedited", "truckFlatbed", "truckHeavybulk", "truckLTL", "truckMixed", "truckMoving", "truckPackage", "truckSpecialized", "truckTanker" or "truckTL" 
-        - fuelType: enum "diesel", "petrol", "hybrid", "CNG", "LPG", "pluginHybrid", "electricity" or "other"
+        - fuelType: enum "diesel", "petrol", "CNG", "LPG", "electricity" or "other"
         - weightUnit: enum "kilograms" or "lbs"
         - emissionStandard: enum "EURO_5" or :EURO_6"
 
@@ -60,13 +61,16 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
         
     addresses_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromCountry': 'str', 'toCountry': 'str', 'weight': 'float'}
     addresses_optional_columns = {'fromState': 'str', 'fromPostalCode': 'str', 'fromCity': 'str', 'fromStreet': 'str', 'toState': 'str', 'toPostalCode': 'str', 'toCity': 'str', 'toStreet': 'str', 'isRefrigirated': 'str'}
+    addresses_optional_floats = ['distance']
 
     # Validate and convert data types
     addresses = validate_and_convert_data_types(addresses, addresses_mandatory_columns, 'mandatory', 'addresses')
     if not addresses is None:
         addresses = validate_and_convert_data_types(addresses, addresses_optional_columns, 'optional', 'addresses')
-    if not addresses is None:
-        addresses = convert_dates(addresses, ['shipmentDate'])
+        if not addresses is None:
+            addresses = convert_dates(addresses, ['shipmentDate'])
+            addresses = convert_to_float(addresses, addresses_optional_floats, 'optional')
+            addresses = convert_df_to_dict_excluding_nan(addresses, addresses_optional_floats)
     if addresses is None:
         return None
     
@@ -75,7 +79,7 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
     headers = create_headers(api_key)
 
     payload = {
-        'freightShipmentEmissionsByRoad': addresses.to_dict(orient='records'),
+        'freightShipmentEmissionsByRoad': addresses,
         'parameters': parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -95,7 +99,7 @@ def forward_freight_shipment_emissions_road(addresses: pd.DataFrame, parameters:
 def forward_freight_shipment_emissions_road_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'CO2RoadAddresses.xlsx')
-    addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:O').fillna("")
+    addresses_df = pd.read_excel(data_path, sheet_name='addresses', usecols='A:P').fillna("")
     parameters = {
         "vehicleType": "truck",
         "fuelType": "diesel",
@@ -128,11 +132,12 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
         - toLatitude (number): The latitude of the coordinate to which a shipment should arrive at.
         - toLongitude (numebr): The longitude of the coordinate to which a shipment should arrive at.
         - isRefrigirated (str): A YES/NO option that specifies whether the content being transferred through the shipments is refrigirated or not. If not specified will be taken as NO.
+        - distance: Distance beteen sender and recipient. It will be calculated if not provided.
         - weight (number): The weight of the shipment.
 
     parameters (dict): A dictionary containing parameters:
         - vehicleType: "van(0-3.5)", "truck", "truckUrbanTruck", "truckMGV", "truckHGV", "truckRigid(3.5-7.5)", "truckRigid(7.5-12)", "truckRigid(12-20)" , "truckRigid(20-26)", "truckRigid(26-32)", "truckArticulated(3.5-34)", "truckArticulated(34-40)", "truckArticulated(40-44)", "truckArticulated(44-60)", "truckArticulated(60-72)", "truckGeneral", "truckAutoCarrier", "truckDray", "truckExpedited", "truckFlatbed", "truckHeavybulk", "truckLTL", "truckMixed", "truckMoving", "truckPackage", "truckSpecialized", "truckTanker" or "truckTL" 
-        - fuelType: enum "diesel", "petrol", "hybrid", "CNG", "LPG", "pluginHybrid", "electricity" or "other"
+        - fuelType: enum "diesel", "petrol", "CNG", "LPG", "electricity" or "other"
         - weightUnit: enum "kilograms" or "lbs"
         - emissionStandard: enum "EURO_5" or :EURO_6"
 
@@ -155,13 +160,16 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
 
     coordinates_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromLatitude': 'float', 'fromLongitude': 'float', 'toLatitude': 'float', 'toLongitude': 'float', 'weight': 'float'}
     coordinates_optional_columns = {'isRefrigirated': 'str'}
+    coordinates_optional_floats = ['distance']
 
     # Validate and convert data types
     coordinates = validate_and_convert_data_types(coordinates, coordinates_mandatory_columns, 'mandatory', 'coordinates')
     if not coordinates is None:
         coordinates = validate_and_convert_data_types(coordinates, coordinates_optional_columns, 'optional', 'coordinates')
-    if not coordinates is None:
-        coordinates = convert_dates(coordinates, ['shipmentDate'])
+        if not coordinates is None:
+            coordinates = convert_dates(coordinates, ['shipmentDate'])
+            coordinates = convert_to_float(coordinates, coordinates_optional_floats, 'optional')
+            coordinates = convert_df_to_dict_excluding_nan(coordinates, coordinates_optional_floats)
     if coordinates is None:
         return None
     url = create_url("reverseco2emissionsroad")
@@ -169,7 +177,7 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
     headers = create_headers(api_key)
 
     payload = {
-        'freightShipmentEmissionsByRoad': coordinates.to_dict(orient='records'),
+        'freightShipmentEmissionsByRoad': coordinates,
         'parameters': parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -189,7 +197,7 @@ def reverse_freight_shipment_emissions_road(coordinates: pd.DataFrame, parameter
 def reverse_freight_shipment_emissions_road_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'CO2RoadReverse.xlsx')
-    coordinates_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:I').fillna("")
+    coordinates_df = pd.read_excel(data_path, sheet_name='coordinates', usecols='A:J').fillna("")
     parameters = {
         "vehicleType": "truck",
         "fuelType": "diesel",
