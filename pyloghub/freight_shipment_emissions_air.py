@@ -102,14 +102,3 @@ def forward_freight_shipment_emissions_air_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'iataCodes': iata_codes_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    sample_data = forward_freight_shipment_emissions_air_sample_data()
-    iata_codes_df = sample_data['iataCodes']
-    parameters = sample_data['parameters']
-    save_scenario  =sample_data['saveScenarioParameters']
-
-    api_key_dev = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
-
-    df = forward_freight_shipment_emissions_air(iata_codes_df, parameters, api_key_dev, save_scenario)
