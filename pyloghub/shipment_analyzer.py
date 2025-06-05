@@ -7,7 +7,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_dates, validate_and_convert_data_types, convert_to_float, validate_boolean, convert_df_to_dict_excluding_nan
-from sending_requests import post_method, create_headers, create_url, get_workspace_entities
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities, get_method
 
 def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
@@ -118,7 +118,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if any(df is None for df in [shipments, cost_adjustment, consolidation,surcharges]):
         return None
 
-    url = create_url("shipmentanalyzerplus")
+    url = create_url("shipmentanalyzerpluslongrun")
     
     headers = create_headers(api_key)
 
@@ -134,13 +134,18 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if response_data is None:
         return None
     else:
-        shipments_df = pd.DataFrame(response_data['shipments'])
-        transports_df = pd.DataFrame(response_data['transports'])
-        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
-            create_buttons()
-        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
-            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
-        return shipments_df, transports_df
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "shipment analyzer plus")
+        if get_method_result is None:
+            return None
+        else:
+            shipments_df = pd.DataFrame(get_method_result['shipments'])
+            transports_df = pd.DataFrame(get_method_result['transports'])
+            if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+                create_buttons()
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
+            return shipments_df, transports_df
            
 def forward_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -263,7 +268,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if any(df is None for df in [shipments, cost_adjustment, consolidation,surcharges]):
         return None
 
-    url = create_url("reverseshipmentanalyzerplus")
+    url = create_url("reverseshipmentanalyzerpluslongrun")
     
     headers = create_headers(api_key)
 
@@ -280,13 +285,18 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if response_data is None:
         return None
     else:
-        shipments_df = pd.DataFrame(response_data['shipments'])
-        transports_df = pd.DataFrame(response_data['transports'])
-        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
-            create_buttons()
-        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
-            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
-        return shipments_df, transports_df
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "shipment analyzer plus")
+        if get_method_result is None:
+            return None
+        else:
+            shipments_df = pd.DataFrame(get_method_result['shipments'])
+            transports_df = pd.DataFrame(get_method_result['transports'])
+            if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+                create_buttons()
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
+            return shipments_df, transports_df
             
 def reverse_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
@@ -307,3 +317,18 @@ def reverse_shipment_analyzer_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
+
+if __name__ == "__main__":
+
+    sample_data = forward_shipment_analyzer_sample_data()
+    shipments_df = sample_data['shipments']
+    consolidation = sample_data['consolidation']
+    costs_adj_df = sample_data['transportCostAdjustments']
+    surcharges_df = sample_data['surcharges']
+    parameters = sample_data['parameters']
+
+    api_key = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
+    api_key_loc = "d1e7942682e770b160a1387d9be26b50d53d493b"
+    save_scenario = sample_data['saveScenarioParameters']
+
+    df1, df2 = forward_shipment_analyzer(shipments_df, costs_adj_df, consolidation, surcharges_df, parameters, api_key, save_scenario)
