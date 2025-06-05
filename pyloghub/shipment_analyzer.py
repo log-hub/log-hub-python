@@ -317,18 +317,3 @@ def reverse_shipment_analyzer_sample_data():
         'scenarioName': 'Your scenario name'
     }
     return {'shipments': shipments_df, 'transportCostAdjustments': transport_costs_adjustments_df, 'consolidation': consolidation_df, 'surcharges': surcharges_df, 'parameters': parameters, 'saveScenarioParameters': save_scenario}
-
-if __name__ == "__main__":
-
-    sample_data = forward_shipment_analyzer_sample_data()
-    shipments_df = sample_data['shipments']
-    consolidation = sample_data['consolidation']
-    costs_adj_df = sample_data['transportCostAdjustments']
-    surcharges_df = sample_data['surcharges']
-    parameters = sample_data['parameters']
-
-    api_key = "2c010d62ff7508c3e5362126ca22ed859eb68ddd"
-    api_key_loc = "d1e7942682e770b160a1387d9be26b50d53d493b"
-    save_scenario = sample_data['saveScenarioParameters']
-
-    df1, df2 = forward_shipment_analyzer(shipments_df, costs_adj_df, consolidation, surcharges_df, parameters, api_key, save_scenario)
