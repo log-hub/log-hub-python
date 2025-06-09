@@ -31,7 +31,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - carrier (str): Carrier information.
         - truckShipPlaneType (str): Type of transportation vehicle.
         - speedProfile (str): Speed profile used.
-        - distance: Distance betwwen sender and recipient. It will be calculated if not provided
+        - distance (float): Distance between sender and recipient. It will be calculated if not provided.
         - weight (float), volume (float), pallets (float): Shipment metrics.
         - shipmentValue (float): Value of the shipment.
         - freightCosts (float): Cost of freight.
@@ -192,7 +192,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - carrier (str): Carrier information.
         - truckShipPlaneType (str): Type of transportation vehicle.
         - speedProfile (str): Speed profile used.
-        - distance: Distance between sender and recipient. It will be calculated if not provided.
+        - distance (float): Distance between sender and recipient. It will be calculated if not provided.
         - weight (float): Weight of the shipment.
         - volume (float): Volume of the shipment.
         - pallets (float): Number of pallets.
@@ -202,13 +202,26 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - surcharges (str): Any additional surcharges.
 
     costAdjustment (pd.DataFrame): DataFrame containing cost adjustment settings.
-        [Include Columns and their types Description Here Similar to Forward Analyzer]
+        Columns and their types:
+        - fromIso2Country (str), toIso2Country (str): ISO country codes for adjustment applicability.
+        - truckShipPlaneType (str): Type of transportation vehicle for which adjustment is applicable.
+        - carrier (str): Carrier information for which adjustment is applicable.
+        - benchmarkTariff (str): Benchmark tariff information.
+        - factor (float): Adjustment factor.
+        - flatOnTop (float): Flat fee on top of the cost.
 
     consolidation (pd.DataFrame): DataFrame containing consolidation settings.
-        [Include Columns and their types Description Here Similar to Forward Analyzer]
+        Columns and their types:
+        - truckShipPlaneType (str): Type of transportation vehicle for consolidation.
+        - fromIso2Country (str), toIso2Country (str): ISO country codes for consolidation applicability.
+        - carrier (str): Carrier information for consolidation.
+        - capacityWeight (float), capacityVolume (float), capacityPallets (float): Capacity metrics for consolidation.
+        - consolidationFrequency (str): Frequency of consolidation (e.g., weekly, bi-weekly).
 
     surcharges (pd.DataFrame): DataFrame containing surcharges information.
-        [Include Columns and their types Description Here Similar to Forward Analyzer]
+        Columns and their types:
+        - surcharge (str): Type of surcharge.
+        - flatOnTop (float): Flat surcharge amount.
 
     parameters (Dict): Dictionary containing parameters for the analysis.
         Keys and their types:
