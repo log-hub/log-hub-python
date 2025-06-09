@@ -93,7 +93,7 @@ def forward_freight_shipment_emissions_sea_sample_data():
     un_locodes_df = pd.read_excel(data_path, sheet_name='sea', usecols='A:H').fillna("")
     parameters = {
         "shipType": "shipContainerShipAvg",
-        "weightUnit": "teu",
+        "weightUnit": "TEU",
         "refrigerantFactor": 12
     }
     save_scenario = {
