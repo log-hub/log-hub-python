@@ -31,7 +31,7 @@ def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters:
     parameters (dict): A dictionary containing parameters:
         - shipType: enum "shipBulkCarrierAvg", "shipBulkCarrier(0-10k)", "shipBulkCarrier(10-100k)", "shipBulkCarrier(>100k)",
         "shipBulkCarrierGeneralCargo", "shipBulkCarrierGeneralCargo(0-10k)", "shipBulkCarrierGeneralCargo(10-20k)", "shipContainerShipAvg", "shipRoRoFerry" or "shipRoPaxFerry"
-        - weightUnit: enum "kilograms" or "lbs" or "teu"
+        - weightUnit: enum "kilograms" or "LBS" or "TEU"
         - refrigerantFactor: a number between 0 and 100
 
     api_key (str): The Log-hub API key for accessing the freight emissions service.

@@ -29,7 +29,7 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
         - weight (number): The weight of the shipment.
 
     parameters (dict): A dictionary containing parameters:
-        - weightUnit: enum "kilograms" or "lbs"
+        - weightUnit: enum "kilograms" or "LBS"
         - planeType: enum "average", "freighter" or "bellyFreight"
         - refrigerantFactor: a number between 0 and 100 
 
