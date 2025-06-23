@@ -7,7 +7,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check, create_button
 from input_data_validation import convert_dates, validate_and_convert_data_types, convert_to_float, validate_boolean, convert_df_to_dict_excluding_nan
-from sending_requests import post_method, create_headers, create_url, get_workspace_entities
+from sending_requests import post_method, create_headers, create_url, get_workspace_entities, get_method
 
 def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataFrame, consolidation: pd.DataFrame, surcharges: pd.DataFrame, parameters: Dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[Tuple[pd.DataFrame, pd.DataFrame]]:
     """
@@ -31,6 +31,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - carrier (str): Carrier information.
         - truckShipPlaneType (str): Type of transportation vehicle.
         - speedProfile (str): Speed profile used.
+        - distance (float): Distance between sender and recipient. It will be calculated if not provided.
         - weight (float), volume (float), pallets (float): Shipment metrics.
         - shipmentValue (float): Value of the shipment.
         - freightCosts (float): Cost of freight.
@@ -86,7 +87,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
                     'fromCity': 'str', 'toCity': 'str', 'fromPostalCode': 'str', 'toPostalCode': 'str', 'fromStreet': 'str', 'toStreet': 'str',
                     'fromUnLocode': 'str', 'toUnLocode': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'shippingMode': 'str', 'carrier': 'str',
                     'truckShipPlaneType': 'str', 'speedProfile': 'str', 'benchmarkTariff': 'str', 'surcharges': 'str', 'expectedDeliveryDate': 'str', 'actualDeliveryDate': 'str'}
-    shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts']
+    shipments_optional_floats = ['distance', 'volume', 'pallets', 'shipmentValue', 'freightCosts']
 
     shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
@@ -118,7 +119,7 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if any(df is None for df in [shipments, cost_adjustment, consolidation,surcharges]):
         return None
 
-    url = create_url("shipmentanalyzerplus")
+    url = create_url("shipmentanalyzerpluslongrun")
     
     headers = create_headers(api_key)
 
@@ -134,18 +135,23 @@ def forward_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if response_data is None:
         return None
     else:
-        shipments_df = pd.DataFrame(response_data['shipments'])
-        transports_df = pd.DataFrame(response_data['transports'])
-        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
-            create_buttons()
-        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
-            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
-        return shipments_df, transports_df
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "shipment analyzer plus")
+        if get_method_result is None:
+            return None
+        else:
+            shipments_df = pd.DataFrame(get_method_result['shipments'])
+            transports_df = pd.DataFrame(get_method_result['transports'])
+            if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+                create_buttons()
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
+            return shipments_df, transports_df
            
 def forward_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'shipmentAnalyzerAddresses.xlsx')
-    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:AG').fillna("")
+    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:AH').fillna("")
     transport_costs_adjustments_df = pd.read_excel(data_path, sheet_name='transportCostAdjustments', usecols='A:H').fillna("")
     consolidation_df = pd.read_excel(data_path, sheet_name='consolidation', usecols='A:I').fillna("")
     surcharges_df = pd.read_excel(data_path, sheet_name='surcharges', usecols='A:C').fillna("")
@@ -186,6 +192,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - carrier (str): Carrier information.
         - truckShipPlaneType (str): Type of transportation vehicle.
         - speedProfile (str): Speed profile used.
+        - distance (float): Distance between sender and recipient. It will be calculated if not provided.
         - weight (float): Weight of the shipment.
         - volume (float): Volume of the shipment.
         - pallets (float): Number of pallets.
@@ -195,13 +202,26 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
         - surcharges (str): Any additional surcharges.
 
     costAdjustment (pd.DataFrame): DataFrame containing cost adjustment settings.
-        [Include Columns and their types Description Here Similar to Forward Analyzer]
+        Columns and their types:
+        - fromIso2Country (str), toIso2Country (str): ISO country codes for adjustment applicability.
+        - truckShipPlaneType (str): Type of transportation vehicle for which adjustment is applicable.
+        - carrier (str): Carrier information for which adjustment is applicable.
+        - benchmarkTariff (str): Benchmark tariff information.
+        - factor (float): Adjustment factor.
+        - flatOnTop (float): Flat fee on top of the cost.
 
     consolidation (pd.DataFrame): DataFrame containing consolidation settings.
-        [Include Columns and their types Description Here Similar to Forward Analyzer]
+        Columns and their types:
+        - truckShipPlaneType (str): Type of transportation vehicle for consolidation.
+        - fromIso2Country (str), toIso2Country (str): ISO country codes for consolidation applicability.
+        - carrier (str): Carrier information for consolidation.
+        - capacityWeight (float), capacityVolume (float), capacityPallets (float): Capacity metrics for consolidation.
+        - consolidationFrequency (str): Frequency of consolidation (e.g., weekly, bi-weekly).
 
     surcharges (pd.DataFrame): DataFrame containing surcharges information.
-        [Include Columns and their types Description Here Similar to Forward Analyzer]
+        Columns and their types:
+        - surcharge (str): Type of surcharge.
+        - flatOnTop (float): Flat surcharge amount.
 
     parameters (Dict): Dictionary containing parameters for the analysis.
         Keys and their types:
@@ -231,7 +251,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
                     'fromCity': 'str', 'toCity': 'str', 'fromPostalCode': 'str', 'toPostalCode': 'str', 'fromStreet': 'str', 'toStreet': 'str',
                     'fromUnLocode': 'str', 'toUnLocode': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'shippingMode': 'str', 'carrier': 'str',
                     'truckShipPlaneType': 'str', 'speedProfile': 'str', 'benchmarkTariff': 'str', 'surcharges': 'str', 'expectedDeliveryDate': 'str', 'actualDeliveryDate': 'str'}
-    shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts']
+    shipments_optional_floats = ['volume', 'pallets', 'shipmentValue', 'freightCosts', 'distance']
 
     shipments = validate_and_convert_data_types(shipments, shipments_mandatory_columns, 'mandatory', 'shipments')
     if not shipments is None:
@@ -263,7 +283,7 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if any(df is None for df in [shipments, cost_adjustment, consolidation,surcharges]):
         return None
 
-    url = create_url("reverseshipmentanalyzerplus")
+    url = create_url("reverseshipmentanalyzerpluslongrun")
     
     headers = create_headers(api_key)
 
@@ -280,18 +300,23 @@ def reverse_shipment_analyzer(shipments: pd.DataFrame, cost_adjustment: pd.DataF
     if response_data is None:
         return None
     else:
-        shipments_df = pd.DataFrame(response_data['shipments'])
-        transports_df = pd.DataFrame(response_data['transports'])
-        if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
-            create_buttons()
-        if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
-            logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
-        return shipments_df, transports_df
+        result = response_data['result']
+        get_method_result = get_method(result['apiServer'], result['url'], {"authorization": f"apikey {api_key}"}, "shipment analyzer plus")
+        if get_method_result is None:
+            return None
+        else:
+            shipments_df = pd.DataFrame(get_method_result['shipments'])
+            transports_df = pd.DataFrame(get_method_result['transports'])
+            if (show_buttons and payload['saveScenarioParameters']['saveScenario']):
+                create_buttons()
+            if (not payload['saveScenarioParameters']['saveScenario'] and show_buttons):
+                logging.info("Please, save the scenario in order to create the buttons for opening the results on the platform.")
+            return shipments_df, transports_df
             
 def reverse_shipment_analyzer_sample_data():
     warnings.simplefilter("ignore", category=UserWarning)
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'shipmentAnalyzerReverse.xlsx')
-    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:W').fillna("")
+    shipments_df = pd.read_excel(data_path, sheet_name='shipments', usecols='A:X').fillna("")
     transport_costs_adjustments_df = pd.read_excel(data_path, sheet_name='transportCostAdjustments', usecols='A:H').fillna("")
     consolidation_df = pd.read_excel(data_path, sheet_name='consolidation', usecols='A:I').fillna("")
     surcharges_df = pd.read_excel(data_path, sheet_name='surcharges', usecols='A:C').fillna("")

@@ -4,6 +4,26 @@ All notable changes to the `log_hub` project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2025-06-25
+
+### Added
+- N/A (no additions in this release).
+
+### Changed
+- `forward_shipment_analyzer` and `reverse_shipment_analyzer` services are changed due to the API changes to a longrun version.
+-  `forward_freight_shipment_emissions_road`,  `reverse_freight_shipment_emissions_road`,  `forward_freight_shipment_emissions_air` and  `forward_freight_shipment_emissions_sea` services have additional input column 'distance'.
+- `forward_freight_shipment_emissions_air` service has additional input parameters 'planeType' and 'refrigerantFactor'
+- `forward_freight_shipment_emissions_sea` service has additional input parameter 'refrigerantFactor'
+
+### Fixed
+- N/A (no fixes in this release).
+
+### Deprecated
+- N/A (no deprecations in this release).
+
+### Removed
+- `forward_freight_shipment_emissions_rail` and  `reverse_freight_shipment_emissions_rail`services are removed from this version.
+
 ## [0.1.5] - 2025-03-25
 
 ### Added

@@ -284,7 +284,7 @@ save_scenario['saveScenario'] = True
 save_scenario['scenarioName'] = "YOUR SCENARIO NAME" 
 save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
 
-reachable_areas_df = reverse_isochrone(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
+reachable_areas_df = reverse_isochrone(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
 reachable_areas_df.head()
 ```
 
@@ -1250,44 +1250,6 @@ save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
 freight_emissions_df, not_evaluated_df = reverse_freight_shipment_emissions_road(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
 display(freight_emissions_df.head())
 display(not_evaluated_df.head())
-```
-
-#### Forward CO2 Emissions Rail
-Calculating a CO2 footprint based on your shipments transported by train.
-
-```python
-from pyloghub.freight_shipment_emissions_rail import forward_freight_shipment_emissions_rail_sample_data, forward_freight_shipment_emissions_rail
-
-sample_data = forward_freight_shipment_emissions_rail_sample_data()
-addresses_df = sample_data['addresses']
-parameters = sample_data['parameters']
-
-save_scenario = sample_data['saveScenarioParameters']
-save_scenario['saveScenario'] = True
-save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
-save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
-
-freight_emissions_df = forward_freight_shipment_emissions_rail(addresses_df, parameters, api_key, save_scenario, show_buttons=True)
-freight_emissions_df.head()
-```
-
-#### Reverse CO2 Emissions Rail
-Calculating a CO2 footprint based on your shipments transported by train.
-
-```python
-from pyloghub.freight_shipment_emissions_rail import reverse_freight_shipment_emissions_rail_sample_data, reverse_freight_shipment_emissions_rail
-
-sample_data = reverse_freight_shipment_emissions_rail_sample_data()
-coordinates_df = sample_data['coordinates']
-parameters = sample_data['parameters']
-
-save_scenario = sample_data['saveScenarioParameters']
-save_scenario['saveScenario'] = True
-save_scenario['workspaceId'] = "YOUR WORKSPACE ID"
-save_scenario['scenarioName'] = "YOUR SCENARIO NAME"
-
-freight_emissions_df = reverse_freight_shipment_emissions_rail(coordinates_df, parameters, api_key, save_scenario, show_buttons=True)
-freight_emissions_df.head()
 ```
 
 #### CO2 Emissions Air

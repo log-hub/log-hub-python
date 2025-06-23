@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check, create_button
-from input_data_validation import convert_dates, validate_and_convert_data_types
+from input_data_validation import convert_dates, validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
 from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
 def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
@@ -24,12 +24,14 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
         - shipmentDate (str): Dates related to the shipment (Format: YYYY-MM-DD)
         - fromIataCode (str): IATA Code for the shipment's start location.
         - toIataCode (str): IATA Code for the shipment's end location.
-        - flightNumber (str): A flight number is a code for any airline service.
         - isRefrigirated (str): A YES/NO option that specifies whether the content being transferred through the shipments is refrigirated or not. If not specified will be taken as NO.
+        -distance (number): Distance between sender and recipient. If not provided, the distance will be calculated.
         - weight (number): The weight of the shipment.
 
     parameters (dict): A dictionary containing parameters:
-        - weightUnit: enum "kilograms" or "lbs"
+        - weightUnit: enum "kilograms" or "LBS"
+        - planeType: enum "average", "freighter" or "bellyFreight"
+        - refrigerantFactor: a number between 0 and 100 
 
     api_key (str): The Log-hub API key for accessing the freight emissions service.
 
@@ -49,14 +51,17 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
         create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
 
     iata_codes_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromIataCode': 'str', 'toIataCode': 'str', 'weight': 'float'}
-    iata_codes_optional_columns = {'flightNumber': 'str', 'isRefrigirated': 'str'}
+    iata_codes_optional_columns = {'isRefrigirated': 'str'}
+    iata_codes_optional_floats = ['distance']
 
     # Validate and convert data types
     iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_mandatory_columns, 'mandatory', 'iata codes')
     if not iata_codes is None:
         iata_codes = validate_and_convert_data_types(iata_codes, iata_codes_optional_columns, 'optional', 'iata codes')
-    if not iata_codes is None:
-        iata_codes = convert_dates(iata_codes, ['shipmentDate'])
+        if not iata_codes is None:
+            iata_codes = convert_dates(iata_codes, ['shipmentDate'])
+            iata_codes = convert_to_float(iata_codes, iata_codes_optional_floats, 'optional')
+            iata_codes = convert_df_to_dict_excluding_nan(iata_codes, iata_codes_optional_floats)
     if iata_codes is None:
         return None
     
@@ -65,7 +70,7 @@ def forward_freight_shipment_emissions_air(iata_codes: pd.DataFrame, parameters:
     headers = create_headers(api_key)
 
     payload = {
-        'freightShipmentEmissionsByAir': iata_codes.to_dict(orient='records'),
+        'freightShipmentEmissionsByAir': iata_codes,
         'parameters': parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -86,7 +91,9 @@ def forward_freight_shipment_emissions_air_sample_data():
     data_path = os.path.join(os.path.dirname(__file__), 'sample_data', 'CO2Air.xlsx')
     iata_codes_df = pd.read_excel(data_path, sheet_name='air', usecols='A:H').fillna("")
     parameters = {
-        "weightUnit": "kilograms"
+        "planeType": "average",
+        "weightUnit": "kilograms",
+        "refrigerantFactor": 12
     }
     save_scenario = {
         'saveScenario': False,

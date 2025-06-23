@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pyloghub')))
 from save_to_platform import save_scenario_check, create_button
-from input_data_validation import convert_dates, validate_and_convert_data_types
+from input_data_validation import convert_dates, validate_and_convert_data_types, convert_to_float, convert_df_to_dict_excluding_nan
 from sending_requests import post_method, create_headers, create_url, get_workspace_entities
 
 def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters: dict, api_key: str, save_scenario = {}, show_buttons = False) -> Optional[pd.DataFrame]:
@@ -24,14 +24,15 @@ def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters:
         - shipmentDate (str): Dates related to the shipment (Format: YYYY-MM-DD)
         - fromUnLocode (str): UN/LOCODE for the shipment's start location.
         - toUnLocode (str): UN/LOCODE for the shipment's end location.
-        - vesselId (str): The 7 digit IMO (International Maritime Organization) ship identifier of the cargo ships.
         - isRefrigirated (str): A YES/NO option that specifies whether the content being transferred through the shipments is refrigirated or not. If not specified will be taken as NO.
+        - distance: Distance between sender and recipient. It will be calculated if not provided
         - weight (number): The weight of the shipment.
 
     parameters (dict): A dictionary containing parameters:
         - shipType: enum "shipBulkCarrierAvg", "shipBulkCarrier(0-10k)", "shipBulkCarrier(10-100k)", "shipBulkCarrier(>100k)",
         "shipBulkCarrierGeneralCargo", "shipBulkCarrierGeneralCargo(0-10k)", "shipBulkCarrierGeneralCargo(10-20k)", "shipContainerShipAvg", "shipRoRoFerry" or "shipRoPaxFerry"
-        - weightUnit: enum "kilograms" or "lbs" or "teu"
+        - weightUnit: enum "kilograms" or "LBS" or "TEU"
+        - refrigerantFactor: a number between 0 and 100
 
     api_key (str): The Log-hub API key for accessing the freight emissions service.
 
@@ -51,14 +52,17 @@ def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters:
         create_button(links = [links['map'], links['dashboard'], links['inputDataset'], links['outputDataset']], texts = ["🌍 Open Map", "📊 Open Dashboard", "📋 Show Input Dataset", "📋 Show Output Dataset"])
     
     un_locodes_mandatory_columns = {'shipmentId': 'str', 'shipmentDate': 'str', 'fromUnLocode': 'str', 'toUnLocode': 'str', 'weight': 'float'}
-    un_locodes_optional_columns = {'vesselId': 'str', 'isRefrigirated': 'str'}
+    un_locodes_optional_columns = {'isRefrigirated': 'str'}
+    un_locodes_optional_floats = ['distance']
 
     # Validate and convert data types
     un_locodes = validate_and_convert_data_types(un_locodes, un_locodes_mandatory_columns, 'mandatory', 'un locodes')
     if not un_locodes is None:
         un_locodes = validate_and_convert_data_types(un_locodes, un_locodes_optional_columns, 'optional', 'un locodes')
-    if not un_locodes is None:
-        un_locodes = convert_dates(un_locodes, ['shipmentDate'])
+        if not un_locodes is None:
+            un_locodes = convert_dates(un_locodes, ['shipmentDate'])
+            un_locodes = convert_to_float(un_locodes, un_locodes_optional_floats, 'optional')
+            un_locodes = convert_df_to_dict_excluding_nan(un_locodes, un_locodes_optional_floats)
     if un_locodes is None:
         return None
     
@@ -67,7 +71,7 @@ def forward_freight_shipment_emissions_sea(un_locodes: pd.DataFrame, parameters:
     headers = create_headers(api_key)
 
     payload = {
-        'freightShipmentEmissionsBySea': un_locodes.to_dict(orient='records'),
+        'freightShipmentEmissionsBySea': un_locodes,
         'parameters': parameters
     }
     payload = save_scenario_check(save_scenario, payload)
@@ -89,7 +93,8 @@ def forward_freight_shipment_emissions_sea_sample_data():
     un_locodes_df = pd.read_excel(data_path, sheet_name='sea', usecols='A:H').fillna("")
     parameters = {
         "shipType": "shipContainerShipAvg",
-        "weightUnit": "teu"
+        "weightUnit": "TEU",
+        "refrigerantFactor": 12
     }
     save_scenario = {
         'saveScenario': False,

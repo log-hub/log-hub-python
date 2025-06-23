@@ -60,7 +60,7 @@ def get_method(api_server, url, headers, app_name):
         response = requests.get(api_server + url, headers = headers)
         if response.status_code == 200:
             response_data = response.json()
-            if response_data['calculationRunning']:
+            if ('calculationRunning' in response_data.keys()) and response_data['calculationRunning']:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
                     logging.error("Timeout of one hour is reached with the calculation still running. Try running the calculation again.")
